@@ -9,8 +9,9 @@
           :bodyStyle="{ paddingTop: 0, paddingBottom: '16px' }"
         >
           <div class="text-right mb-4">
-            <a-button type="primary" class="mx-2">Liste des versements</a-button>
-
+            <a-button type="primary" class="mx-2"
+              >Liste des versements</a-button
+            >
             <a-button class="mx-2" @click="$router.go(-1)">Retour</a-button>
           </div>
 
@@ -45,6 +46,30 @@
               class="header-solid h-full"
               :bodyStyle="{ paddingTop: 0, paddingBottom: '16px' }"
             >
+              <template #title>
+                <h6 class="font-semibold m-0">Statistique de l'agence</h6>
+              </template>
+              <a-row :gutter="24">
+                <a-col
+                  :span="8"
+                  :lg="8"
+                  :xl="8"
+                  class="mb-24"
+                  v-for="(stat, index) in stats"
+                  :key="index"
+                >
+                  <!-- Widget 1 Card -->
+                  <WidgetCounter
+                    :title="stat.title"
+                    :value="stat.value"
+                    :prefix="stat.prefix"
+                    :suffix="stat.suffix"
+                    :icon="stat.icon"
+                    :status="stat.status"
+                  ></WidgetCounter>
+                  <!-- / Widget 1 Card -->
+                </a-col>
+              </a-row>
             </a-card>
           </a-col>
 
@@ -86,31 +111,7 @@
           class="header-solid h-full"
           :bodyStyle="{ paddingTop: '20px', paddingBottom: '16px' }"
         >
-          <template #title>
-            <h6 class="font-semibold m-0">Statistique de l'agence</h6>
-          </template>
-          <a-row :gutter="24">
-            <a-col
-              :span="24"
-              :lg="24"
-              :xl="24"
-              class="mb-24"
-              v-for="(stat, index) in stats"
-              :key="index"
-            >
-              <!-- Widget 1 Card -->
-              <WidgetCounter
-                :title="stat.title"
-                :value="stat.value"
-                :prefix="stat.prefix"
-                :suffix="stat.suffix"
-                :icon="stat.icon"
-                :status="stat.status"
-              ></WidgetCounter>
-              <!-- / Widget 1 Card -->
-            </a-col>
-          </a-row>
-
+          <!--  affectation d'un collecteur -->
           <template>
             <h6 class="font-semibold m-0">Affecter un agent collecteur</h6>
           </template>
@@ -173,7 +174,141 @@
               </a-button>
             </div>
           </a-form>
+          <!-- end collecteur affect -->
 
+          <!-- affectation agent superviseur -->
+          <template>
+            <h6 class="font-semibold m-0">Affecter un agent superviseur</h6>
+          </template>
+          <a-form
+            id="components-form-demo-normal-login"
+            :form="formSuperviseurAffect"
+            class="affect-form"
+            @submit="agentSuperviseurSubmit"
+            :hideRequiredMark="true"
+          >
+            <a-form-item label="Selectionnez l'agent">
+              <a-select
+                placeholder="Selectionnez le superviseur"
+                v-decorator="[
+                  'superviseur',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Superviseur est vide!',
+                      },
+                    ],
+                  },
+                ]"
+              >
+                <a-select-option
+                  v-for="(collecteur, index) in superviseurs"
+                  :key="index"
+                  :value="collecteur.id"
+                >
+                  {{ collecteur.nom }} {{ collecteur.prenom }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+
+            <a-form-item class="" label="Code secret" :colon="false">
+              <a-input
+                v-decorator="[
+                  'code_secret',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Code secret incorrect!',
+                      },
+                    ],
+                  },
+                ]"
+                type="number"
+                placeholder="Code secret"
+              />
+            </a-form-item>
+            <div class="mb-4 text-right">
+              <a-button
+                type="primary"
+                html-type="submit"
+                class="login-form-button"
+              >
+                Affecter
+              </a-button>
+            </div>
+          </a-form>
+
+          <!-- end affectation superviseur -->
+
+          <!-- affectation livreur -->
+          <template>
+            <h6 class="font-semibold m-0">Affecter un agent livreur</h6>
+          </template>
+          <a-form
+            id="components-form-demo-normal-login"
+            :form="formLivreurAffect"
+            class="affect-form"
+            @submit="agentLivreurSubmit"
+            :hideRequiredMark="true"
+          >
+            <a-form-item label="Selectionnez l'agent">
+              <a-select
+                placeholder="Selectionnez le livreur"
+                v-decorator="[
+                  'livreur',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Livreur est vide!',
+                      },
+                    ],
+                  },
+                ]"
+              >
+                <a-select-option
+                  v-for="(collecteur, index) in livreurs"
+                  :key="index"
+                  :value="collecteur.id"
+                >
+                  {{ collecteur.nom }} {{ collecteur.prenom }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+
+            <a-form-item class="" label="Code secret" :colon="false">
+              <a-input
+                v-decorator="[
+                  'code_secret',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Code secret incorrect!',
+                      },
+                    ],
+                  },
+                ]"
+                type="number"
+                placeholder="Code secret"
+              />
+            </a-form-item>
+            <div class="mb-4 text-right">
+              <a-button
+                type="primary"
+                html-type="submit"
+                class="login-form-button"
+              >
+                Affecter
+              </a-button>
+            </div>
+          </a-form>
+
+          <!-- end affectation livreur -->
+
+          <!-- affectation gerant -->
           <template>
             <h6 class="font-semibold m-0">Affecter un caissier</h6>
           </template>
@@ -181,7 +316,7 @@
             id="components-form-demo-normal-login"
             :form="formCaissier"
             class="login-form"
-            @submit="caissierSubmit"
+            @submit="agentCaissierSubmit"
             :hideRequiredMark="true"
           >
             <a-form-item label="Selectionnez le caissier">
@@ -296,6 +431,12 @@ export default {
     this.formAffect = this.$form.createForm(this, {
       name: "affect_collecteur",
     });
+    this.formSuperviseurAffect = this.$form.createForm(this, {
+      name: "affect_collecteur",
+    });
+    this.formLivreurAffect = this.$form.createForm(this, {
+      name: "affect_collecteur",
+    });
   },
   data() {
     return {
@@ -304,6 +445,8 @@ export default {
       visible: false,
       confirmLoading: false,
       collecteurs: [],
+      superviseurs: [],
+      livreurs: [],
       caissiers: [],
       columns: [],
       data: [],
@@ -384,6 +527,8 @@ export default {
     this.detailAgence();
     this.listeCollecteur();
     this.listeCaissier();
+    this.listeLivreur();
+    this.listeSuperviseur()
   },
 
   methods: {
@@ -510,6 +655,44 @@ export default {
         );
     },
 
+    listeSuperviseur() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(`${this.callback}/agent/superviseur/list`, {}, headers)
+        .then(
+          (response) => {
+            let data = response.body.data;
+            this.superviseurs = data;
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
+          }
+        );
+    },
+
+    listeLivreur() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(`${this.callback}/livreur/list`, {}, headers)
+        .then(
+          (response) => {
+            let data = response.body.data;
+            this.livreurs = data;
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
+          }
+        );
+    },
+
     listeCaissier() {
       let session = localStorage;
       this.token_admin = session.getItem("token");
@@ -568,7 +751,7 @@ export default {
       });
     },
 
-    caissierSubmit(e) {
+    agentCaissierSubmit(e) {
       e.preventDefault();
       this.formCaissier.validateFields((err, values) => {
         if (!err) {
@@ -582,6 +765,88 @@ export default {
             this.$http
               .post(
                 `${this.callback}/agence/affectation/agence/${this.$route.params.id}/gerant/${values.caissier}`,
+                {},
+                headers
+              )
+              .then(
+                (response) => {
+                  if (response) {
+                    this.showAlert(
+                      "success",
+                      "Success",
+                      "Affectation effectuer avec success"
+                    );
+                    this.formCaissier.resetFields();
+                    this.detailAgence();
+                  }
+                },
+                (response) => {
+                  this.showAlert("error", "Error", response.body.message);
+                }
+              );
+          } else {
+            this.showAlert("error", "Erreur", "Code secret incorrect");
+          }
+        }
+      });
+    },
+
+    
+    agentSuperviseurSubmit(e) {
+      e.preventDefault();
+      this.formSuperviseurAffect.validateFields((err, values) => {
+        if (!err) {
+          console.log(values);
+          if (values.code_secret == localStorage.getItem("code_secret")) {
+            let session = localStorage;
+            this.token_admin = session.getItem("token");
+
+            let headers = { headers: { Authorization: this.token_admin } };
+
+            this.$http
+              .post(
+                `${this.callback}/agence/affectation/agence/${this.$route.params.id}/gerant/${values.superviseur}`,
+                {},
+                headers
+              )
+              .then(
+                (response) => {
+                  if (response) {
+                    this.showAlert(
+                      "success",
+                      "Success",
+                      "Affectation effectuer avec success"
+                    );
+                    this.formCaissier.resetFields();
+                    this.detailAgence();
+                  }
+                },
+                (response) => {
+                  this.showAlert("error", "Error", response.body.message);
+                }
+              );
+          } else {
+            this.showAlert("error", "Erreur", "Code secret incorrect");
+          }
+        }
+      });
+    },
+
+    
+    agentLivreurSubmit(e) {
+      e.preventDefault();
+      this.formLivreurAffect.validateFields((err, values) => {
+        if (!err) {
+          console.log(values);
+          if (values.code_secret == localStorage.getItem("code_secret")) {
+            let session = localStorage;
+            this.token_admin = session.getItem("token");
+
+            let headers = { headers: { Authorization: this.token_admin } };
+
+            this.$http
+              .post(
+                `${this.callback}/agence/affectation/agence/${this.$route.params.id}/gerant/${values.livreur}`,
                 {},
                 headers
               )
