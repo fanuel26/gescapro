@@ -3,7 +3,7 @@
   <a-card :bordered="false" class="card-info-2 h-full">
     <div
       class="col-content h-full"
-      style="background-image: url('images/info-card-2.jpg')"
+      style="background-image: url('/images/info-card-2.jpg')"
     >
       <div class="card-content">
         <h5>Versement en point Launship-Box</h5>

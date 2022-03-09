@@ -7,7 +7,7 @@
 	<div>
 
 		<!-- Header Background Image -->
-		<div class="profile-nav-bg" style="background-image: url('images/bg-profile.jpg')"></div>
+		<div class="profile-nav-bg" style="background-image: url('/images/bg-profile.jpg')"></div>
 		<!-- / Header Background Image -->
 
 		<!-- User Profile Card -->
@@ -15,7 +15,7 @@
 			<template #title>
 				<a-row type="flex" align="middle">
 					<a-col :span="24" :md="12" class="col-info">
-						<a-avatar :size="74" shape="square" src="images/face-1.jpg" />
+						<a-avatar :size="74" shape="square" src="/images/face-1.jpg" />
 						<div class="avatar-info">
 							<h4 class="font-semibold m-0">Sarah Jacob</h4>
 							<p>CEO / Co-Founder</p>
@@ -137,31 +137,31 @@
 			id: "1",
 			title: "Sophie B.",
 			code: "Hi! I need more information…",
-			avatar: "images/face-3.jpg",
+			avatar: "/images/face-3.jpg",
 		},
 		{
 			id: "2",
 			title: "Anne Marie",
 			code: "Awesome work, can you…",
-			avatar: "images/face-4.jpg",
+			avatar: "/images/face-4.jpg",
 		},
 		{
 			id: "3",
 			title: "Ivan",
 			code: "About files I can…",
-			avatar: "images/face-5.jpeg",
+			avatar: "/images/face-5.jpeg",
 		},
 		{
 			id: "4",
 			title: "Peterson",
 			code: "Have a great afternoon…",
-			avatar: "images/face-6.jpeg",
+			avatar: "/images/face-6.jpeg",
 		},
 		{
 			id: "5",
 			title: "Nick Daniel",
 			code: "Hi! I need more information…",
-			avatar: "images/face-2.jpg",
+			avatar: "/images/face-2.jpg",
 		},
 	] ;
 
@@ -171,36 +171,36 @@
 			id: 1,
 			title: "Modern",
 			content: "As Uber works through a huge amount of internal management turmoil.",
-			cover: "images/home-decor-3.jpeg",
+			cover: "/images/home-decor-3.jpeg",
 			team: [
-				"images/face-1.jpg",
-				"images/face-4.jpg",
-				"images/face-2.jpg",
-				"images/face-3.jpg",
+				"/images/face-1.jpg",
+				"/images/face-4.jpg",
+				"/images/face-2.jpg",
+				"/images/face-3.jpg",
 			],
 		},
 		{
 			id: 2,
 			title: "Scandinavian",
 			content: "Music is something that every person has his or her own specific opinion about.",
-			cover: "images/home-decor-2.jpeg",
+			cover: "/images/home-decor-2.jpeg",
 			team: [
-				"images/face-1.jpg",
-				"images/face-4.jpg",
-				"images/face-2.jpg",
-				"images/face-3.jpg",
+				"/images/face-1.jpg",
+				"/images/face-4.jpg",
+				"/images/face-2.jpg",
+				"/images/face-3.jpg",
 			],
 		},
 		{
 			id: 3,
 			title: "Minimalist",
 			content: "Different people have different taste, and various types of music, Zimbali Resort.",
-			cover: "images/home-decor-1.jpeg",
+			cover: "/images/home-decor-1.jpeg",
 			team: [
-				"images/face-1.jpg",
-				"images/face-4.jpg",
-				"images/face-2.jpg",
-				"images/face-3.jpg",
+				"/images/face-1.jpg",
+				"/images/face-4.jpg",
+				"/images/face-2.jpg",
+				"/images/face-3.jpg",
 			],
 		},
 	] ;

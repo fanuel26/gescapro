@@ -832,12 +832,10 @@ export default {
       });
     },
 
-    
     agentLivreurSubmit(e) {
       e.preventDefault();
       this.formLivreurAffect.validateFields((err, values) => {
         if (!err) {
-          console.log(values);
           if (values.code_secret == localStorage.getItem("code_secret")) {
             let session = localStorage;
             this.token_admin = session.getItem("token");
@@ -877,4 +875,5 @@ export default {
 </script>
 
 <style lang="scss">
+  
 </style>

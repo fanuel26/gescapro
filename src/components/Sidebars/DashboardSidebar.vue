@@ -17,7 +17,7 @@
     :style="{ backgroundColor: 'transparent' }"
   >
     <div class="brand">
-      <h4 class="text-primary font-weight-bold">GESCAPRO</h4>
+      <img src="/images/logo1.png" class="img-fluid w-75 h-100" alt="" />
     </div>
     <hr />
 
@@ -367,7 +367,7 @@
       </a-menu-item>
       <a-menu-item class="menu-item-header"> Paramêtre </a-menu-item>
       <a-menu-item>
-        <router-link :to="{name: 'Launship_demande'}">
+        <router-link :to="{ name: 'Launship_demande' }">
           <span class="icon">
             <svg
               width="20"

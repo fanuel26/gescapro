@@ -23,7 +23,7 @@
     </a-row>
 
     <a-row :gutter="24">
-      <a-col :span="12" :lg="18" :xl="18" class="mb-24" :key="index">
+      <a-col :span="12" :lg="18" :xl="18" class="mb-24">
         <a-card class="card card-body border-0">
           <div class="mb-4 text-right">
             <a-button type="primary" class="mx-2" @click="showModal(1)">
@@ -105,7 +105,6 @@
 
                     <a-col :span="24" :md="24" class="">
                       <a-form-item
-                        v-bind="formItemLayout"
                         label="Selectionnez le pays"
                       >
                         <div class="d-flex">
@@ -168,7 +167,6 @@
 
                     <a-col :span="24" :md="24" class="">
                       <a-form-item
-                        v-bind="formItemLayout"
                         label="Selectionnez le pays"
                       >
                         <div class="d-flex">
@@ -185,7 +183,6 @@
                     </a-col>
                     <a-col :span="24" :md="24" class="">
                       <a-form-item
-                        v-bind="formItemLayout"
                         label="Selectionnez la ville"
                       >
                         <div class="d-flex">
@@ -254,7 +251,7 @@ import WidgetCounter from "../../components/Widgets/WidgetCounter";
 const stats = [
   {
     title: "Pays actif",
-    value: 1,
+    value: 0,
     prefix: "",
     suffix: "",
     icon: `<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -265,7 +262,7 @@ const stats = [
   },
   {
     title: "Villes actifs",
-    value: 4,
+    value: 0,
     prefix: "",
     suffix: "",
     icon: `<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -276,7 +273,7 @@ const stats = [
   },
   {
     title: "Quartiers actifs",
-    value: 53,
+    value: 0,
     prefix: "",
     suffix: "",
     icon: `<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -290,6 +287,10 @@ const stats = [
 export default {
   components: {
     WidgetCounter,
+  },
+  
+  beforeCreate() {
+    this.form = this.$form.createForm(this, { name: "normal_login" });
   },
   data() {
     return {
@@ -399,6 +400,8 @@ export default {
       this.visibleville = false;
       this.visiblequartier = false;
     },
+
+    handleSubmit() {}
   },
 };
 </script>
