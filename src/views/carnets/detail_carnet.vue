@@ -42,12 +42,15 @@
                     <a-descriptions-item label="Nombre vendus">
                       {{ carnet.vendu }}
                     </a-descriptions-item>
+                    <a-descriptions-item label="Nom du createur">
+                      Admin X
+                    </a-descriptions-item>
                   </a-descriptions>
                 </div>
               </a-card>
             </a-col>
           </a-row>
-          <a-col :span="24" :md="24" class="mb-24">
+          <a-col :span="24" :md="24" class="mb-24" v-if="carnet.vendu == 0">
             <a-card
               :bordered="false"
               class="header-solid h-full"

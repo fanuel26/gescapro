@@ -164,6 +164,7 @@ export default {
         title: "Libelle produit",
         dataIndex: "libelle",
         key: "libelle",
+        
       },
       {
         title: "Action",
@@ -262,7 +263,7 @@ export default {
           (response) => {
             this.showAlert("error", "Error", response.body.message);
           }
-        );
+        ); b
     },
 
     deleteProduit(id) {

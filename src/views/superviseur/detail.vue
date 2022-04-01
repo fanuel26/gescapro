@@ -50,6 +50,16 @@
                 </div>
               </a-card>
             </a-col>
+
+            <a-col :span="24">
+              <a-card :bordered="false">
+                <template #title>
+                  <h6>Liste des controlles</h6>
+                </template>
+
+                <a-table :columns="columns" :data-source="data"> </a-table>
+              </a-card>
+            </a-col>
           </a-row>
         </a-card>
       </a-col>

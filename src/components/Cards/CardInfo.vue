@@ -13,7 +13,7 @@
         </div>
         <div class="card-footer">
           <a href="https://launship.com/" target="_brank" size="small">
-            <span>Lire plus</span>
+            <span>Commencer</span>
             <svg
               width="16"
               height="16"

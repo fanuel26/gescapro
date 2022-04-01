@@ -24,7 +24,7 @@
               <a-card :bordered="false" class="card-billing-info">
                 <div class="col-info">
                   <a-descriptions
-                    :title="'Client creer le: ' + client.created_at"
+                    :title="'Date de creation: ' + client.created_at"
                     :column="2"
                   >
                     <a-descriptions-item label="Nom/Prénoms">
@@ -37,7 +37,10 @@
                       {{ client.profession }}
                     </a-descriptions-item>
                     <a-descriptions-item label="Quartier">
-                      {{ client.quartier.libelle }}
+                      {{ quartier }}
+                    </a-descriptions-item>
+                    <a-descriptions-item label="Position géographique">
+                      01586854x12558866
                     </a-descriptions-item>
                     <a-descriptions-item label="Collecteur en charge">
                       {{ client.collecteur.nom }}
@@ -92,6 +95,7 @@
         <!-- / Your Transactions Card -->
       </a-col>
       <!-- / Your Transactions Column -->
+      <!-- / Your Transactions Column -->
     </a-row>
   </div>
 </template>
@@ -103,6 +107,7 @@ import CardPaymentMethods from "../../components/Cards/CardPaymentMethods";
 import CardInvoices from "../../components/Cards/CardInvoices";
 import CardBillingInfo from "../../components/Cards/CardBillingInfo";
 import CardTransactions from "../../components/Cards/CardTransactions";
+import CardTransactionsE from "../../components/Cards/CardTransactionsE";
 import WidgetCounter from "../../components/Widgets/WidgetCounter";
 
 // "Your Transactions" list data.
@@ -115,6 +120,7 @@ export default {
     CardInvoices,
     CardBillingInfo,
     CardTransactions,
+    CardTransactionsE,
     WidgetCounter,
   },
   data() {
@@ -133,6 +139,7 @@ export default {
       motif: null,
       type: 0,
       time_out: 0,
+      quartier: null,
     };
   },
 
@@ -199,6 +206,7 @@ export default {
             this.prenom = this.client.prenom;
             this.numero = this.client.numero;
             this.profession = this.client.profession;
+            this.quartier = this.client.quartier.libelle;
 
             let dd = this.client.carnets;
             this.stats[0].value = this.client.carnets.length;
@@ -206,22 +214,26 @@ export default {
             let n_s = 0;
             let n_l = 0;
             for (let i = 0; i < dd.length; i++) {
-              this.carnets.push({
-                title: `${dd[i].carnet.libelle.substr(0, 30)} ..., N° ${dd[i].ids}`,
-                description: `Nbr de cotisation: ${dd[i].nbcotisattion} | Prix du carnet: ${dd[i].carnet.tarif} Fcfa`,
-                amount: dd[i].nbcotisattion * dd[i].carnet.tarif,
-                type: dd[i].state == 0 ? -1 : 1, // 0 is for pending, 1 is for deposit, -1 is for withdrawal.
-                status: "danger",
-              });
+              if (dd[i].id_pack != 1) {
+                this.carnets.push({
+                  title: `${dd[i].carnet.libelle.substr(0, 30)} ..., N° ${
+                    dd[i].ids
+                  }`,
+                  description: `Nbr de cotisation: ${dd[i].nbcotisattion} | Prix du carnet: ${dd[i].carnet.tarif} Fcfa`,
+                  amount: dd[i].nbcotisattion * dd[i].carnet.tarif,
+                  type: dd[i].state == 0 ? -1 : 1, // 0 is for pending, 1 is for deposit, -1 is for withdrawal.
+                  status: "danger",
+                });
 
-              if (dd[i].state == 0) {
-                n_s = n_s + 1;
-                this.stats[1].value = n_s;
-              }
+                if (dd[i].state == 0) {
+                  n_s = n_s + 1;
+                  this.stats[1].value = n_s;
+                }
 
-              if (dd[i].is_delivered == 1) {
-                n_l = n_l + 1;
-                this.stats[2].value = n_l;
+                if (dd[i].is_delivered == 1) {
+                  n_l = n_l + 1;
+                  this.stats[2].value = n_l;
+                }
               }
             }
           },

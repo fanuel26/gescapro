@@ -12,7 +12,6 @@
 			:class="'text-' + status"
 		>
 		</a-statistic>
-		<div class="icon" v-html="icon"></div>
 	</a-card>
 
 </template>

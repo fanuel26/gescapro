@@ -47,8 +47,8 @@ import WidgetCounter from "../../components/Widgets/WidgetCounter";
 
 const stats = [
   {
-    title: "Nouveaux clients epargnes",
-    value: 53,
+    title: "Tous les clients epargnes",
+    value: 0,
     prefix: "",
     suffix: "",
     icon: `<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -58,8 +58,8 @@ const stats = [
 						</svg>`,
   },
   {
-    title: "Tous les clients epargnes",
-    value: 150,
+    title: "Nouveaux clients epargnes",
+    value: 0,
     prefix: "",
     suffix: "",
     icon: `<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -70,7 +70,7 @@ const stats = [
   },
   {
     title: "clients epargnes inactifs",
-    value: 3,
+    value: 0,
     prefix: "",
     suffix: "",
     icon: `<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -87,6 +87,8 @@ export default {
   },
   data() {
     return {
+      callback: "http://egal.iziway.tk/api/auth/admin",
+      token_admin: null,
       stats,
       columns: [],
       data: [],
@@ -133,54 +135,54 @@ export default {
       },
     ];
 
-    this.data = [
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        profession: "Informaticien",
-        quartier: "Totsi",
-        collecteur: "Elise marc",
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        profession: "Informaticien",
-        quartier: "Totsi",
-        collecteur: "Elise marc",
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        profession: "Informaticien",
-        quartier: "Totsi",
-        collecteur: "Elise marc",
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        profession: "Informaticien",
-        quartier: "Totsi",
-        collecteur: "Elise marc",
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        profession: "Informaticien",
-        quartier: "Totsi",
-        collecteur: "Elise marc",
-      },
-    ];
+    this.listeClient();
   },
-  methods: {},
+  methods: {
+    showAlert(type, title, description) {
+      this.$notification[type]({
+        message: title,
+        description: description,
+      });
+    },
+
+    listeClient() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(
+          `${this.callback}/client/carnet/epargne`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let data = response.body;
+
+            console.log(response);
+            this.stats[0].value = data.length;
+            
+            this.data = [];
+
+            for (let i = 0; i < data.length; i++) {
+              this.data.push({
+                key: data[i].id,
+                created_at: data[i].created_at,
+                nom: data[i].nom,
+                numero: data[i].numero,
+                profession: data[i].profession,
+                quartier: data[i].quartier,
+                collecteur: data[i].collecteur,
+              });
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
+          }
+        );
+    },
+  },
 };
 </script>

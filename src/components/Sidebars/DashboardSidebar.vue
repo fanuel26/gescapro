@@ -17,7 +17,9 @@
     :style="{ backgroundColor: 'transparent' }"
   >
     <div class="brand">
-      <img src="/images/logo1.png" class="img-fluid w-75 h-100" alt="" />
+      <router-link :to="{ name: 'Dashboard' }"
+        ><img src="/images/logo1.png" class="img-fluid w-75 h-100" alt=""
+      /></router-link>
     </div>
     <hr />
 
@@ -50,7 +52,7 @@
           <span class="label">Tableau de bord</span>
         </router-link>
       </a-menu-item>
-      <a-menu-item>
+      <a-menu-item v-if="type.carnet == true">
         <router-link :to="{ name: 'Carnets' }">
           <span class="icon">
             <svg
@@ -75,7 +77,7 @@
           <span class="label">Carnets</span>
         </router-link>
       </a-menu-item>
-      <a-menu-item>
+      <a-menu-item v-if="type.epargne == true">
         <router-link :to="{ name: 'Epargne' }">
           <span class="icon">
             <svg
@@ -100,8 +102,8 @@
           <span class="label">Compte épargne</span>
         </router-link>
       </a-menu-item>
-      <a-menu-item>
-        <router-link :to="{ name: 'Produit' }">
+      <a-menu-item v-if="type.produit == true">
+        <router-link :to="{ name: 'Produit_stock' }">
           <span class="icon">
             <svg
               width="20"
@@ -125,32 +127,7 @@
           <span class="label">Produits</span>
         </router-link>
       </a-menu-item>
-      <a-menu-item>
-        <router-link :to="{ name: 'Produit_stock' }">
-          <span class="icon">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M4 4C2.89543 4 2 4.89543 2 6V7H18V6C18 4.89543 17.1046 4 16 4H4Z"
-                fill="#111827"
-              />
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M18 9H2V14C2 15.1046 2.89543 16 4 16H16C17.1046 16 18 15.1046 18 14V9ZM4 13C4 12.4477 4.44772 12 5 12H6C6.55228 12 7 12.4477 7 13C7 13.5523 6.55228 14 6 14H5C4.44772 14 4 13.5523 4 13ZM9 12C8.44772 12 8 12.4477 8 13C8 13.5523 8.44772 14 9 14H10C10.5523 14 11 13.5523 11 13C11 12.4477 10.5523 12 10 12H9Z"
-                fill="#111827"
-              />
-            </svg>
-          </span>
-          <span class="label">Produits & stock</span>
-        </router-link>
-      </a-menu-item>
-      <a-menu-item>
+      <a-menu-item v-if="type.client == true">
         <router-link :to="{ name: 'Client' }">
           <span class="icon">
             <svg
@@ -171,8 +148,18 @@
           <span class="label">Clients</span>
         </router-link>
       </a-menu-item>
-      <a-menu-item class="menu-item-header"> Agences & Agents </a-menu-item>
-      <a-menu-item>
+      <a-menu-item
+        class="menu-item-header"
+        v-if="
+          type.collecteur == true ||
+          type.superviseur == true ||
+          type.livreur == true ||
+          type.agence == true
+        "
+      >
+        Agences & Agents
+      </a-menu-item>
+      <a-menu-item v-if="type.collecteur == true">
         <router-link :to="{ name: 'Collecteur' }">
           <span class="icon">
             <svg
@@ -197,7 +184,7 @@
           <span class="label">Agents collecteurs</span>
         </router-link>
       </a-menu-item>
-      <a-menu-item>
+      <a-menu-item v-if="type.superviseur == true">
         <router-link :to="{ name: 'Superviseur' }">
           <span class="icon">
             <svg
@@ -222,7 +209,7 @@
           <span class="label">Agents superviseur</span>
         </router-link>
       </a-menu-item>
-      <a-menu-item>
+      <a-menu-item v-if="type.livreur == true">
         <router-link :to="{ name: 'Livreur' }">
           <span class="icon">
             <svg
@@ -247,7 +234,7 @@
           <span class="label">Agents livreur</span>
         </router-link>
       </a-menu-item>
-      <a-menu-item>
+      <a-menu-item v-if="type.agence == true">
         <router-link :to="{ name: 'Agence' }">
           <span class="icon">
             <svg
@@ -272,8 +259,8 @@
           <span class="label">Agences</span>
         </router-link>
       </a-menu-item>
-      <a-menu-item class="menu-item-header"> Admin & Local </a-menu-item>
-      <a-menu-item>
+      <a-menu-item class="menu-item-header" v-if="type.chef == true || type.admin == true || type.ville == true"> Admin & Local </a-menu-item>
+      <a-menu-item v-if="type.chef == true">
         <router-link :to="{ name: 'Chef_agence' }">
           <span class="icon">
             <svg
@@ -298,7 +285,7 @@
           <span class="label">Chef agence</span>
         </router-link>
       </a-menu-item>
-      <a-menu-item>
+      <a-menu-item v-if="type.admin == true">
         <router-link :to="{ name: 'Admin' }">
           <span class="icon">
             <svg
@@ -323,28 +310,7 @@
           <span class="label">Administration</span>
         </router-link>
       </a-menu-item>
-      <!--<a-menu-item>
-        <router-link :to="{name: 'Synchronisation'}">
-          <span class="icon">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M3 6C3 4.34315 4.34315 3 6 3H16C16.3788 3 16.725 3.214 16.8944 3.55279C17.0638 3.89157 17.0273 4.29698 16.8 4.6L14.25 8L16.8 11.4C17.0273 11.703 17.0638 12.1084 16.8944 12.4472C16.725 12.786 16.3788 13 16 13H6C5.44772 13 5 13.4477 5 14V17C5 17.5523 4.55228 18 4 18C3.44772 18 3 17.5523 3 17V6Z"
-                fill="#111827"
-              />
-            </svg>
-          </span>
-          <span class="label">Synchronisations</span>
-        </router-link>
-      </a-menu-item>-->
-      <a-menu-item>
+      <a-menu-item v-if="type.ville == true">
         <router-link :to="{ name: 'Deploiement' }">
           <span class="icon">
             <svg
@@ -366,7 +332,7 @@
         </router-link>
       </a-menu-item>
       <a-menu-item class="menu-item-header"> Paramêtre </a-menu-item>
-      <a-menu-item>
+      <a-menu-item v-if="type.launship == true">
         <router-link :to="{ name: 'Launship_demande' }">
           <span class="icon">
             <svg
@@ -475,7 +441,33 @@ export default {
   data() {
     return {
       // sidebarCollapsedModel: this.sidebarCollapsed,
+      type: {},
     };
+  },
+
+  mounted() {
+    let t = localStorage.getItem("type");
+
+    if (t == null) {
+      this.type = {
+        carnet: false,
+        epargne: false,
+        produit: false,
+        client: false,
+        collecteur: false,
+        superviseur: false,
+        livreur: false,
+        agence: false,
+        chef: false,
+        admin: false,
+        ville: false,
+        launship: false,
+      };
+    } else {
+      this.type = JSON.parse(t);
+    }
+
+    console.log(this.type);
   },
 };
 </script>

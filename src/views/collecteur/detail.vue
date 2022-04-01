@@ -395,7 +395,7 @@ export default {
 
     this.stats = [
       {
-        title: "Somme versement",
+        title: "Total versement",
         value: 0,
         prefix: "",
         suffix: "Fcfa",
@@ -406,7 +406,7 @@ export default {
 						</svg>`,
       },
       {
-        title: "Somme cotiser total",
+        title: "Total global des collectes",
         value: 0,
         prefix: "",
         suffix: "Fcfa",
@@ -428,7 +428,7 @@ export default {
 						</svg>`,
       },
       {
-        title: "Carnet vendus",
+        title: "Carnet total vendus",
         value: 0,
         prefix: "",
         suffix: "",
@@ -461,7 +461,7 @@ export default {
 						</svg>`,
       },
       {
-        title: "Carnet du jour",
+        title: "Carnet vendus / Jour",
         value: 0,
         prefix: "",
         suffix: "",

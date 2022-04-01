@@ -293,7 +293,7 @@ export default {
         scopedSlots: { customRender: "name" },
       },
       {
-        title: "Nom/Prénom superviseur",
+        title: "Nom/Prénom",
         dataIndex: "nom",
         key: "nom",
       },

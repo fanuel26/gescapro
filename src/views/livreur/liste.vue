@@ -26,7 +26,10 @@
       <a-col :span="12" :lg="12" :xl="24" class="mb-24">
         <a-card class="card card-body border-0">
           <div class="mb-4 text-right">
-            <a-button type="primary" @click="showModal">
+            <router-link to="">
+              <a-button class="mx-2"> Liste de tous les livraisons </a-button>
+            </router-link>
+            <a-button type="primary" class="mx-2" @click="showModal">
               Créer un agent livreur
             </a-button>
           </div>
@@ -185,10 +188,7 @@
               <a-col :span="8" :md="8" class="mt-4">
                 <a-card :bordered="false" class="card-billing-info">
                   <div class="col-info">
-                    <a-descriptions
-                      title="Information du livreur"
-                      :column="1"
-                    >
+                    <a-descriptions title="Information du livreur" :column="1">
                       <a-descriptions-item label="Nom">
                         {{ nom }}
                       </a-descriptions-item>
@@ -387,30 +387,28 @@ export default {
 
       let headers = { headers: { Authorization: this.token_admin } };
 
-      this.$http
-        .post(`${this.callback}/livreur/list`, {}, headers)
-        .then(
-          (response) => {
-            let data = response.body.data;
+      this.$http.post(`${this.callback}/livreur/list`, {}, headers).then(
+        (response) => {
+          let data = response.body.data;
 
-            this.stats[0].value = data.length;
-            this.data = [];
-            console.log(data);
-            for (let i = data.length - 1; i >= 0; i--) {
-              this.data.push({
-                key: data[i].id,
-                created_at: data[i].created_at,
-                nom: `${data[i].nom} ${data[i].prenom}`,
-                numero: `(+228) ${data[i].numero}`,
-                agence: data[i].agence ? data[i].agence.nom_agence : "",
-                status: data[i].is_active,
-              });
-            }
-          },
-          (response) => {
-            this.showAlert("error", "Error", response.body.message);
+          this.stats[0].value = data.length;
+          this.data = [];
+          console.log(data);
+          for (let i = data.length - 1; i >= 0; i--) {
+            this.data.push({
+              key: data[i].id,
+              created_at: data[i].created_at,
+              nom: `${data[i].nom} ${data[i].prenom}`,
+              numero: `(+228) ${data[i].numero}`,
+              agence: data[i].agence ? data[i].agence.nom_agence : "",
+              status: data[i].is_active,
+            });
           }
-        );
+        },
+        (response) => {
+          this.showAlert("error", "Error", response.body.message);
+        }
+      );
     },
     showModal() {
       this.visible = true;

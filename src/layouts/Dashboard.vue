@@ -41,7 +41,7 @@
 
 				
 				<!-- Floating Action Button For Toggling Settings Drawer -->
-    			<a href="https://wa.me/22892580305" target="_brank"><a-button class="fab" shape="circle">
+    			<a href="https://wa.me/22892432861" target="_brank"><a-button class="fab" shape="circle">
 					<a-icon type="wechat" theme="filled" />
 				</a-button></a>
 				<!-- / Floating Action Button For Toggling Settings Drawer -->

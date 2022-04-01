@@ -18,17 +18,17 @@ const msiCreator = new MSICreator({
 
     // Configure metadata
     description: 'GesCaPro: Gestion de Carnet et Produit',
-    exe: 'muse-vue-ant-design-dashboard',
+    exe: 'gescapro',
     name: 'GesCaPro',
     manufacturer: 'GesCaPro',
     version: '1.0.0',
-    //appIconPath: path.resolve(__dirname, './assets/logo.ico'),
+    appIconPath: path.resolve(__dirname, './public/images/logo.ico'),
     
 
     // Configure installer User Interface
     ui: {
         chooseDirectory: true,
-        images: path.resolve(__dirname, './assets/logo/1.png'),
+        images: path.resolve(__dirname, './public/images/logo.ico'),
     },
 });
 

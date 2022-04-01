@@ -26,14 +26,142 @@
       <a-col :span="12" :lg="12" :xl="24" class="mb-24">
         <a-card class="card card-body border-0">
           <div class="text-right mb-24">
+            <a-button class="mx-2" @click="showModal"
+              >Creation de chef agence</a-button
+            >
             <router-link :to="{ name: 'Chef_agence_historique' }">
               <a-button class="mx-2">Historique des demandes</a-button>
             </router-link>
-            <router-link :to="{name: 'Chef_agence_transaction'}">
+            <router-link :to="{ name: 'Chef_agence_transaction' }">
               <a-button type="primary" class="mx-2"
                 >Liste des transaction</a-button
               >
             </router-link>
+
+            <a-modal
+              :width="width"
+              title="Creer un agent chef"
+              :visible="visible"
+              :confirm-loading="confirmLoading"
+              @ok="handleOk"
+              @cancel="handleCancel"
+            >
+              <a-row type="flex" :gutter="24">
+                <!-- Billing Information Column -->
+                <a-col :span="16" :md="16" class="">
+                  <a-form
+                    id="components-form-demo-normal-login"
+                    :form="form"
+                    class="login-form"
+                    @submit="chefSubmit"
+                    :hideRequiredMark="true"
+                  >
+                    <a-row type="flex" :gutter="24">
+                      <!-- Billing Information Column -->
+                      <a-col :span="12" :md="12" class="">
+                        <a-form-item
+                          class=""
+                          label="Nom du chef"
+                          :colon="false"
+                        >
+                          <a-input
+                            v-model="nom"
+                            v-decorator="[
+                              'nom',
+                              {
+                                initialValue: nom,
+                                rules: [
+                                  {
+                                    required: true,
+                                    message: 'Nom du chef est vide!',
+                                  },
+                                ],
+                              },
+                            ]"
+                            type="text"
+                            placeholder="Nom agent chef"
+                          />
+                        </a-form-item>
+                      </a-col>
+                      <a-col :span="12" :md="12" class="">
+                        <a-form-item
+                          class=""
+                          label="Prénom du chef"
+                          :colon="false"
+                        >
+                          <a-input
+                            v-model="prenom"
+                            v-decorator="[
+                              'prenom',
+                              {
+                                initialValue: prenom,
+                                rules: [
+                                  {
+                                    required: true,
+                                    message: 'Prénom du chef est vide!',
+                                  },
+                                ],
+                              },
+                            ]"
+                            type="text"
+                            placeholder="Prénom agent chef"
+                          />
+                        </a-form-item>
+                      </a-col>
+                      <a-col :span="12" :md="12" class="">
+                        <a-form-item
+                          class=""
+                          label="Numéro de téléphone"
+                          :colon="false"
+                        >
+                          <a-input
+                            v-model="numero"
+                            v-decorator="[
+                              'numero',
+                              {
+                                initialValue: numero,
+                                rules: [
+                                  {
+                                    required: true,
+                                    message: 'Numero est vide!',
+                                  },
+                                ],
+                              },
+                            ]"
+                            type="number"
+                            placeholder="Numéro de téléphone"
+                          />
+                        </a-form-item>
+                      </a-col>
+                      
+                    </a-row>
+                  </a-form>
+                </a-col>
+                <a-col :span="8" :md="8" class="mt-4">
+                  <a-card :bordered="false" class="card-billing-info">
+                    <div class="col-info">
+                      <a-descriptions
+                        title="Information du chef"
+                        :column="1"
+                      >
+                        <a-descriptions-item label="Nom">
+                          {{ nom }}
+                        </a-descriptions-item>
+                        <a-descriptions-item label="Prenom">
+                          {{ prenom }}
+                        </a-descriptions-item>
+                        <a-descriptions-item label="Numéro de téléphone">
+                          (+228) {{ numero }}
+                        </a-descriptions-item>
+                        <a-descriptions-item label="Mot de passe">
+                          {{ password }}
+                        </a-descriptions-item>
+                      </a-descriptions>
+                    </div>
+                  </a-card>
+                </a-col>
+              </a-row>
+            </a-modal>
           </div>
           <a-table :columns="columns" :data-source="data">
             <template slot="operation" slot-scope="text, record">
@@ -109,6 +237,9 @@ export default {
   components: {
     WidgetCounter,
   },
+  beforeCreate() {
+    this.form = this.$form.createForm(this, { name: "normal_login" });
+  },
   data() {
     return {
       callback: "http://egal.iziway.tk/api/auth/admin",
@@ -120,6 +251,13 @@ export default {
       buttonText: "Détail",
       visible: false,
       confirmLoading: false,
+
+      nom: null,
+      prenom: null,
+      numero: null,
+      ville: null,
+      quartier: null,
+      password: null,
     };
   },
   mounted() {
@@ -170,7 +308,7 @@ export default {
                 nom: `${data[i].agent.nom} ${data[i].agent.prenom}`,
                 numero: `(+228) ${data[i].agent.numero}`,
                 montant: data[i].reste + data[i].montant,
-                cotiser: data[i].montant
+                cotiser: data[i].montant,
               });
             }
           },
@@ -234,6 +372,35 @@ export default {
           }
         );
     },
+
+    showModal() {
+      this.visible = true;
+    },
+    
+    handleOk(e) {
+      e.preventDefault();
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          console.log(values);
+          this.confirmLoading = true;
+          this.chefSubmit(values);
+          setTimeout(() => {
+            this.listechef();
+            this.visible = false;
+            this.confirmLoading = false;
+          }, 2000);
+        } else {
+          console.log("error");
+        }
+      });
+    },
+
+    handleCancel(e) {
+      console.log("Clicked cancel button");
+      this.visible = false;
+    },
+
+chefSubmit() {},
   },
 };
 </script>

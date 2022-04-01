@@ -23,30 +23,186 @@
             <a-col :span="24">
               <a-card :bordered="false" class="card-billing-info">
                 <div class="col-info">
-                  <a-descriptions title="12/03/2022 à 15:30" :column="2">
+                  <a-descriptions :title="admin.created_at" :column="2">
                     <a-descriptions-item label="Nom">
-                      Franck
+                      {{ admin.nom }}
                     </a-descriptions-item>
                     <a-descriptions-item label="Prenom">
-                      Kossi Louis
+                      {{ admin.prenom }}
                     </a-descriptions-item>
                     <a-descriptions-item label="Adresse email">
-                      gescapro@gmail.com
+                      {{ admin.email }}
                     </a-descriptions-item>
                     <a-descriptions-item label="Nom d'utilisateur">
-                      Franck26
+                      {{ admin.username }}
                     </a-descriptions-item>
-                    <a-descriptions-item label="Numéro de téléphone">
-                      (+228) 92580305
-                    </a-descriptions-item>
-                    <a-descriptions-item label="Type de compte">
-                      Compte 1
-                    </a-descriptions-item>
-                    <a-descriptions-item label="Mot de passe">
-                      gescapro@1234
+                    <a-descriptions-item label="Code secret">
+                      {{ admin.code_secret }}
                     </a-descriptions-item>
                   </a-descriptions>
                 </div>
+              </a-card>
+            </a-col>
+
+            <a-col :span="24">
+              <a-card :bordered="false">
+                <template #title>Definir les rôles</template>
+
+                <a-form
+                  id="components-form-demo-normal-login"
+                  :form="form_role"
+                  class="login-form"
+                  @submit="roleSubmit"
+                  :hideRequiredMark="true"
+                >
+                  <a-row :gutter="24">
+                    <a-col :span="8">
+                      <div class="d-flex">
+                        <a-switch
+                          checked-children=""
+                          un-checked-children=""
+                          :checked="state.carnet"
+                          v-model="state.carnet"
+                        />
+                        <p class="mx-2">Carnets produit</p>
+                      </div>
+                    </a-col>
+                    <a-col :span="8">
+                      <div class="d-flex">
+                        <a-switch
+                          checked-children=""
+                          un-checked-children=""
+                          :checked="state.epargne"
+                          v-model="state.epargne"
+                        />
+                        <p class="mx-2">Compte épargne</p>
+                      </div>
+                    </a-col>
+                    <a-col :span="8">
+                      <div class="d-flex">
+                        <a-switch
+                          checked-children=""
+                          un-checked-children=""
+                          :checked="state.produit"
+                          v-model="state.produit"
+                        />
+                        <p class="mx-2">Produit</p>
+                      </div>
+                    </a-col>
+                    <a-col :span="8">
+                      <div class="d-flex">
+                        <a-switch
+                          checked-children=""
+                          un-checked-children=""
+                          :checked="state.client"
+                          v-model="state.client"
+                        />
+                        <p class="mx-2">Client</p>
+                      </div>
+                    </a-col>
+                    <a-col :span="8">
+                      <div class="d-flex">
+                        <a-switch
+                          checked-children=""
+                          un-checked-children=""
+                          :checked="state.collecteur"
+                          v-model="state.collecteur"
+                        />
+                        <p class="mx-2">Agent collecteur</p>
+                      </div>
+                    </a-col>
+                    <a-col :span="8">
+                      <div class="d-flex">
+                        <a-switch
+                          checked-children=""
+                          un-checked-children=""
+                          :checked="state.superviseur"
+                          v-model="state.superviseur"
+                        />
+                        <p class="mx-2">Agent superviseur</p>
+                      </div>
+                    </a-col>
+                    <a-col :span="8">
+                      <div class="d-flex">
+                        <a-switch
+                          checked-children=""
+                          un-checked-children=""
+                          :checked="state.livreur"
+                          v-model="state.livreur"
+                        />
+                        <p class="mx-2">Agent livreur</p>
+                      </div>
+                    </a-col>
+                    <a-col :span="8">
+                      <div class="d-flex">
+                        <a-switch
+                          checked-children=""
+                          un-checked-children=""
+                          :checked="state.agence"
+                          v-model="state.agence"
+                        />
+                        <p class="mx-2">Agences</p>
+                      </div>
+                    </a-col>
+
+                    <a-col :span="8">
+                      <div class="d-flex">
+                        <a-switch
+                          checked-children=""
+                          un-checked-children=""
+                          :checked="state.chef"
+                          v-model="state.chef"
+                        />
+                        <p class="mx-2">Chef agence</p>
+                      </div>
+                    </a-col>
+                    <a-col :span="8">
+                      <div class="d-flex">
+                        <a-switch
+                          checked-children=""
+                          un-checked-children=""
+                          :checked="state.admin"
+                          v-model="state.admin"
+                        />
+                        <p class="mx-2">Administration</p>
+                      </div>
+                    </a-col>
+                    <a-col :span="8">
+                      <div class="d-flex">
+                        <a-switch
+                          checked-children=""
+                          un-checked-children=""
+                          :checked="state.ville"
+                          v-model="state.ville"
+                        />
+                        <p class="mx-2">Deploiement ville</p>
+                      </div>
+                    </a-col>
+                    <a-col :span="8">
+                      <div class="d-flex">
+                        <a-switch
+                          checked-children=""
+                          un-checked-children=""
+                          :checked="state.launship"
+                          v-model="state.launship"
+                        />
+                        <p class="mx-2">Launship-Box</p>
+                      </div>
+                    </a-col>
+                  </a-row>
+
+                  <a-col :span="24">
+                    <div class="mb-4 text-right">
+                      <a-button
+                        type="primary"
+                        html-type="submit"
+                        class="login-form-button"
+                      >
+                        Valider
+                      </a-button>
+                    </div>
+                  </a-col>
+                </a-form>
               </a-card>
             </a-col>
           </a-row>
@@ -77,16 +233,17 @@
           </template>
           <a-form
             id="components-form-demo-normal-login"
-            :form="form"
+            :form="form_code_secret"
             class="login-form"
-            @submit="handleSubmit"
+            @submit="codeSubmit"
             :hideRequiredMark="true"
           >
             <a-form-item class="" label="Code secret generer" :colon="false">
               <a-input
                 v-decorator="[
-                  'Code secret generer',
+                  'code_secret_new',
                   {
+                    initialValue: code_secret,
                     rules: [
                       {
                         required: true,
@@ -97,10 +254,28 @@
                 ]"
                 disabled
                 type="text"
-                value="1254"
                 placeholder="Code secret"
               />
             </a-form-item>
+
+            <a-form-item class="" label="Code secret" :colon="false">
+              <a-input
+                v-decorator="[
+                  'code_secret',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Code secret incorrect!',
+                      },
+                    ],
+                  },
+                ]"
+                type="text"
+                placeholder="Code secret"
+              />
+            </a-form-item>
+
             <div class="mb-4 text-right">
               <a-button
                 type="primary"
@@ -116,16 +291,17 @@
           </template>
           <a-form
             id="components-form-demo-normal-login"
-            :form="form"
+            :form="form_password"
             class="login-form"
-            @submit="handleSubmit"
+            @submit="passwordSubmit"
             :hideRequiredMark="true"
           >
             <a-form-item class="" label="Mot de passe generer" :colon="false">
               <a-input
                 v-decorator="[
-                  'Mot de passe generer',
+                  'password',
                   {
+                    initialValue: password,
                     rules: [
                       {
                         required: true,
@@ -136,8 +312,25 @@
                 ]"
                 disabled
                 type="text"
-                value="gescapro@1254"
                 placeholder="Mot de passe"
+              />
+            </a-form-item>
+
+            <a-form-item class="" label="Code secret" :colon="false">
+              <a-input
+                v-decorator="[
+                  'code_secret',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Code secret incorrect!',
+                      },
+                    ],
+                  },
+                ]"
+                type="text"
+                placeholder="Code secret"
               />
             </a-form-item>
             <div class="mb-4 text-right">
@@ -155,15 +348,15 @@
           </template>
           <a-form
             id="components-form-demo-normal-login"
-            :form="form"
+            :form="form_disconnect"
             class="login-form"
-            @submit="handleSubmit"
+            @submit="disconnectSubmit"
             :hideRequiredMark="true"
           >
             <a-form-item class="" label="Code secret" :colon="false">
               <a-input
                 v-decorator="[
-                  'Code secret',
+                  'code_secret',
                   {
                     rules: [
                       {
@@ -187,7 +380,6 @@
               </a-button>
             </div>
           </a-form>
-          
         </a-card>
       </a-col>
       <!-- / Your Transactions Column -->
@@ -204,76 +396,6 @@ import CardBillingInfo from "../../components/Cards/CardBillingInfo";
 import CardTransactions from "../../components/Cards/CardTransactions";
 import WidgetCounter from "../../components/Widgets/WidgetCounter";
 
-// Salary cards data
-const salaries = [
-  {
-    value: 2000,
-    prefix: "+$",
-    icon: `
-										<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22">
-											<g id="bank" transform="translate(0.75 0.75)">
-												<path id="Shape" transform="translate(0.707 9.543)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.5"/>
-												<path id="Path" d="M10.25,0,20.5,9.19H0Z" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.5"/>
-												<path id="Path-2" data-name="Path" d="M0,.707H20.5" transform="translate(0 19.793)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.5"/>
-											</g>
-										</svg>`,
-    title: "Salary",
-    content: "Belong Interactive",
-  },
-  {
-    value: 49000,
-    prefix: "+$",
-    icon: `
-										<img src="/images/logos/paypal-logo-2.png" alt="">`,
-    title: "Paypal",
-    content: "Freelance Payment",
-  },
-];
-
-const stats = [
-  {
-    title: "Somme versement",
-    value: 53000000,
-    prefix: "",
-    suffix: "",
-    icon: `<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path d="M8.43338 7.41784C8.58818 7.31464 8.77939 7.2224 9 7.15101L9.00001 8.84899C8.77939 8.7776 8.58818 8.68536 8.43338 8.58216C8.06927 8.33942 8 8.1139 8 8C8 7.8861 8.06927 7.66058 8.43338 7.41784Z" fill="#111827"/>
-							<path d="M11 12.849L11 11.151C11.2206 11.2224 11.4118 11.3146 11.5666 11.4178C11.9308 11.6606 12 11.8861 12 12C12 12.1139 11.9308 12.3394 11.5666 12.5822C11.4118 12.6854 11.2206 12.7776 11 12.849Z" fill="#111827"/>
-							<path fill-rule="evenodd" clip-rule="evenodd" d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18ZM11 5C11 4.44772 10.5523 4 10 4C9.44772 4 9 4.44772 9 5V5.09199C8.3784 5.20873 7.80348 5.43407 7.32398 5.75374C6.6023 6.23485 6 7.00933 6 8C6 8.99067 6.6023 9.76515 7.32398 10.2463C7.80348 10.5659 8.37841 10.7913 9.00001 10.908L9.00002 12.8492C8.60902 12.7223 8.31917 12.5319 8.15667 12.3446C7.79471 11.9275 7.16313 11.8827 6.74599 12.2447C6.32885 12.6067 6.28411 13.2382 6.64607 13.6554C7.20855 14.3036 8.05956 14.7308 9 14.9076L9 15C8.99999 15.5523 9.44769 16 9.99998 16C10.5523 16 11 15.5523 11 15L11 14.908C11.6216 14.7913 12.1965 14.5659 12.676 14.2463C13.3977 13.7651 14 12.9907 14 12C14 11.0093 13.3977 10.2348 12.676 9.75373C12.1965 9.43407 11.6216 9.20873 11 9.09199L11 7.15075C11.391 7.27771 11.6808 7.4681 11.8434 7.65538C12.2053 8.07252 12.8369 8.11726 13.254 7.7553C13.6712 7.39335 13.7159 6.76176 13.354 6.34462C12.7915 5.69637 11.9405 5.26915 11 5.09236V5Z" fill="#111827"/>
-						</svg>`,
-  },
-  
-];
-
-// "Invoices" list data.
-const invoiceData = [
-  {
-    title: "March, 01, 2021",
-    code: "#MS-415646",
-    amount: "180",
-  },
-  {
-    title: "February, 12, 2021",
-    code: "#RV-126749",
-    amount: "250",
-  },
-  {
-    title: "April, 05, 2020",
-    code: "#FB-212562",
-    amount: "550",
-  },
-  {
-    title: "June, 25, 2019",
-    code: "#QW-103578",
-    amount: "400",
-  },
-  {
-    title: "March, 03, 2019",
-    code: "#AR-803481",
-    amount: "700",
-  },
-];
-
 export default {
   components: {
     CardCredit,
@@ -284,16 +406,291 @@ export default {
     CardTransactions,
     WidgetCounter,
   },
+
+  beforeCreate() {
+    this.form_code_secret = this.$form.createForm(this, {
+      name: "normal_login",
+    });
+    this.form_password = this.$form.createForm(this, { name: "normal_login" });
+    this.form_role = this.$form.createForm(this, { name: "normal_login" });
+    this.form_disconnect = this.$form.createForm(this, {
+      name: "normal_login",
+    });
+  },
+
   data() {
     return {
-      // Salary cards data
-      salaries,
+      callback: "http://egal.iziway.tk/api/auth/admin",
+      token_admin: null,
+      admin: {},
+      state: {},
 
-      // Associating "Invoices" list data with its corresponding property.
-      invoiceData,
-
-      stats,
+      code_secret: null,
+      password: null,
     };
+  },
+
+  mounted() {
+    this.password = `gescapro@${Math.floor(
+      Math.random() * (9999 - 1000) + 1000
+    )}`;
+
+    this.code_secret = Math.floor(Math.random() * (9999 - 1000) + 1000);
+
+    this.detailadmin();
+  },
+
+  methods: {
+    showAlert(type, title, description) {
+      this.$notification[type]({
+        message: title,
+        description: description,
+      });
+    },
+
+    detailadmin() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http.post(`${this.callback}/liste`, {}, headers).then(
+        (response) => {
+          let data = response.body.data;
+
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].id == this.$route.params.id) {
+              console.log(data[i]);
+              this.admin = data[i];
+              if (data[i].adminAttributes == null) {
+                this.state = {
+                  carnet: true,
+                  epargne: true,
+                  produit: true,
+                  client: true,
+                  collecteur: true,
+                  superviseur: true,
+                  livreur: true,
+                  agence: true,
+                  chef: true,
+                  admin: true,
+                  ville: true,
+                  launship: true,
+                };
+              } else {
+                this.state = JSON.parse(data[i].adminAttributes);
+              }
+
+              console.log(this.state)
+            }
+          }
+        },
+        (response) => {
+          this.showAlert("error", "Erreur", response.body.message);
+        }
+      );
+    },
+
+    codeSubmit(e) {
+      e.preventDefault();
+      this.form_code_secret.validateFields((err, values) => {
+        if (!err) {
+          console.log(values);
+          if (values.code_secret == localStorage.getItem("code_secret")) {
+            let session = localStorage;
+            this.token_admin = session.getItem("token");
+
+            let headers = { headers: { Authorization: this.token_admin } };
+
+            let data_param = {
+              code_secret: this.admin.code_secret,
+              newcode_secret: values.code_secret_new,
+            };
+
+            this.$http
+              .post(
+                `${this.callback}/gest/admin/change/code-secret/${this.$route.params.id}`,
+                data_param,
+                headers
+              )
+              .then(
+                (response) => {
+                  let data = response.body;
+                  console.log(data);
+
+                  if (data.status == true) {
+                    this.showAlert(
+                      "success",
+                      "Success",
+                      `Code secret générer avec success! Code secret: ${values.code_secret_new}`
+                    );
+                    this.detailadmin();
+
+                    this.code_secret = Math.floor(
+                      Math.random() * (9999 - 1000) + 1000
+                    );
+                  } else {
+                    this.showAlert("danger", "Erreur", data.message);
+                  }
+                },
+                (response) => {
+                  this.showAlert("danger", "Erreur", response.body.message);
+                }
+              );
+          } else {
+            this.showAlert("error", "Erreur", "Code secret incorrect");
+          }
+        } else {
+          console.log(err);
+        }
+      });
+    },
+
+    passwordSubmit(e) {
+      e.preventDefault();
+      this.form_password.validateFields((err, values) => {
+        if (!err) {
+          console.log(values);
+          if (values.code_secret == localStorage.getItem("code_secret")) {
+            let session = localStorage;
+            this.token_admin = session.getItem("token");
+
+            let headers = { headers: { Authorization: this.token_admin } };
+
+            this.$http
+              .post(
+                `${this.callback}/gest/admin/${this.$route.params.id}/password/change/token`,
+                {},
+                headers
+              )
+              .then(
+                (response) => {
+                  let data = response.body.data;
+
+                  console.log(data);
+                  let token_password = data;
+
+                  let headers = { headers: { Authorization: token_password } };
+
+                  let data_param = {
+                    newpassword: values.password,
+                  };
+
+                  this.$http
+                    .post(
+                      `${this.callback}/gest/admin/${this.$route.params.id}/password/change/operation`,
+                      data_param,
+                      headers
+                    )
+                    .then(
+                      (response) => {
+                        let data = response.body;
+                        console.log(data);
+
+                        if (data.status == true) {
+                          this.showAlert(
+                            "success",
+                            "Success",
+                            `Mot de passe generer avec succes! Mot de passe: ${values.password}`
+                          );
+                          this.password = `gescapro@${Math.floor(
+                            Math.random() * (9999 - 1000) + 1000
+                          )}`;
+                        } else {
+                          this.showAlert("error", "Erreur", data.message);
+                        }
+                      },
+                      (response) => {
+                        this.showAlert(
+                          "error",
+                          "Erreur",
+                          response.body.message
+                        );
+                      }
+                    );
+                },
+                (response) => {
+                  this.showAlert("error", "Erreur", response.body.message);
+                }
+              );
+          } else {
+            this.showAlert("error", "Erreur", "Code secret incorrect");
+          }
+        } else {
+          console.log("error");
+        }
+      });
+    },
+
+    disconnectSubmit(e) {
+      e.preventDefault();
+      this.form_disconnect.validateFields((err, values) => {
+        if (!err) {
+          if (values.code_secret == localStorage.getItem("code_secret")) {
+            let session = localStorage;
+            this.token_admin = session.getItem("token");
+
+            let headers = { headers: { Authorization: this.token_admin } };
+
+            this.$http
+              .post(
+                `${this.callback}/gest/admin/disconnect/${this.$route.params.id}`,
+                {},
+                headers
+              )
+              .then(
+                (response) => {
+                  let data = response.body;
+                  console.log(data);
+
+                  if (data) {
+                    this.showAlert(
+                      "success",
+                      "Success",
+                      "Agent admin deconneter avec success"
+                    );
+                  }
+                },
+                (response) => {
+                  this.showAlert("error", "Erreur", response.body.message);
+                }
+              );
+          } else {
+            this.showAlert("error", "Erreur", "Code secret incorrect");
+          }
+        }
+      });
+    },
+
+    roleSubmit(e) {
+      e.preventDefault();
+
+      console.log(this.state);
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(
+          `${this.callback}/update-admin/${this.$route.params.id}`,
+          { admin_attributes: `${JSON.stringify(this.state)}` },
+          headers
+        )
+        .then(
+          (response) => {
+            let data = response.body;
+
+            if (data) {
+              this.showAlert("success", "Success", "Role definit avec success");
+              this.detailadmin();
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Erreur", response.body.message);
+          }
+        );
+    },
   },
 };
 </script>

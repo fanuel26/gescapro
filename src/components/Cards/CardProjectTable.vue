@@ -20,7 +20,7 @@
 		<a-table :columns="columns" :data-source="data" :pagination="false">
 			<template slot="completion" slot-scope="completion">
 				<span class="font-bold text-muted text-sm">{{ completion.label ? completion.label : completion }}</span>
-				<a-progress :percent="completion.value ? completion.value : completion" :show-info="false" size="small" :status="completion.status ? completion.status : 'normal'" />
+				<!--<a-progress :percent="completion.value ? completion.value : completion" :show-info="false" size="small" :status="completion.status ? completion.status : 'normal'" />-->
 			</template>
 		</a-table>
 	</a-card>

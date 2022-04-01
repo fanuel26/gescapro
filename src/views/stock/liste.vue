@@ -50,7 +50,7 @@
               id="components-form-demo-normal-login"
               :form="form"
               class="login-form"
-              @submit="handleSubmit"
+              @submit="produitSubmit"
               :hideRequiredMark="true"
             >
               <a-row type="flex" :gutter="24">
@@ -59,7 +59,7 @@
                   <a-form-item class="" label="Nom du produit" :colon="false">
                     <a-input
                       v-decorator="[
-                        'Nom du produit',
+                        'libelle',
                         {
                           rules: [
                             {
@@ -70,7 +70,6 @@
                         },
                       ]"
                       type="text"
-                      value="produit X"
                       placeholder="Nom produit"
                     />
                   </a-form-item>
@@ -79,7 +78,7 @@
                   <a-form-item class="" label="Stock total" :colon="false">
                     <a-input
                       v-decorator="[
-                        'Stock total',
+                        'stock',
                         {
                           rules: [
                             {
@@ -95,21 +94,40 @@
                   </a-form-item>
                 </a-col>
                 <a-col :span="8" :md="8" class="">
-                  <a-form-item class="" label="Prix unitaire" :colon="false">
+                  <a-form-item class="" label="Prix d'achat" :colon="false">
                     <a-input
                       v-decorator="[
-                        'Prix unitaire',
+                        'prix_achat',
                         {
                           rules: [
                             {
                               required: true,
-                              message: 'Prix unitaire est vide!',
+                              message: 'Prix d\'achat est vide!',
                             },
                           ],
                         },
                       ]"
                       type="number"
-                      placeholder="Prix unitaire"
+                      placeholder="Prix d'achat"
+                    />
+                  </a-form-item>
+                </a-col>
+                <a-col :span="8" :md="8" class="">
+                  <a-form-item class="" label="Prix de vente" :colon="false">
+                    <a-input
+                      v-decorator="[
+                        'prix_vente',
+                        {
+                          rules: [
+                            {
+                              required: true,
+                              message: 'Prix de vente est vide!',
+                            },
+                          ],
+                        },
+                      ]"
+                      type="number"
+                      placeholder="Prix de vente"
                     />
                   </a-form-item>
                 </a-col>
@@ -118,7 +136,7 @@
                   <a-form-item class="" label="Code secret" :colon="false">
                     <a-input
                       v-decorator="[
-                        'Code secret',
+                        'code_secret',
                         {
                           rules: [
                             {
@@ -139,7 +157,10 @@
           <a-table :columns="columns" :data-source="data">
             <template slot="operation" slot-scope="text, record">
               <router-link
-                :to="{ name: 'Produit_stock_detail', params: { id: record.key } }"
+                :to="{
+                  name: 'Produit_stock_detail',
+                  params: { id: record.key },
+                }"
                 ><a-button type="primary" size="small"
                   >Détail</a-button
                 ></router-link
@@ -174,8 +195,13 @@ export default {
   components: {
     WidgetCounter,
   },
+  beforeCreate() {
+    this.form = this.$form.createForm(this, { name: "normal_login" });
+  },
   data() {
     return {
+      callback: "http://egal.iziway.tk/api/auth/admin",
+      token_admin: null,
       stats,
       width: 1000,
       columns: [],
@@ -200,18 +226,18 @@ export default {
       },
       {
         title: "Stock total",
-        dataIndex: "stock_total",
-        key: "stock_total",
+        dataIndex: "stock",
+        key: "stock",
       },
       {
-        title: "Prix unitaire (Fcfa)",
-        dataIndex: "prix_uni",
-        key: "prix_uni",
+        title: "Prix d'achat (Fcfa)",
+        dataIndex: "prix_achat",
+        key: "prix_achat",
       },
       {
-        title: "Somme total (Fcfa)",
-        dataIndex: "somme",
-        key: "somme",
+        title: "Prix de vente (Fcfa)",
+        dataIndex: "prix_vente",
+        key: "prix_vente",
       },
       {
         title: "Action",
@@ -219,82 +245,137 @@ export default {
         scopedSlots: { customRender: "operation" },
       },
     ];
-
-    this.data = [
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        libelle: "produit X",
-        stock_total: 150,
-        prix_uni: 150000,
-        somme: 54000,
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        libelle: "produit X",
-        stock_total: 150,
-        prix_uni: 150000,
-        somme: 54000,
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        libelle: "produit X",
-        stock_total: 150,
-        prix_uni: 150000,
-        somme: 54000,
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        libelle: "produit X",
-        stock_total: 150,
-        prix_uni: 150000,
-        somme: 54000,
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        libelle: "produit X",
-        stock_total: 150,
-        prix_uni: 150000,
-        somme: 54000,
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        libelle: "produit X",
-        stock_total: 150,
-        prix_uni: 150000,
-        somme: 54000,
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        libelle: "produit X",
-        stock_total: 150,
-        prix_uni: 150000,
-        somme: 54000,
-      },
-    ];
+    this.listeProduit();
   },
   methods: {
+    showAlert(type, title, description) {
+      this.$notification[type]({
+        message: title,
+        description: description,
+      });
+    },
+
+    listeProduit() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http.post(`${this.callback}/produit/list`, {}, headers).then(
+        (response) => {
+          let data = response.body.data;
+
+          this.stats[0].value = data.length;
+          this.data = [];
+          console.log(data);
+          for (let i = 0; i < data.length; i++) {
+            this.data.push({
+              key: data[i].id,
+              created_at: data[i].created_at,
+              libelle: data[i].libelle,
+              prix_achat: data[i].prix_achat,
+              prix_vente: data[i].prix_vente,
+              stock: data[i].stock,
+            });
+          }
+        },
+        (response) => {
+          this.showAlert("error", "Error", response.body.message);
+        }
+      );
+    },
+
     showModal() {
       this.visible = true;
     },
 
     handleOk(e) {
-      this.ModalText = "The modal will be closed after two seconds";
-      this.confirmLoading = true;
-      setTimeout(() => {
-        this.visible = false;
-        this.confirmLoading = false;
-      }, 2000);
+      e.preventDefault();
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          if (values.code_secret == localStorage.getItem("code_secret")) {
+            console.log(values);
+            this.confirmLoading = true;
+            this.produitSubmit(values);
+          } else {
+            this.showAlert("error", "Erreur", "Code secret incorrect");
+          }
+        } else {
+          console.log("error");
+        }
+      });
     },
     handleCancel(e) {
       console.log("Clicked cancel button");
       this.visible = false;
+    },
+
+    produitSubmit(data) {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      let data_create = {
+        libelle: data.libelle,
+        stock: data.stock,
+        prix_achat: data.prix_achat,
+        prix_vente: data.prix_vente,
+      };
+
+      this.$http
+        .post(`${this.callback}/produit/create`, data_create, headers)
+        .then(
+          (response) => {
+            console.log(response);
+            if (response.body.status == true) {
+              this.showAlert(
+                "success",
+                "Success",
+                "Produit creer avec success"
+              );
+              
+              this.form.resetFields();
+              this.confirmLoading = false;
+              this.visible = false;
+              this.listeProduit();
+            }
+          },
+          (response) => {
+            this.confirmLoading = false;
+            this.showAlert("error", "Error", response.body.message);
+          }
+        );
+      b;
+    },
+
+    deleteProduit(id) {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(`${this.callback}/produit/delete/${id}`, {}, headers)
+        .then(
+          (response) => {
+            if (response) {
+              this.showAlert(
+                "success",
+                "Success",
+                "Suppression de produit effectuer avec success"
+              );
+              this.listeProduit();
+            }
+          },
+          (response) => {
+            if (response) {
+              this.showAlert(
+                "error",
+                "Erreur",
+                "Erreur lors de la suppression"
+              );
+            }
+          }
+        );
     },
   },
 };

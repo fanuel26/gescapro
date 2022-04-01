@@ -53,7 +53,7 @@
                   id="components-form-demo-normal-login"
                   :form="form"
                   class="login-form"
-                  @submit="handleSubmit"
+                  @submit="AdminSubmit"
                   :hideRequiredMark="true"
                 >
                   <a-row type="flex" :gutter="24">
@@ -65,9 +65,11 @@
                         :colon="false"
                       >
                         <a-input
+                          v-model="nom"
                           v-decorator="[
-                            'Nom du administrateur',
+                            'nom',
                             {
+                              initialValue: nom,
                               rules: [
                                 {
                                   required: true,
@@ -88,9 +90,11 @@
                         :colon="false"
                       >
                         <a-input
+                          v-model="prenom"
                           v-decorator="[
-                            'Prénom du administrateur',
+                            'prenom',
                             {
+                              initialValue: prenom,
                               rules: [
                                 {
                                   required: true,
@@ -111,8 +115,9 @@
                         :colon="false"
                       >
                         <a-input
+                          v-model="email"
                           v-decorator="[
-                            'Adresse email',
+                            'email',
                             {
                               rules: [
                                 {
@@ -122,49 +127,54 @@
                               ],
                             },
                           ]"
-                          type="text"
-                          placeholder="Prénom administrateur"
+                          type="email"
+                          placeholder="Adresse email administrateur"
                         />
                       </a-form-item>
                     </a-col>
                     <a-col :span="12" :md="12" class="">
                       <a-form-item
                         class=""
-                        label="Numéro de téléphone"
+                        label="Nom d'utilisateur"
                         :colon="false"
                       >
                         <a-input
+                          v-model="username"
                           v-decorator="[
-                            'Numéro de téléphone',
+                            'username',
                             {
                               rules: [
                                 {
                                   required: true,
-                                  message: 'Numero est vide!',
+                                  message: 'Nom d\'utilisateur est vide!',
                                 },
                               ],
                             },
                           ]"
-                          type="number"
-                          placeholder="Numéro de téléphone"
+                          type="text"
+                          placeholder="Nom d'utilisateur"
                         />
                       </a-form-item>
                     </a-col>
+
                     <a-col :span="12" :md="12" class="">
-                      <a-form-item
-                        v-bind="formItemLayout"
-                        label="Type de compte"
-                      >
-                        <div class="d-flex">
-                          <a-select>
-                            <a-select-option value="86">
-                              Compte 1
-                            </a-select-option>
-                            <a-select-option value="87">
-                              Compte 2
-                            </a-select-option>
-                          </a-select>
-                        </div>
+                      <a-form-item class="" label="Code secret" :colon="false">
+                        <a-input
+                          v-model="username"
+                          v-decorator="[
+                            'code_secret',
+                            {
+                              rules: [
+                                {
+                                  required: true,
+                                  message: 'Code secret est vide!',
+                                },
+                              ],
+                            },
+                          ]"
+                          type="numbr"
+                          placeholder="Code secret"
+                        />
                       </a-form-item>
                     </a-col>
                   </a-row>
@@ -178,22 +188,19 @@
                       :column="1"
                     >
                       <a-descriptions-item label="Nom">
-                        Franck
+                        {{ nom }}
                       </a-descriptions-item>
                       <a-descriptions-item label="Prenom">
-                        Kossi Louis
-                      </a-descriptions-item>
-                      <a-descriptions-item label="Numéro de téléphone">
-                        (+228) 92580305
+                        {{ prenom }}
                       </a-descriptions-item>
                       <a-descriptions-item label="Adresse email">
-                        cagespro@gmail.com
+                        {{ email }}
                       </a-descriptions-item>
                       <a-descriptions-item label="Nom d'utilisateur">
-                        cagespro
+                        {{ username }}
                       </a-descriptions-item>
                       <a-descriptions-item label="Mot de passe">
-                        gescapro@1234
+                        {{ password }}
                       </a-descriptions-item>
                     </a-descriptions>
                   </div>
@@ -203,13 +210,36 @@
           </a-modal>
           <a-table :columns="columns" :data-source="data">
             <template slot="operation" slot-scope="text, record">
-              <router-link
-                class="mx-2"
-                :to="{ name: 'Admin_detail', params: { id: record.key } }"
-                ><a-button type="primary" size="small"
-                  >Détail</a-button
-                ></router-link
-              >
+              <a-row>
+                <a-col :span="12">
+                  <router-link
+                    class="mx-2"
+                    :to="{ name: 'Admin_detail', params: { id: record.key } }"
+                    ><a-button type="primary" size="small"
+                      >Détail</a-button
+                    ></router-link
+                  ></a-col
+                >
+                <a-col :span="12">
+                  <a-popconfirm
+                    v-if="record.status == 1"
+                    title="Sure de bloquer?"
+                    @confirm="() => block(record.key)"
+                    ><a-button type="danger" class="mx-2" size="small"
+                      >Bloquer</a-button
+                    >
+                  </a-popconfirm>
+
+                  <a-popconfirm
+                    v-if="record.status == 0"
+                    title="Sure de débloquer?"
+                    @confirm="() => block(record.key)"
+                    ><a-button type="success" class="mx-2" size="small"
+                      >Debloquer</a-button
+                    >
+                  </a-popconfirm>
+                </a-col>
+              </a-row>
             </template>
           </a-table>
         </a-card>
@@ -225,7 +255,7 @@ import WidgetCounter from "../../components/Widgets/WidgetCounter";
 const stats = [
   {
     title: "Nombre d'administrateur",
-    value: 53,
+    value: 0,
     prefix: "",
     suffix: "",
     icon: `<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -240,8 +270,14 @@ export default {
   components: {
     WidgetCounter,
   },
+
+  beforeCreate() {
+    this.form = this.$form.createForm(this, { name: "normal_login" });
+  },
   data() {
     return {
+      callback: "http://egal.iziway.tk/api/auth/admin",
+      token_admin: null,
       stats,
       width: 1000,
       columns: [],
@@ -249,9 +285,20 @@ export default {
       buttonText: "Détail",
       visible: false,
       confirmLoading: false,
+
+      nom: null,
+      prenom: null,
+      username: null,
+      email: null,
+      code_secret: null,
+      password: null,
     };
   },
   mounted() {
+    this.password = `gescapro@${Math.floor(
+      Math.random() * (9999 - 1000) + 1000
+    )}`;
+
     this.columns = [
       {
         title: "Date de creation",
@@ -275,100 +322,127 @@ export default {
         key: "email",
       },
       {
-        title: "Type de compte",
-        dataIndex: "type_compte",
-        key: "type_compte",
-      },
-      {
         title: "Action",
         key: "Action",
         scopedSlots: { customRender: "operation" },
       },
     ];
 
-    this.data = [
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        email: "gescapro@gmail.com",
-        type_compte: "Compte 1",
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        email: "gescapro@gmail.com",
-        type_compte: "Compte 1",
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        email: "gescapro@gmail.com",
-        type_compte: "Compte 1",
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        email: "gescapro@gmail.com",
-        type_compte: "Compte 1",
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        email: "gescapro@gmail.com",
-        type_compte: "Compte 1",
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        email: "gescapro@gmail.com",
-        type_compte: "Compte 1",
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        email: "gescapro@gmail.com",
-        type_compte: "Compte 1",
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        email: "gescapro@gmail.com",
-        type_compte: "Compte 1",
-      },
-    ];
+    this.listeAdmin();
   },
   methods: {
+    showAlert(type, title, description) {
+      this.$notification[type]({
+        message: title,
+        description: description,
+      });
+    },
+
+    listeAdmin() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http.post(`${this.callback}/liste`, {}, headers).then(
+        (response) => {
+          let data = response.body.data;
+
+          this.stats[0].value = data.length;
+          this.data = [];
+          console.log(data);
+          for (let i = data.length - 1; i >= 0; i--) {
+            this.data.push({
+              key: data[i].id,
+              created_at: data[i].created_at,
+              nom: `${data[i].nom} ${data[i].prenom}`,
+              numero: `(+228) ${data[i].numero}`,
+              email: data[i].email,
+              status: data[i].is_active,
+            });
+          }
+        },
+        (response) => {
+          this.showAlert("error", "Error", response.body.message);
+        }
+      );
+    },
+
+    block(id) {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(`${this.callback}/gest/admin/change/state/${id}`, {}, headers)
+        .then(
+          (response) => {
+            console.log(response);
+            this.showAlert("success", "Success", response.body.message);
+            this.listeAdmin();
+          },
+          (response) => {
+            this.showAlert("error", "Erreur", response.body.message);
+          }
+        );
+    },
+
     showModal() {
       this.visible = true;
     },
 
     handleOk(e) {
-      this.ModalText = "The modal will be closed after two seconds";
-      this.confirmLoading = true;
-      setTimeout(() => {
-        this.visible = false;
-        this.confirmLoading = false;
-      }, 2000);
+      e.preventDefault();
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          if (values.code_secret == localStorage.getItem("code_secret")) {
+            console.log(values);
+            this.confirmLoading = true;
+            this.AdminSubmit(values);
+            setTimeout(() => {
+              this.listeAdmin();
+              this.visible = false;
+              this.confirmLoading = false;
+              this.form.resetFields();
+            }, 2000);
+          } else {s
+            this.showAlert("error", "Erreur", "Code secret incorrect");
+          }
+        } else {
+          console.log("error");
+        }
+      });
     },
+
     handleCancel(e) {
       console.log("Clicked cancel button");
       this.visible = false;
+    },
+
+    AdminSubmit() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      let data_create = {
+        nom: this.nom,
+        prenom: this.prenom,
+        email: this.email,
+        id_type_administrateur: 1,
+        username: this.username,
+        password: this.password,
+      };
+
+      this.$http.post(`${this.callback}/register`, data_create, headers).then(
+        (response) => {
+          console.log(response);
+          this.showAlert("success", "Success", "Admin creer avec success");
+        },
+        (response) => {
+          this.showAlert("error", "Error", response.body.message);
+        }
+      );
     },
   },
 };

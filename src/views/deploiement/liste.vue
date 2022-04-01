@@ -26,13 +26,10 @@
       <a-col :span="12" :lg="18" :xl="18" class="mb-24">
         <a-card class="card card-body border-0">
           <div class="mb-4 text-right">
-            <a-button type="primary" class="mx-2" @click="showModal(1)">
-              Créer un pays
-            </a-button>
-            <a-button type="primary" class="mx-2" @click="showModal(2)">
+            <a-button type="primary" class="mx-2" @click="showModalVille()">
               Créer une ville
             </a-button>
-            <a-button type="primary" class="mx-2" @click="showModal(3)">
+            <a-button type="primary" class="mx-2" @click="showModalQuartier()">
               Créer un quartier
             </a-button>
           </div>
@@ -40,80 +37,45 @@
           <a-modal
             :width="width"
             title="Creer un pays"
-            :visible="visiblepays"
-            :confirm-loading="confirmLoading"
-            @ok="handleOk"
-            @cancel="handleCancel"
-          >
-            <a-row type="flex" :gutter="24">
-              <!-- Billing Information Column -->
-              <a-col :span="24" :md="24" class="">
-                <a-form
-                  id="components-form-demo-normal-login"
-                  :form="form"
-                  class="login-form"
-                  @submit="handleSubmit"
-                  :hideRequiredMark="true"
-                >
-                  <a-row type="flex" :gutter="24">
-                    <!-- Billing Information Column -->
-                    <a-col :span="24" :md="24" class="">
-                      <a-form-item class="" label="Pays" :colon="false">
-                        <a-input
-                          v-decorator="[
-                            'Nom du pays',
-                            {
-                              rules: [
-                                {
-                                  required: true,
-                                  message: 'Nom du pays est vide!',
-                                },
-                              ],
-                            },
-                          ]"
-                          type="text"
-                          placeholder="Nom pays"
-                        />
-                      </a-form-item>
-                    </a-col>
-                  </a-row>
-                </a-form>
-              </a-col>
-            </a-row>
-          </a-modal>
-
-          <a-modal
-            :width="width"
-            title="Creer un pays"
             :visible="visibleville"
             :confirm-loading="confirmLoading"
-            @ok="handleOk"
-            @cancel="handleCancel"
+            @ok="handleOkVille"
+            @cancel="handleCancelVille"
           >
             <a-row type="flex" :gutter="24">
               <!-- Billing Information Column -->
               <a-col :span="24" :md="24" class="">
                 <a-form
                   id="components-form-demo-normal-login"
-                  :form="form"
+                  :form="form_ville"
                   class="login-form"
-                  @submit="handleSubmit"
+                  @submit="villeSubmit"
                   :hideRequiredMark="true"
                 >
                   <a-row type="flex" :gutter="24">
                     <!-- Billing Information Column -->
-
                     <a-col :span="24" :md="24" class="">
-                      <a-form-item
-                        label="Selectionnez le pays"
-                      >
+                      <a-form-item label="Selectionnez le pays">
                         <div class="d-flex">
-                          <a-select>
-                            <a-select-option value="86">
-                              Pays 1
-                            </a-select-option>
-                            <a-select-option value="87">
-                              Pays 2
+                          <a-select
+                            v-decorator="[
+                              'id_pays',
+                              {
+                                rules: [
+                                  {
+                                    required: true,
+                                    message: 'Sélectionner un pays!',
+                                  },
+                                ],
+                              },
+                            ]"
+                          >
+                            <a-select-option
+                              v-for="dt in data"
+                              :key="dt.id"
+                              :value="dt.id"
+                            >
+                              {{ dt.libelle }}
                             </a-select-option>
                           </a-select>
                         </div>
@@ -123,8 +85,9 @@
                       <a-form-item class="" label="Ville" :colon="false">
                         <a-input
                           v-decorator="[
-                            'Nom de la ville',
+                            'libelle',
                             {
+                              initialValue: '',
                               rules: [
                                 {
                                   required: true,
@@ -149,49 +112,71 @@
             title="Creer un pays"
             :visible="visiblequartier"
             :confirm-loading="confirmLoading"
-            @ok="handleOk"
-            @cancel="handleCancel"
+            @ok="handleOkQuartier"
+            @cancel="handleCancelQuartier"
           >
             <a-row type="flex" :gutter="24">
               <!-- Billing Information Column -->
               <a-col :span="24" :md="24" class="">
                 <a-form
                   id="components-form-demo-normal-login"
-                  :form="form"
+                  :form="form_quartier"
                   class="login-form"
-                  @submit="handleSubmit"
+                  @submit="quartierSubmit"
                   :hideRequiredMark="true"
                 >
                   <a-row type="flex" :gutter="24">
                     <!-- Billing Information Column -->
 
                     <a-col :span="24" :md="24" class="">
-                      <a-form-item
-                        label="Selectionnez le pays"
-                      >
+                      <a-form-item label="Selectionnez le pays">
                         <div class="d-flex">
-                          <a-select>
-                            <a-select-option value="86">
-                              Pays 1
-                            </a-select-option>
-                            <a-select-option value="87">
-                              Pays 2
+                          <a-select
+                            v-decorator="[
+                              'id_pays',
+                              {
+                                rules: [
+                                  {
+                                    required: true,
+                                    message: 'Sélectionner un pays!',
+                                  },
+                                ],
+                              },
+                            ]"
+                            @change="changePays"
+                          >
+                            <a-select-option
+                              v-for="dt in data"
+                              :key="dt.id"
+                              :value="dt.id"
+                            >
+                              {{ dt.libelle }}
                             </a-select-option>
                           </a-select>
                         </div>
                       </a-form-item>
                     </a-col>
                     <a-col :span="24" :md="24" class="">
-                      <a-form-item
-                        label="Selectionnez la ville"
-                      >
+                      <a-form-item label="Selectionnez la ville">
                         <div class="d-flex">
-                          <a-select>
-                            <a-select-option value="86">
-                              Ville 1
-                            </a-select-option>
-                            <a-select-option value="87">
-                              Ville 2
+                          <a-select 
+                            v-decorator="[
+                              'id_ville',
+                              {
+                                rules: [
+                                  {
+                                    required: true,
+                                    message: 'Sélectionner une ville!',
+                                  },
+                                ],
+                              },
+                            ]">
+                            <a-select-option
+                              v-for="dt in villes"
+                              :key="dt.id"
+                              :value="dt.id"
+                            >
+                              {{ dt.libelle }}
                             </a-select-option>
                           </a-select>
                         </div>
@@ -201,7 +186,7 @@
                       <a-form-item class="" label="Quartier" :colon="false">
                         <a-input
                           v-decorator="[
-                            'Nom du quartier',
+                            'libelle',
                             {
                               rules: [
                                 {
@@ -222,22 +207,7 @@
             </a-row>
           </a-modal>
 
-          <a-table :columns="columns" :data-source="data">
-            <a-table
-              slot="expandedRowRender"
-              :columns="villeColumns"
-              :data-source="villeData"
-              :pagination="false"
-            >
-              <a-table
-                slot="expandedRowRender"
-                :columns="quartierColumns"
-                :data-source="quartierData"
-                :pagination="false"
-              >
-              </a-table>
-            </a-table>
-          </a-table>
+          <a-table :columns="columns" :data-source="data"> </a-table>
         </a-card>
       </a-col>
     </a-row>
@@ -261,7 +231,7 @@ const stats = [
 						</svg>`,
   },
   {
-    title: "Villes actifs",
+    title: "Villes actives",
     value: 0,
     prefix: "",
     suffix: "",
@@ -288,25 +258,24 @@ export default {
   components: {
     WidgetCounter,
   },
-  
+
   beforeCreate() {
-    this.form = this.$form.createForm(this, { name: "normal_login" });
+    this.form_ville = this.$form.createForm(this, { name: "normal_login" });
+    this.form_quartier = this.$form.createForm(this, { name: "normal_login" });
   },
   data() {
     return {
+      callback: "http://egal.iziway.tk/api/auth/admin",
+      token_admin: null,
       stats,
       width: 500,
       columns: [],
       data: [],
-      villeColumns: [],
-      villeData: [],
-      quartierColumns: [],
-      quartierData: [],
       buttonText: "Détail",
-      visiblepays: false,
       visibleville: false,
       visiblequartier: false,
       confirmLoading: false,
+      villes: [],
     };
   },
   mounted() {
@@ -315,93 +284,176 @@ export default {
         title: "Date de creation",
         dataIndex: "created_at",
         key: "created_at",
-        scopedSlots: { customRender: "name" },
       },
       {
         title: "Nom pays",
-        dataIndex: "nom",
-        key: "nom",
+        dataIndex: "libelle",
+        key: "libelle",
       },
     ];
 
-    this.data = [
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Togo",
-      },
-      {
-        key: "2",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Benin",
-      },
-    ];
-
-    this.villeColumns = [
-      { title: "Date de creation", dataIndex: "date", key: "date" },
-      { title: "Nom Ville", dataIndex: "name", key: "name" },
-    ];
-
-    this.villeData = [
-      {
-        key: "1",
-        date: "2014-12-24 23:12:00",
-        name: "Lomé",
-      },
-    ];
-
-    this.quartierColumns = [
-      { title: "Date de creation", dataIndex: "date", key: "date" },
-      { title: "Nom Quartier", dataIndex: "name", key: "name" },
-    ];
-
-    this.quartierData = [
-      {
-        key: "1",
-        date: "2014-12-24 23:12:00",
-        name: "Avedji",
-      },
-      {
-        key: "2",
-        date: "2014-12-24 23:12:00",
-        name: "Totsi",
-      },
-      {
-        key: "3",
-        date: "2014-12-24 23:12:00",
-        name: "Agoè",
-      },
-    ];
+    this.listePays();
   },
+
   methods: {
-    showModal(type) {
-      if (type == 1) {
-        this.visiblepays = true;
-      } else if (type == 2) {
-        this.visibleville = true;
-      } else {
-        this.visiblequartier = true;
+    showAlert(type, title, description) {
+      this.$notification[type]({
+        message: title,
+        description: description,
+      });
+    },
+
+    listePays() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http.post(`${this.callback}/pays/liste`, {}, headers).then(
+        (response) => {
+          let data = response.body.data;
+
+          this.data = data.map((item) => ({
+            id: item.id,
+            key: `pays${item.id}`,
+            created_at: item.created_at,
+            libelle: item.libelle,
+            children: item.villes.map((value) => ({
+              id: value.id,
+              key: `ville${value.id}`,
+              created_at: value.created_at,
+              libelle: value.libelle,
+              children: value.quartiers.map((it) => ({
+                id: it.id,
+                key: `quartier${it.id}`,
+                created_at: it.created_at,
+                libelle: it.libelle,
+              })),
+            })),
+          }));
+
+          console.log(this.data);
+        },
+        (response) => {
+          this.showAlert("error", "Error", response.body.message);
+        }
+      );
+    },
+
+    changePays(value) {
+      let data = this.data
+
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].id == value) {
+          this.villes = data[i].children
+        }
       }
     },
 
-    handleOk(e) {
-      this.ModalText = "The modal will be closed after two seconds";
-      this.confirmLoading = true;
-      setTimeout(() => {
-        this.visiblepays = false;
-        this.visibleville = false;
-        this.visiblequartier = false;
-        this.confirmLoading = false;
-      }, 2000);
+
+    showModalVille() {
+      this.visibleville = true;
     },
-    handleCancel(e) {
-      console.log("Clicked cancel button");
-      this.visiblepays = false;
+
+    showModalQuartier() {
+      this.visiblequartier = true;
+    },
+
+    handleOkVille(e) {
+      e.preventDefault();
+      this.form_ville.validateFields((err, values) => {
+        if (!err) {
+          console.log(values);
+          this.confirmLoading = true;
+          this.villeSubmit(values);
+          setTimeout(() => {
+            this.listePays();
+            this.visibleville = false;
+            this.confirmLoading = false;
+          }, 1000);
+        } else {
+          console.log("error");
+        }
+      });
+    },
+
+    handleCancelVille(e) {
       this.visibleville = false;
+    },
+
+    villeSubmit(data) {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      let data_create = {
+        id_pays: data.id_pays,
+        libelle: data.libelle,
+      };
+
+      this.$http
+        .post(`${this.callback}/ville/create`, data_create, headers)
+        .then(
+          (response) => {
+            if (response) {
+              this.showAlert("success", "Success", "Ville creer avec success");
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
+          }
+        );
+    },
+
+    handleOkQuartier(e) {
+      e.preventDefault();
+      this.form_quartier.validateFields((err, values) => {
+        if (!err) {
+          console.log(values);
+          this.confirmLoading = true;
+          this.quartierSubmit(values);
+          setTimeout(() => {
+            this.listePays();
+            this.visiblequartier = false;
+            this.confirmLoading = false;
+          }, 2000);
+        } else {
+          console.log("error");
+        }
+      });
+    },
+
+    handleCancelQuartier(e) {
       this.visiblequartier = false;
     },
 
-    handleSubmit() {}
+    quartierSubmit(data) {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      let data_create = {
+        id_ville: data.id_ville,
+        libelle: data.libelle,
+      };
+
+      this.$http
+        .post(`${this.callback}/quartier/create`, data_create, headers)
+        .then(
+          (response) => {
+            if (response) {
+              this.showAlert(
+                "success",
+                "Success",
+                "Quartier creer avec success"
+              );
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", 'Libelle de quartier déjà utiliser');
+          }
+        );
+    },
   },
 };
 </script>

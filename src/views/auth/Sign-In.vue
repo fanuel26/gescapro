@@ -113,7 +113,7 @@ export default {
                 session.setItem("code_secret", response.body.info.code_secret);
                 session.setItem(
                   "type",
-                  response.body.info.id_type_administrateur
+                  response.body.info.adminAttributes
                 );
 
                 this.$router.push({ name: "Dashboard" });
