@@ -23,14 +23,15 @@
     </a-row>
 
     <a-row :gutter="24">
-      <a-col
-        :span="12"
-        :lg="12"
-        :xl="24"
-        class="mb-24"
-      >
+      <a-col :span="12" :lg="12" :xl="24" class="mb-24">
         <a-card class="card card-body border-0">
-          <div class="mb-4 text-right">
+          <div class="mb-4 d-flex justify-content-between align-items-center">
+            <a-input-search
+              v-model="value"
+              placeholder="Recherche ici"
+              style="width: 300px"
+              @change="onSearch"
+            />
             <a-button type="primary" @click="showModal">
               Créer un agent collecteur
             </a-button>
@@ -212,7 +213,7 @@
               </a-col>
             </a-row>
           </a-modal>
-          <a-table :columns="columns" :data-source="data">
+          <a-table :columns="columns" :data-source="data" :pagination="false">
             <template slot="operation" slot-scope="text, record">
               <a-row>
                 <a-col :span="12">
@@ -245,6 +246,10 @@
               </a-row>
             </template>
           </a-table>
+          <div class="text-right mt-4">
+            <a-button class="mx-2" @click="preview()"> Retour </a-button>
+            <a-button class="mx-2" @click="next()"> Suivant </a-button>
+          </div>
         </a-card>
       </a-col>
     </a-row>
@@ -270,12 +275,17 @@ export default {
       width: 1000,
       columns: [],
       data: [],
+      data_s: [],
+      value: null,
       buttonText: "Détail",
       visible: false,
       confirmLoading: false,
 
       villes: null,
       quartiers: null,
+
+      row: 5,
+      page: 1,
 
       nom: null,
       prenom: null,
@@ -385,7 +395,6 @@ export default {
 
       this.$http.post(`${this.callback}/ville/liste`, {}, headers).then(
         (response) => {
-          console.log(response);
           let data = response.body.data;
 
           this.villes = data;
@@ -403,7 +412,6 @@ export default {
 
       this.$http.post(`${this.callback}/quartier/liste`, {}, headers).then(
         (response) => {
-          console.log(response);
           let data = response.body.data;
 
           this.quartiers = [];
@@ -426,15 +434,19 @@ export default {
       let headers = { headers: { Authorization: this.token_admin } };
 
       this.$http
-        .post(`${this.callback}/agent_collecteur/list`, {}, headers)
+        .post(
+          `${this.callback}/agent_collecteur/list?row=${this.row}&page=${this.page}`,
+          {},
+          headers
+        )
         .then(
           (response) => {
             let data = response.body.data;
 
-            this.stats[0].value = data.length;
+            console.log(response.body);
+            this.stats[0].value = response.body.total;
             this.data = [];
-            console.log(data);
-            for (let i = data.length - 1; i >= 0; i--) {
+            for (let i = 0; i < data.length; i++) {
               this.data.push({
                 key: data[i].id,
                 created_at: data[i].created_at,
@@ -443,6 +455,8 @@ export default {
                 agence: data[i].agc_name,
                 status: data[i].is_active,
               });
+
+              this.data_s = this.data;
             }
           },
           (response) => {
@@ -450,6 +464,95 @@ export default {
           }
         );
     },
+
+    next() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.page += 1;
+
+      this.$http
+        .post(
+          `${this.callback}/agent_collecteur/list?row=${this.row}&page=${this.page}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let d = response.body.data;
+
+            console.log(this.data_s);
+            this.data = [];
+
+            let data = Object.keys(d).map(function (key) {
+              return d[key];
+            });
+
+            for (let i = 0; i < data.length; i++) {
+              console.log(data[i]);
+              this.data.push({
+                key: data[i].id,
+                created_at: data[i].created_at,
+                nom: `${data[i].nom} ${data[i].prenom}`,
+                numero: `(+228) ${data[i].numero}`,
+                agence: data[i].agc_name,
+                status: data[i].is_active,
+              });
+
+              this.data_s = this.data;
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
+          }
+        );
+    },
+
+    preview() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.page -= 1;
+
+      this.$http
+        .post(
+          `${this.callback}/agent_collecteur/list?row=${this.row}&page=${this.page}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let d = response.body.data;
+
+            console.log(this.data_s);
+            this.data = [];
+
+            let data = Object.keys(d).map(function (key) {
+              return d[key];
+            });
+            for (let i = 0; i < data.length; i++) {
+              this.data.push({
+                key: data[i].id,
+                created_at: data[i].created_at,
+                nom: `${data[i].nom} ${data[i].prenom}`,
+                numero: `(+228) ${data[i].numero}`,
+                agence: data[i].agc_name,
+                status: data[i].is_active,
+              });
+
+              this.data_s = this.data;
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
+          }
+        );
+    },
+
     showModal() {
       this.visible = true;
     },
@@ -468,7 +571,6 @@ export default {
         )
         .then(
           (response) => {
-            console.log(response);
             this.showAlert("success", "Success", response.body.message);
             this.listeCollecteur();
           },
@@ -482,7 +584,6 @@ export default {
       e.preventDefault();
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log(values);
           this.confirmLoading = true;
           this.collecteurSubmit(values);
           setTimeout(() => {
@@ -497,7 +598,6 @@ export default {
     },
 
     handleCancel(e) {
-      console.log("Clicked cancel button");
       this.visible = false;
     },
 
@@ -518,7 +618,6 @@ export default {
         .post(`${this.callback}/agent_collecteur/create`, data_create, headers)
         .then(
           (response) => {
-            console.log(response);
             this.showAlert(
               "success",
               "Success",
@@ -529,6 +628,55 @@ export default {
             this.showAlert("error", "Error", response.body.message);
           }
         );
+    },
+
+    onSearch() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(
+          `${this.callback}/agent_collecteur/list?search=${this.value}&row=${this.row}&page=1`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let data = response.body.data;
+
+            console.log(response.body);
+            this.data = [];
+            for (let i = 0; i < data.length; i++) {
+              this.data.push({
+                key: data[i].id,
+                created_at: data[i].created_at,
+                nom: `${data[i].nom} ${data[i].prenom}`,
+                numero: `(+228) ${data[i].numero}`,
+                agence: data[i].agc_name,
+                status: data[i].is_active,
+              });
+
+              this.data_s = this.data;
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
+          }
+        );
+      /*this.value = this.value.toLowerCase();
+
+      let data = this.data_s;
+
+      this.data = [];
+      for (let i = 0; i < data.length; i++) {
+        let nom = data[i].nom.toLowerCase().indexOf(this.value);
+        let numero = data[i].numero.toLowerCase().indexOf(this.value);
+        if (nom > -1 || numero > -1) {
+          this.data.push(data[i]);
+        }
+      }*/
     },
   },
 };

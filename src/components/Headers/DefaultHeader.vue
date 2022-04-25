@@ -3,7 +3,9 @@
 	<!-- Layout Header ( Navbar ) -->
 	<a-layout-header>
 		<div class="header-col header-brand">
-			<router-link :to="{name: 'Dashboard'}"><h6 class="mt-4 text-primary">GesCaPro</h6></router-link>
+			<router-link :to="{name: 'Dashboard'}">
+				<img src="/images/logo1.png" class="img-fluid w-100 h-75" alt=""/>
+			</router-link>
 
 			<!-- Trigger Button For Navigation Menu For Small Screens -->
 			<a-button type="link" @click="collapseNav = collapseNav ? 0 : 1 " class="btn-menu-trigger">

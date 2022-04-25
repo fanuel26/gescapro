@@ -59,7 +59,7 @@
                     id="components-form-demo-normal-login"
                     :form="form"
                     class="login-form"
-                    @submit="updateSubmit"
+                    @submit="addStock"
                     :hideRequiredMark="true"
                   >
                     <a-row type="flex" :gutter="24">
@@ -127,6 +127,138 @@
               </a-row>
             </a-card>
           </a-col>
+
+          <a-col :span="24" :md="24" class="mb-24">
+            <a-card
+              :bordered="false"
+              class="header-solid h-full"
+              :bodyStyle="{ paddingTop: 0, paddingBottom: '16px' }"
+            >
+              <template #title>
+                <h6 class="font-semibold m-0">Modifier le produit</h6>
+              </template>
+              <a-row>
+                <a-col :span="24" :md="24" class="mb-24">
+                  <a-form
+                    id="components-form-demo-normal-login"
+                    :form="form_update"
+                    class="login-form"
+                    @submit="updateSubmit"
+                  >
+                    <a-row type="flex" :gutter="24">
+                      <!-- Billing Information Column -->
+                      <a-col :span="12" :md="12" class="">
+                        <a-form-item
+                          class=""
+                          label="Nom du produit"
+                          :colon="false"
+                        >
+                          <a-input
+                            v-decorator="[
+                              'libelle',
+                              {
+                                initialValue: produit.libelle,
+                                rules: [
+                                  {
+                                    required: true,
+                                    message: 'Nom du produit est vide!',
+                                  },
+                                ],
+                              },
+                            ]"
+                            type="text"
+                            placeholder="Nom produit"
+                          />
+                        </a-form-item>
+                      </a-col>
+                      <a-col :span="12" :md="12" class="">
+                        <a-form-item
+                          class=""
+                          label="Prix d'achat"
+                          :colon="false"
+                        >
+                          <a-input
+                            v-decorator="[
+                              'prix_achat',
+                              {
+                                initialValue: produit.prix_achat,
+                                rules: [
+                                  {
+                                    required: true,
+                                    message: 'Prix d\'achat est vide!',
+                                  },
+                                ],
+                              },
+                            ]"
+                            type="number"
+                            placeholder="Prix d'achat"
+                          />
+                        </a-form-item>
+                      </a-col>
+                      <a-col :span="12" :md="12" class="">
+                        <a-form-item
+                          class=""
+                          label="Prix de vente"
+                          :colon="false"
+                        >
+                          <a-input
+                            v-decorator="[
+                              'prix_vente',
+                              {
+                                initialValue: produit.prix_vente,
+                                rules: [
+                                  {
+                                    required: true,
+                                    message: 'Prix de vente est vide!',
+                                  },
+                                ],
+                              },
+                            ]"
+                            type="number"
+                            placeholder="Prix de vente"
+                          />
+                        </a-form-item>
+                      </a-col>
+
+                      <a-col :span="12" :md="12" class="">
+                        <a-form-item
+                          class=""
+                          label="Code secret"
+                          :colon="false"
+                        >
+                          <a-input
+                            v-decorator="[
+                              'code_secret',
+                              {
+                                rules: [
+                                  {
+                                    required: true,
+                                    message: 'Code secret est vide!',
+                                  },
+                                ],
+                              },
+                            ]"
+                            type="number"
+                            placeholder="Code secret"
+                          />
+                        </a-form-item>
+                      </a-col>
+
+                      <a-col :span="24" :md="24" class="mb-4 text-right">
+                        <a-button
+                          type="primary"
+                          html-type="submit"
+                          class="login-form-button"
+                        >
+                          Ajouter
+                        </a-button>
+                      </a-col>
+                    </a-row>
+                  </a-form>
+                </a-col>
+              </a-row>
+            </a-card>
+          </a-col>
         </a-card>
       </a-col>
       <!-- Billing Information Column -->
@@ -153,6 +285,7 @@ export default {
   },
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: "normal_login" });
+    this.form_update = this.$form.createForm(this, { name: "normal_login" });
   },
   data() {
     return {
@@ -199,6 +332,56 @@ export default {
     },
 
     updateSubmit(e) {
+      e.preventDefault();
+      this.form_update.validateFields((err, values) => {
+        if (!err) {
+          if (values.code_secret == localStorage.getItem("code_secret")) {
+            let session = localStorage;
+            this.token_admin = session.getItem("token");
+            let headers = { headers: { Authorization: this.token_admin } };
+
+            let data = {
+              libelle: values.libelle,
+              prix_achat: values.prix_achat,
+              prix_vente: values.prix_vente,
+            };
+
+            this.$http
+              .post(
+                `${this.callback}/produit/update/${this.$route.params.id}`,
+                data,
+                headers
+              )
+              .then(
+                (response) => {
+                  console.log(response);
+                  if (response) {
+                    this.detailProduit();
+                    this.showAlert(
+                      "success",
+                      "Success",
+                      "Modification de produit effectuer avec success"
+                    );
+                  }
+                },
+                (response) => {
+                  if (response) {
+                    this.showAlert(
+                      "error",
+                      "Erreur",
+                      "Erreur lors de la modification"
+                    );
+                  }
+                }
+              );
+          } else {
+            this.showAlert("error", "Erreur", "Code secret incorrect");
+          }
+        }
+      });
+    },
+
+    addStock(e) {
       e.preventDefault();
       this.form.validateFields((err, values) => {
         if (!err) {

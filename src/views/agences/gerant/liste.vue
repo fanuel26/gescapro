@@ -36,7 +36,13 @@
       >
         <a-card class="card card-body border-0">
           <div class="mb-4 text-right">
-            <a-button type="primary" @click="showModal">
+            <a-input-search
+              v-model="value"
+              placeholder="Recherche ici"
+              style="width: 300px"
+              @change="onSearch"
+            />
+            <a-button type="primary" class="mx-2" @click="showModal">
               Créer un agent caissier
             </a-button>
 
@@ -216,7 +222,7 @@
               </a-col>
             </a-row>
           </a-modal>
-          <a-table :columns="columns" :data-source="data">
+          <a-table :columns="columns" :data-source="data" :pagination="false">
             <template slot="operation" slot-scope="text, record">
               <div class="d-flex">
                 <router-link
@@ -245,6 +251,11 @@
               </div>
             </template>
           </a-table>
+          
+          <div class="text-right mt-4">
+            <a-button class="mx-2" @click="preview()"> Retour </a-button>
+            <a-button class="mx-2" @click="next()"> Suivant </a-button>
+          </div>
         </a-card>
       </a-col>
     </a-row>
@@ -277,6 +288,10 @@ export default {
       villes: null,
       quartiers: null,
 
+      row: 5,
+      page: 1,
+      value: null,
+
       nom: null,
       prenom: null,
       numero: null,
@@ -306,6 +321,11 @@ export default {
         title: "Numéro de téléphone",
         dataIndex: "numero",
         key: "numero",
+      },
+      {
+        title: "Agence",
+        dataIndex: "agence",
+        key: "agence",
       },
       {
         title: "Action",
@@ -387,11 +407,12 @@ export default {
 
       let headers = { headers: { Authorization: this.token_admin } };
 
-      this.$http.post(`${this.callback}/agent/list`, {}, headers).then(
+      this.$http.post(`${this.callback}/agent/list?row=${this.row}&page=${this.page}`, {}, headers).then(
         (response) => {
           let data = response.body.data;
 
-          this.stats[0].value = data.length;
+          console.log(response)
+          this.stats[0].value = response.body.total;
           this.data = [];
           console.log(data);
           for (let i = data.length - 1; i >= 0; i--) {
@@ -400,6 +421,7 @@ export default {
               created_at: data[i].created_at,
               nom: `${data[i].nom} ${data[i].prenom}`,
               numero: `(+228) ${data[i].numero}`,
+              agence: data[i].agence.nom_agence,
               status: data[i].is_active,
             });
           }
@@ -409,6 +431,70 @@ export default {
         }
       );
     },
+
+    
+    next() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.page += 1
+      this.$http.post(`${this.callback}/agent/list?row=${this.row}&page=${this.page}`, {}, headers).then(
+        (response) => {
+          let data = response.body.data;
+
+          console.log(response)
+          this.data = [];
+          console.log(data);
+          for (let i = data.length - 1; i >= 0; i--) {
+            this.data.push({
+              key: data[i].id,
+              created_at: data[i].created_at,
+              nom: `${data[i].nom} ${data[i].prenom}`,
+              numero: `(+228) ${data[i].numero}`,
+              agence: data[i].agence.nom_agence,
+              status: data[i].is_active,
+            });
+          }
+        },
+        (response) => {
+          this.showAlert("error", "Error", response.body.message);
+        }
+      );
+    },
+    
+    preview() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+      this.page -= 1
+      this.$http.post(`${this.callback}/agent/list?row=${this.row}&page=${this.page}`, {}, headers).then(
+        (response) => {
+          let data = response.body.data;
+
+          console.log(response)
+          this.stats[0].value = response.body.total;
+          this.data = [];
+          console.log(data);
+          for (let i = data.length - 1; i >= 0; i--) {
+            this.data.push({
+              key: data[i].id,
+              created_at: data[i].created_at,
+              nom: `${data[i].nom} ${data[i].prenom}`,
+              numero: `(+228) ${data[i].numero}`,
+              agence: data[i].agence.nom_agence,
+              status: data[i].is_active,
+            });
+          }
+        },
+        (response) => {
+          this.showAlert("error", "Error", response.body.message);
+        }
+      );
+    },
+
     showModal() {
       this.visible = true;
     },
@@ -485,6 +571,36 @@ export default {
             this.showAlert("error", "Error", response.body.message);
           }
         );
+    },
+
+    onSearch() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http.post(`${this.callback}/agent/list?row=${this.row}&page=1&search=${this.value}`, {}, headers).then(
+        (response) => {
+          let data = response.body.data;
+
+          console.log(response)
+          this.data = [];
+          console.log(data);
+          for (let i = data.length - 1; i >= 0; i--) {
+            this.data.push({
+              key: data[i].id,
+              created_at: data[i].created_at,
+              nom: `${data[i].nom} ${data[i].prenom}`,
+              numero: `(+228) ${data[i].numero}`,
+              agence: data[i].agence.nom_agence,
+              status: data[i].is_active,
+            });
+          }
+        },
+        (response) => {
+          this.showAlert("error", "Error", response.body.message);
+        }
+      );
     },
   },
 };

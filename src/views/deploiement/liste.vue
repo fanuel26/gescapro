@@ -313,6 +313,8 @@ export default {
         (response) => {
           let data = response.body.data;
 
+          this.stats[0].value = data.length
+
           this.data = data.map((item) => ({
             id: item.id,
             key: `pays${item.id}`,

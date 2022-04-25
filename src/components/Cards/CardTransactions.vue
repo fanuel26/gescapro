@@ -82,8 +82,55 @@
             </div>
 
             <div class="d-flex mt-2">
-              <a-button size="small"> Suspendre </a-button>
+              <a-popconfirm
+                title="Voulez vous vraiment faire cette action"
+                ok-text="Oui"
+                cancel-text="Non"
+                @confirm="confirm(item.id)"
+                @cancel="cancel()"
+              >
+                <a-button size="small">Suspendre</a-button>
+              </a-popconfirm>
             </div>
+            <a-drawer
+              title="Suspendre le carnet"
+              placement="right"
+              :closable="false"
+              :visible="visible"
+            >
+              <a-form
+                ref="formRef"
+                :form="form"
+                class="login-form"
+                @submit="onSubmit"
+              >
+                <a-form-item label="Motif de suspension" name="desc">
+                  <a-textarea
+                    v-decorator="[
+                      'motif',
+                      {
+                        rules: [
+                          {
+                            required: true,
+                            message: 'Motif est vide!',
+                          },
+                        ],
+                      },
+                    ]"
+                    placeholder="Motif"
+                  />
+                </a-form-item>
+                <a-form-item class="text-right">
+                  <a-button @click="resetForm">Annuler</a-button>
+                  <a-button
+                    type="primary"
+                    @click="onSubmit"
+                    style="margin-left: 10px"
+                    >Suspendre</a-button
+                  >
+                </a-form-item>
+              </a-form>
+            </a-drawer>
           </div>
         </template>
       </a-list-item>
@@ -100,8 +147,76 @@ export default {
       default: () => [],
     },
   },
+  beforeCreate() {
+    this.form = this.$form.createForm(this, { name: "normal_login" });
+  },
   data() {
-    return {};
+    return {
+      callback: "http://egal.iziway.tk/api/auth/admin",
+      token_admin: null,
+      motif: null,
+      visible: false,
+      id: null,
+    };
+  },
+
+  methods: {
+    showAlert(type, title, description) {
+      this.$notification[type]({
+        message: title,
+        description: description,
+      });
+    },
+
+    confirm(id) {
+      console.log(id);
+      this.id = id
+      this.visible = true;
+    },
+
+    cancel(e) {
+      console.log(e);
+    },
+
+    resetForm() {
+      this.form.resetFields();
+      this.visible = false;
+    },
+
+    onSubmit(e) {
+      e.preventDefault();
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          let session = localStorage;
+          this.token_admin = session.getItem("token");
+
+          let headers = { headers: { Authorization: this.token_admin } };
+
+          this.$http
+            .post(
+              `${this.callback}/carnet/exemplaire/change/state/${this.id}`,
+              values,
+              headers
+            )
+            .then(
+              (response) => {
+                if (response) {
+                  this.showAlert(
+                    "success",
+                    "Success",
+                    "Operation effectuer avec success"
+                  );
+                }
+              },
+              (response) => {
+                this.showAlert("error", "Erreur", response.body.message);
+              }
+            );
+        } else {
+          this.showAlert("error", "Erreur", "Veillez mettre la motif");
+        }
+      });
+    },
   },
 };
 </script>

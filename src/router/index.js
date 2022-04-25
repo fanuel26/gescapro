@@ -63,6 +63,18 @@ let routes = [
 		component: () => import('../views/carnets/detail_carnet.vue'),
 	},
 	{
+		path: '/carnets-stock',
+		name: 'Carnets_stock',
+		layout: "dashboard",
+		component: () => import('../views/carnet-stock/carnets.vue'),
+	},
+	{
+		path: '/carnets-stock/:id',
+		name: 'Carnets_stock_detail',
+		layout: "dashboard",
+		component: () => import('../views/carnet-stock/detail_carnet.vue'),
+	},
+	{
 		path: '/epargne',
 		name: 'Epargne',
 		layout: "dashboard",
@@ -103,6 +115,12 @@ let routes = [
 		name: 'Client',
 		layout: "dashboard",
 		component: () => import('../views/clients/liste.vue'),
+	},
+	{
+		path: '/client/new',
+		name: 'Client_new',
+		layout: "dashboard",
+		component: () => import('../views/clients/new.vue'),
 	},
 	{
 		path: '/client/:id',

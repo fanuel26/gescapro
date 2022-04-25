@@ -8,13 +8,13 @@
 					<h6>Classement des meilleurs collecteurs</h6>			
 					<p>par jour</p>	
 				</a-col>
-				<a-col :span="24" :md="12" style="display: flex; align-items: center; justify-content: flex-end">
+				<!-- <a-col :span="24" :md="12" style="display: flex; align-items: center; justify-content: flex-end">
 					<a-radio-group v-model="projectHeaderBtns" size="small">
 						<a-radio-button value="all">Jour</a-radio-button>
 						<a-radio-button value="online">Mois</a-radio-button>
 						<a-radio-button value="stores">Année</a-radio-button>
 					</a-radio-group>
-				</a-col>
+				</a-col> -->
 			</a-row>
 		</template>
 		<a-table :columns="columns" :data-source="data" :pagination="false">

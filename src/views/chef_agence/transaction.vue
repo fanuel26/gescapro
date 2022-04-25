@@ -79,6 +79,11 @@ const columns = [
     key: "cotiser",
   },
   {
+    title: "Type",
+    dataIndex: "type",
+    key: "type",
+  },
+  {
     title: "Action",
     key: "Action",
     scopedSlots: { customRender: "operation" },
@@ -151,6 +156,7 @@ export default {
                 numero: `(+228) ${data[i].agent.numero}`,
                 montant: data[i].reste + data[i].montant,
                 cotiser: data[i].montant,
+                type: data[i].type == 1 ? 'Epargne': 'Produit',
                 status: data[i].is_accept,
               });
             }

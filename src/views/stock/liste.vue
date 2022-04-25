@@ -32,7 +32,13 @@
         :key="index"
       >
         <a-card class="card card-body border-0">
-          <div class="mb-4 text-right">
+          <div class="mb-4 d-flex justify-content-between align-items-center">
+            <a-input-search
+              v-model="value"
+              placeholder="Recherche ici"
+              style="width: 300px"
+              @change="onSearch"
+            />
             <a-button type="primary" @click="showModal">
               Créer un produit
             </a-button>
@@ -154,7 +160,7 @@
               </a-row>
             </a-form>
           </a-modal>
-          <a-table :columns="columns" :data-source="data">
+          <a-table :columns="columns" :data-source="data" :pagination="false">
             <template slot="operation" slot-scope="text, record">
               <router-link
                 :to="{
@@ -167,6 +173,10 @@
               >
             </template>
           </a-table>
+          <div class="text-right mt-4">
+            <a-button class="mx-2" @click="preview()"> Retour </a-button>
+            <a-button class="mx-2" @click="next()"> Suivant </a-button>
+          </div>
         </a-card>
       </a-col>
     </a-row>
@@ -206,9 +216,14 @@ export default {
       width: 1000,
       columns: [],
       data: [],
+      data_s: [],
+      row: 5,
+      page: 1,
+      value: null,
       buttonText: "Détail",
       visible: false,
       confirmLoading: false,
+      value: null,
     };
   },
   mounted() {
@@ -261,30 +276,114 @@ export default {
 
       let headers = { headers: { Authorization: this.token_admin } };
 
-      this.$http.post(`${this.callback}/produit/list`, {}, headers).then(
-        (response) => {
-          let data = response.body.data;
+      this.$http
+        .post(
+          `${this.callback}/produit/list?row=${this.row}&page=${this.page}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let data = response.body.data;
 
-          this.stats[0].value = data.length;
-          this.data = [];
-          console.log(data);
-          for (let i = 0; i < data.length; i++) {
-            this.data.push({
-              key: data[i].id,
-              created_at: data[i].created_at,
-              libelle: data[i].libelle,
-              prix_achat: data[i].prix_achat,
-              prix_vente: data[i].prix_vente,
-              stock: data[i].stock,
-            });
+            this.stats[0].value = response.body.total;
+            this.data = [];
+            console.log(data);
+            for (let i = 0; i < data.length; i++) {
+              this.data.push({
+                key: data[i].id,
+                created_at: data[i].created_at,
+                libelle: data[i].libelle,
+                prix_achat: data[i].prix_achat,
+                prix_vente: data[i].prix_vente,
+                stock: data[i].stock,
+              });
+              this.data_s = this.data;
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
           }
-        },
-        (response) => {
-          this.showAlert("error", "Error", response.body.message);
-        }
-      );
+        );
     },
 
+    next() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+      this.page += 1;
+      this.$http
+        .post(
+          `${this.callback}/produit/list?row=${this.row}&page=${this.page}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let d = response.body.data;
+
+            let data = Object.keys(d).map(function (key) {
+              return d[key];
+            });
+            this.data = [];
+            console.log(data);
+            for (let i = 0; i < data.length; i++) {
+              this.data.push({
+                key: data[i].id,
+                created_at: data[i].created_at,
+                libelle: data[i].libelle,
+                prix_achat: data[i].prix_achat,
+                prix_vente: data[i].prix_vente,
+                stock: data[i].stock,
+              });
+              this.data_s = this.data;
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
+          }
+        );
+    },
+
+    preview() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+      this.page -= 1;
+      this.$http
+        .post(
+          `${this.callback}/produit/list?row=${this.row}&page=${this.page}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let d = response.body.data;
+            
+            let data = Object.keys(d).map(function (key) {
+              return d[key];
+            });
+            this.data = [];
+            console.log(data);
+            for (let i = 0; i < data.length; i++) {
+              this.data.push({
+                key: data[i].id,
+                created_at: data[i].created_at,
+                libelle: data[i].libelle,
+                prix_achat: data[i].prix_achat,
+                prix_vente: data[i].prix_vente,
+                stock: data[i].stock,
+              });
+              this.data_s = this.data;
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
+          }
+        );
+    },
     showModal() {
       this.visible = true;
     },
@@ -333,7 +432,7 @@ export default {
                 "Success",
                 "Produit creer avec success"
               );
-              
+
               this.form.resetFields();
               this.confirmLoading = false;
               this.visible = false;
@@ -374,6 +473,53 @@ export default {
                 "Erreur lors de la suppression"
               );
             }
+          }
+        );
+    },
+
+    onSearch() {
+      /*this.value = this.value.toLowerCase();
+
+      let data = this.data_s;
+
+      this.data = [];
+      for (let i = 0; i < data.length; i++) {
+        let libelle = data[i].libelle.toLowerCase();
+        if (libelle.indexOf(this.value) > -1) {
+            this.data.push(data[i]);
+        }
+      }*/
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(
+          `${this.callback}/produit/list?row=${this.row}&page=${this.page}&search=${this.value}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let data = response.body.data;
+
+            this.data = [];
+            console.log(data);
+            for (let i = 0; i < data.length; i++) {
+              this.data.push({
+                key: data[i].id,
+                created_at: data[i].created_at,
+                libelle: data[i].libelle,
+                prix_achat: data[i].prix_achat,
+                prix_vente: data[i].prix_vente,
+                stock: data[i].stock,
+              });
+              this.data_s = this.data;
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
           }
         );
     },

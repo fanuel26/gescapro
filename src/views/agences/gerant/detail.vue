@@ -41,6 +41,9 @@
                     <a-descriptions-item label="Numéro de téléphone">
                       (+228) {{ caissier.numero }}
                     </a-descriptions-item>
+                    <a-descriptions-item label="Agence">
+                      {{ caissier.agence.nom_agence }}
+                    </a-descriptions-item>
                     <a-descriptions-item> </a-descriptions-item>
                     <a-descriptions-item label="Ville">
                       {{ ville }}

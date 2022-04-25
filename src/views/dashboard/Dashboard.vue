@@ -51,8 +51,8 @@
       <a-col :span="24" :lg="16" class="mb-24">
         <!-- Projects Table Card -->
         <CardProjectTable
-          :data="tableData"
-          :columns="tableColumns"
+          :data="dataCollecteur"
+          :columns="columnCollecteur"
         ></CardProjectTable>
         <!-- / Projects Table Card -->
       </a-col>
@@ -61,7 +61,26 @@
       <!-- Timeline -->
       <a-col :span="24" :lg="8" class="mb-24">
         <!-- Orders History Timeline Card -->
-        <CardOrderHistory></CardOrderHistory>
+
+        <!-- Orders History Timeline Card -->
+        <a-card
+          :bordered="false"
+          class="header-solid h-full"
+          :bodyStyle="{ paddingTop: '12px' }"
+        >
+          <template #title>
+            <h6>Carnets les plus vendus</h6>
+            <p>par jour</p>
+          </template>
+          <a-timeline>
+            <a-timeline-item v-for="dc in dataCarnet" :key="dc" color="green">
+              {{ dc.libelle }}
+              <p>{{ dc.vendu }} ventes</p>
+            </a-timeline-item>
+          </a-timeline>
+        </a-card>
+        <!-- / Orders History Timeline Card -->
+
         <!-- / Orders History Timeline Card -->
       </a-col>
       <!-- / Timeline -->
@@ -107,82 +126,6 @@ import CardInfo from "../../components/Cards/CardInfo";
 // Information card 2.
 import CardInfo2 from "../../components/Cards/CardInfo2";
 
-// Counter Widgets stats
-
-// "Projects" table list of rows and their properties.
-const tableData = [
-  {
-    key: 1,
-    company: {
-      name: "Bram Louis",
-    },
-    members: "(+228) 92580605",
-    budget: "150000 Fcfa",
-    completion: "Agence 1",
-  },
-  {
-    key: 2,
-    company: {
-      name: "Marco Edi",
-    },
-    members: "(+228) 92580605",
-    budget: "150000 Fcfa",
-    completion: "Agence 2",
-  },
-  {
-    key: 3,
-    company: {
-      name: "Ethienne François",
-    },
-    members: "(+228) 92580605",
-    budget: "150000 Fcfa",
-    completion: "Agence 3",
-  },
-  {
-    key: 4,
-    company: {
-      name: "Tovey Fanuel",
-    },
-    members: "(+228) 92580605",
-    budget: "150000 Fcfa",
-    completion: "Agence 4",
-  },
-  {
-    key: 5,
-    company: {
-      name: "Elisee Dossé",
-    },
-    members: "(+228) 92580605",
-    budget: "150000 Fcfa",
-    completion: "Agence 5",
-  },
-];
-
-// "Projects" table list of columns and their properties.
-const tableColumns = [
-  {
-    title: "Nom",
-    dataIndex: "company",
-    scopedSlots: { customRender: "company" },
-    width: 300,
-  },
-  {
-    title: "Numéro de téléphone",
-    dataIndex: "members",
-    scopedSlots: { customRender: "members" },
-  },
-  {
-    title: "Somme collecté",
-    dataIndex: "budget",
-    class: "font-bold text-muted text-sm",
-  },
-  {
-    title: "Agence",
-    scopedSlots: { customRender: "completion" },
-    dataIndex: "completion",
-  },
-];
-
 export default {
   components: {
     CardBarChart,
@@ -197,16 +140,41 @@ export default {
     return {
       callback: "http://egal.iziway.tk/api/auth/admin",
       token_admin: null,
-      tableData,
-      tableColumns,
+      dataCollecteur: null,
+      columnCollecteur: null,
+      dataCarnet: null,
       stats: [],
+      timelineReverse: false,
     };
   },
 
   mounted() {
+    this.columnCollecteur = [
+      {
+        title: "Nom",
+        dataIndex: "nom",
+        key: "nom",
+      },
+      {
+        title: "Numéro de téléphone",
+        dataIndex: "numero",
+        key: "numero",
+      },
+      {
+        title: "Somme collecté",
+        dataIndex: "somme",
+        key: "somme",
+      },
+      {
+        title: "Agence",
+        dataIndex: "agence",
+        key: "agence",
+      },
+    ];
+
     this.stats = [
       {
-        title: "Total carnet vendus",
+        title: "Total clients produit",
         value: 0,
         prefix: "",
         suffix: "",
@@ -218,7 +186,7 @@ export default {
 						</svg>`,
       },
       {
-        title: "Total de carnet epargne vendus",
+        title: "Total clients epargne",
         value: 0,
         prefix: "",
         suffix: "",
@@ -230,6 +198,19 @@ export default {
 						</svg>`,
       },
       {
+        title: "Nombre de client total",
+        value: 0,
+        prefix: "",
+        suffix: "",
+        icon: `
+						<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M9 6C9 7.65685 7.65685 9 6 9C4.34315 9 3 7.65685 3 6C3 4.34315 4.34315 3 6 3C7.65685 3 9 4.34315 9 6Z" fill="#111827"/>
+							<path d="M17 6C17 7.65685 15.6569 9 14 9C12.3431 9 11 7.65685 11 6C11 4.34315 12.3431 3 14 3C15.6569 3 17 4.34315 17 6Z" fill="#111827"/>
+							<path d="M12.9291 17C12.9758 16.6734 13 16.3395 13 16C13 14.3648 12.4393 12.8606 11.4998 11.6691C12.2352 11.2435 13.0892 11 14 11C16.7614 11 19 13.2386 19 16V17H12.9291Z" fill="#111827"/>
+							<path d="M6 11C8.76142 11 11 13.2386 11 16V17H1V16C1 13.2386 3.23858 11 6 11Z" fill="#111827"/>
+						</svg>`,
+      },
+      /*{
         title: "Agent collecteur",
         value: 0,
         suffix: "",
@@ -251,9 +232,9 @@ export default {
 						<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path fill-rule="evenodd" clip-rule="evenodd" d="M3.17157 5.17157C4.73367 3.60948 7.26633 3.60948 8.82843 5.17157L10 6.34315L11.1716 5.17157C12.7337 3.60948 15.2663 3.60948 16.8284 5.17157C18.3905 6.73367 18.3905 9.26633 16.8284 10.8284L10 17.6569L3.17157 10.8284C1.60948 9.26633 1.60948 6.73367 3.17157 5.17157Z" fill="#111827"/>
 					%	</svg>`,
-      },
+      },*/
       {
-        title: "Nombre de carnets créés",
+        title: "Nombre de carnets produit vendus",
         value: 0,
         prefix: "",
         suffix: "",
@@ -263,7 +244,7 @@ export default {
 						</svg>`,
       },
       {
-        title: "Nombre de caissier",
+        title: "Nombre de carnets epargne vendus",
         value: 0,
         prefix: "",
         suffix: "",
@@ -283,18 +264,28 @@ export default {
 							<path fill-rule="evenodd" clip-rule="evenodd" d="M3.17157 5.17157C4.73367 3.60948 7.26633 3.60948 8.82843 5.17157L10 6.34315L11.1716 5.17157C12.7337 3.60948 15.2663 3.60948 16.8284 5.17157C18.3905 6.73367 18.3905 9.26633 16.8284 10.8284L10 17.6569L3.17157 10.8284C1.60948 9.26633 1.60948 6.73367 3.17157 5.17157Z" fill="#111827"/>
 					%	</svg>`,
       },
+      // {
+      //   title: "Collectes global épargnes du jour",
+      //   value: 0,
+      //   prefix: "",
+      //   suffix: "Fcfa",
+      //   icon: `
+			// 			<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+			// 				<path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C7.79086 2 6 3.79086 6 6V7H5C4.49046 7 4.06239 7.38314 4.00612 7.88957L3.00612 16.8896C2.97471 17.1723 3.06518 17.455 3.25488 17.6669C3.44458 17.8789 3.71556 18 4 18H16C16.2844 18 16.5554 17.8789 16.7451 17.6669C16.9348 17.455 17.0253 17.1723 16.9939 16.8896L15.9939 7.88957C15.9376 7.38314 15.5096 7 15 7H14V6C14 3.79086 12.2091 2 10 2ZM12 7V6C12 4.89543 11.1046 4 10 4C8.89543 4 8 4.89543 8 6V7H12ZM6 10C6 9.44772 6.44772 9 7 9C7.55228 9 8 9.44772 8 10C8 10.5523 7.55228 11 7 11C6.44772 11 6 10.5523 6 10ZM13 9C12.4477 9 12 9.44772 12 10C12 10.5523 12.4477 11 13 11C13.5523 11 14 10.5523 14 10C14 9.44772 13.5523 9 13 9Z" fill="#111827"/>
+			// 			</svg>`,
+      // },
+      // {
+      //   title: "Collectes global produits du jour",
+      //   value: 0,
+      //   prefix: "",
+      //   suffix: "Fcfa",
+      //   icon: `
+			// 			<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+			// 				<path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C7.79086 2 6 3.79086 6 6V7H5C4.49046 7 4.06239 7.38314 4.00612 7.88957L3.00612 16.8896C2.97471 17.1723 3.06518 17.455 3.25488 17.6669C3.44458 17.8789 3.71556 18 4 18H16C16.2844 18 16.5554 17.8789 16.7451 17.6669C16.9348 17.455 17.0253 17.1723 16.9939 16.8896L15.9939 7.88957C15.9376 7.38314 15.5096 7 15 7H14V6C14 3.79086 12.2091 2 10 2ZM12 7V6C12 4.89543 11.1046 4 10 4C8.89543 4 8 4.89543 8 6V7H12ZM6 10C6 9.44772 6.44772 9 7 9C7.55228 9 8 9.44772 8 10C8 10.5523 7.55228 11 7 11C6.44772 11 6 10.5523 6 10ZM13 9C12.4477 9 12 9.44772 12 10C12 10.5523 12.4477 11 13 11C13.5523 11 14 10.5523 14 10C14 9.44772 13.5523 9 13 9Z" fill="#111827"/>
+			// 			</svg>`,
+      // },
       {
-        title: "Collectes du jour",
-        value: 0,
-        prefix: "",
-        suffix: "",
-        icon: `
-						<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C7.79086 2 6 3.79086 6 6V7H5C4.49046 7 4.06239 7.38314 4.00612 7.88957L3.00612 16.8896C2.97471 17.1723 3.06518 17.455 3.25488 17.6669C3.44458 17.8789 3.71556 18 4 18H16C16.2844 18 16.5554 17.8789 16.7451 17.6669C16.9348 17.455 17.0253 17.1723 16.9939 16.8896L15.9939 7.88957C15.9376 7.38314 15.5096 7 15 7H14V6C14 3.79086 12.2091 2 10 2ZM12 7V6C12 4.89543 11.1046 4 10 4C8.89543 4 8 4.89543 8 6V7H12ZM6 10C6 9.44772 6.44772 9 7 9C7.55228 9 8 9.44772 8 10C8 10.5523 7.55228 11 7 11C6.44772 11 6 10.5523 6 10ZM13 9C12.4477 9 12 9.44772 12 10C12 10.5523 12.4477 11 13 11C13.5523 11 14 10.5523 14 10C14 9.44772 13.5523 9 13 9Z" fill="#111827"/>
-						</svg>`,
-      },
-      {
-        title: "Cumule total de cotisations",
+        title: "Cumule total de cotisations produits",
         value: 0,
         prefix: "",
         suffix: "Fcfa",
@@ -314,31 +305,30 @@ export default {
 						</svg>`,
       },
       {
-        title: "Deversement du jour",
+        title: "Deversement global du jour",
         value: 0,
         prefix: "",
-        suffix: "",
+        suffix: "Fcfa",
         icon: `
 						<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C7.79086 2 6 3.79086 6 6V7H5C4.49046 7 4.06239 7.38314 4.00612 7.88957L3.00612 16.8896C2.97471 17.1723 3.06518 17.455 3.25488 17.6669C3.44458 17.8789 3.71556 18 4 18H16C16.2844 18 16.5554 17.8789 16.7451 17.6669C16.9348 17.455 17.0253 17.1723 16.9939 16.8896L15.9939 7.88957C15.9376 7.38314 15.5096 7 15 7H14V6C14 3.79086 12.2091 2 10 2ZM12 7V6C12 4.89543 11.1046 4 10 4C8.89543 4 8 4.89543 8 6V7H12ZM6 10C6 9.44772 6.44772 9 7 9C7.55228 9 8 9.44772 8 10C8 10.5523 7.55228 11 7 11C6.44772 11 6 10.5523 6 10ZM13 9C12.4477 9 12 9.44772 12 10C12 10.5523 12.4477 11 13 11C13.5523 11 14 10.5523 14 10C14 9.44772 13.5523 9 13 9Z" fill="#111827"/>
 						</svg>`,
       },
       {
-        title: "Nombre de client total",
+        title: "Deversement global",
         value: 0,
         prefix: "",
-        suffix: "",
+        suffix: "Fcfa",
         icon: `
 						<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path d="M9 6C9 7.65685 7.65685 9 6 9C4.34315 9 3 7.65685 3 6C3 4.34315 4.34315 3 6 3C7.65685 3 9 4.34315 9 6Z" fill="#111827"/>
-							<path d="M17 6C17 7.65685 15.6569 9 14 9C12.3431 9 11 7.65685 11 6C11 4.34315 12.3431 3 14 3C15.6569 3 17 4.34315 17 6Z" fill="#111827"/>
-							<path d="M12.9291 17C12.9758 16.6734 13 16.3395 13 16C13 14.3648 12.4393 12.8606 11.4998 11.6691C12.2352 11.2435 13.0892 11 14 11C16.7614 11 19 13.2386 19 16V17H12.9291Z" fill="#111827"/>
-							<path d="M6 11C8.76142 11 11 13.2386 11 16V17H1V16C1 13.2386 3.23858 11 6 11Z" fill="#111827"/>
+							<path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C7.79086 2 6 3.79086 6 6V7H5C4.49046 7 4.06239 7.38314 4.00612 7.88957L3.00612 16.8896C2.97471 17.1723 3.06518 17.455 3.25488 17.6669C3.44458 17.8789 3.71556 18 4 18H16C16.2844 18 16.5554 17.8789 16.7451 17.6669C16.9348 17.455 17.0253 17.1723 16.9939 16.8896L15.9939 7.88957C15.9376 7.38314 15.5096 7 15 7H14V6C14 3.79086 12.2091 2 10 2ZM12 7V6C12 4.89543 11.1046 4 10 4C8.89543 4 8 4.89543 8 6V7H12ZM6 10C6 9.44772 6.44772 9 7 9C7.55228 9 8 9.44772 8 10C8 10.5523 7.55228 11 7 11C6.44772 11 6 10.5523 6 10ZM13 9C12.4477 9 12 9.44772 12 10C12 10.5523 12.4477 11 13 11C13.5523 11 14 10.5523 14 10C14 9.44772 13.5523 9 13 9Z" fill="#111827"/>
 						</svg>`,
       },
     ];
 
     this.statistique();
+    this.classementCollecteur();
+    this.classementCarnet();
   },
 
   methods: {
@@ -349,30 +339,81 @@ export default {
       let headers = { headers: { Authorization: this.token_admin } };
 
       this.$http
-        .post(
-          `${this.callback}/statistique`,
-          {},
-          headers
-        )
+        .post(`${this.callback}/statistique`, {}, headers)
         .then((response) => {
           let data = response.body;
 
-			console.log(data);
+          this.stats[0].value = data.client_produit;
+          this.stats[1].value = data.client_epargne;
+          this.stats[2].value = data.client_all;
+          // this.stats[3].value = data.agent_collecteur
+          // this.stats[4].value = data.agence
+          this.stats[3].value = data.carnet;
+          this.stats[4].value = data.CardLineChart;
+          this.stats[5].value = 0;
+          // this.stats[6].value = data.collecte;
+          // this.stats[7].value = data.collecte;
+          this.stats[6].value = data.totalProduit;
+          this.stats[7].value = data.totalEpargne;
+          this.stats[8].value = data.totalDeversementJournalier;
+          this.stats[9].value = data.totalDeversement;
+        });
 
-          this.stats[0].value = data.client_produit
-          this.stats[1].value = data.client_epargne
-          this.stats[2].value = data.agent_collecteur
-          this.stats[3].value = data.agence
-          this.stats[4].value = data.carnet
-          this.stats[5].value = data.gerant
-          this.stats[6].value = 0
-          this.stats[7].value = 0
-          this.stats[8].value = data.total
-          this.stats[9].value = 0
-          this.stats[10].value = 0
-          this.stats[11].value = data.client_all
+      this.$http
+        .post(`${this.callback}/carnet-clients`, {}, headers)
+        .then((response) => {
+          let data = response.body;
+
+          console.log(data);
+          this.stats[5].value = data.data.length;
+        });
+    },
+
+    classementCollecteur() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(`${this.callback}/classement/collecteur`, {}, headers)
+        .then((response) => {
+          let data = response.body.data;
+
+          console.log(data);
+          this.dataCollecteur = [];
+          for (let i = 0; i < data.length; i++) {
+            this.dataCollecteur.push({
+              key: data[i].id,
+              nom: `${data[i].nom} ${data[i].prenom}`,
+              numero: data[i].numero,
+              somme: `${data[i].total_cotisation} Fcfa`,
+              agence: data[i].agc_name,
+            });
+          }
+        });
+    },
+
+    classementCarnet() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(`${this.callback}/classement/carnet`, {}, headers)
+        .then((response) => {
+          let data = response.body.data;
+
+          console.log(data);
+
+          this.dataCarnet = [];
+          for (let i = 0; i < 5; i++) {
+            this.dataCarnet.push(data[i]);
+          }
         });
     },
   },
 };
 </script>
+

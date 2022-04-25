@@ -26,7 +26,13 @@
       <a-col :span="12" :lg="12" :xl="24" class="mb-24">
         <a-card class="card card-body border-0">
           <div class="mb-4 text-right">
-            <a-button type="primary" @click="showModal">
+            <a-input-search
+              v-model="value"
+              placeholder="Recherche ici"
+              style="width: 300px"
+              @change="onSearch"
+            />
+            <a-button type="primary" class="mx-2" @click="showModal">
               Créer un produit
             </a-button>
           </div>
@@ -90,7 +96,7 @@
               </a-row>
             </a-form>
           </a-modal>
-          <a-table :columns="columns" :data-source="data">
+          <a-table :columns="columns" :data-source="data" :pagination="false">
             <template slot="operation" slot-scope="text, record">
               <div class="d-flex">
                 <router-link
@@ -108,6 +114,11 @@
               </div>
             </template>
           </a-table>
+
+          <div class="text-right mt-4">
+            <a-button class="mx-2" @click="preview()"> Retour </a-button>
+            <a-button class="mx-2" @click="next()"> Suivant </a-button>
+          </div>
         </a-card>
       </a-col>
     </a-row>
@@ -133,6 +144,9 @@ export default {
       width: 1000,
       columns: [],
       data: [],
+      row: 5,
+      page: 1,
+      value: null,
       buttonText: "Détail",
       visible: false,
       confirmLoading: false,
@@ -164,7 +178,6 @@ export default {
         title: "Libelle produit",
         dataIndex: "libelle",
         key: "libelle",
-        
       },
       {
         title: "Action",
@@ -189,25 +202,134 @@ export default {
 
       let headers = { headers: { Authorization: this.token_admin } };
 
-      this.$http.post(`${this.callback}/produit/list`, {}, headers).then(
-        (response) => {
-          let data = response.body.data;
+      this.$http
+        .post(
+          `${this.callback}/produit/list?row=${this.row}&page=${this.page}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let data = response.body.data;
 
-          this.stats[0].value = data.length;
-          this.data = [];
-          console.log(data);
-          for (let i = data.length - 1; i >= 0; i--) {
-            this.data.push({
-              key: data[i].id,
-              created_at: data[i].created_at,
-              libelle: data[i].libelle,
-            });
+            this.stats[0].value = response.body.total;
+            this.data = [];
+            console.log(data);
+            for (let i = data.length - 1; i >= 0; i--) {
+              this.data.push({
+                key: data[i].id,
+                created_at: data[i].created_at,
+                libelle: data[i].libelle,
+              });
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
           }
-        },
-        (response) => {
-          this.showAlert("error", "Error", response.body.message);
-        }
-      );
+        );
+    },
+
+    next() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+      this.page += 1;
+      this.$http
+        .post(
+          `${this.callback}/produit/list?row=${this.row}&page=${this.page}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let d = response.body.data;
+
+            let data = Object.keys(d).map(function (key) {
+              return d[key];
+            });
+            this.data = [];
+            console.log(data);
+            for (let i = data.length - 1; i >= 0; i--) {
+              this.data.push({
+                key: data[i].id,
+                created_at: data[i].created_at,
+                libelle: data[i].libelle,
+              });
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
+          }
+        );
+    },
+
+    preview() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+      this.page -= 1;
+      this.$http
+        .post(
+          `${this.callback}/produit/list?row=${this.row}&page=${this.page}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let d = response.body.data;
+
+            let data = Object.keys(d).map(function (key) {
+              return d[key];
+            });
+            this.data = [];
+            console.log(data);
+            for (let i = data.length - 1; i >= 0; i--) {
+              this.data.push({
+                key: data[i].id,
+                created_at: data[i].created_at,
+                libelle: data[i].libelle,
+              });
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
+          }
+        );
+    },
+
+    onSearch() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(
+          `${this.callback}/produit/list?row=${this.row}&page=1&search=${this.value}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let data = response.body.data;
+
+            this.stats[0].value = data.length;
+            this.data = [];
+            console.log(data);
+            for (let i = data.length - 1; i >= 0; i--) {
+              this.data.push({
+                key: data[i].id,
+                created_at: data[i].created_at,
+                libelle: data[i].libelle,
+              });
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
+          }
+        );
     },
 
     showModal() {
@@ -237,6 +359,7 @@ export default {
     },
     handleCancel(e) {
       console.log("Clicked cancel button");
+      this.confirmLoading = false;
       this.visible = false;
     },
 
@@ -247,6 +370,9 @@ export default {
 
       let data_create = {
         libelle: data.libelle,
+        stock: 0,
+        prix_achat: 0,
+        prix_vente: 0,
       };
 
       this.$http
@@ -254,16 +380,13 @@ export default {
         .then(
           (response) => {
             console.log(response);
-            this.showAlert(
-              "success",
-              "Success",
-              "Produit creer avec success"
-            );
+            this.showAlert("success", "Success", "Produit creer avec success");
           },
           (response) => {
             this.showAlert("error", "Error", response.body.message);
           }
-        ); b
+        );
+      b;
     },
 
     deleteProduit(id) {

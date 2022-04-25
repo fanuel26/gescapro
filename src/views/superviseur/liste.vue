@@ -25,7 +25,13 @@
     <a-row :gutter="24">
       <a-col :span="12" :lg="12" :xl="24" class="mb-24">
         <a-card class="card card-body border-0">
-          <div class="mb-4 text-right">
+          <div class="mb-4 d-flex justify-content-between align-items-center">
+            <a-input-search
+              v-model="value"
+              placeholder="Recherche ici"
+              style="width: 300px"
+              @change="onSearch"
+            />
             <a-button type="primary" @click="showModal">
               Créer un agent superviseur
             </a-button>
@@ -265,6 +271,8 @@ export default {
       width: 1000,
       columns: [],
       data: [],
+      data_s: [],
+      value: null,
       buttonText: "Détail",
       visible: false,
       confirmLoading: false,
@@ -402,9 +410,11 @@ export default {
                 created_at: data[i].created_at,
                 nom: `${data[i].nom} ${data[i].prenom}`,
                 numero: `(+228) ${data[i].numero}`,
-                agence: data[i].agence ? data[i].agence.nom_agence : '',
+                agence: data[i].agence ? data[i].agence.nom_agence : "",
                 status: data[i].is_active,
               });
+
+              this.data_s = this.data
             }
           },
           (response) => {
@@ -488,6 +498,21 @@ export default {
             this.showAlert("error", "Error", response.body.message);
           }
         );
+    },
+
+    onSearch() {
+      this.value = this.value.toLowerCase();
+
+      let data = this.data_s;
+
+      this.data = [];
+      for (let i = 0; i < data.length; i++) {
+        let nom = data[i].nom.toLowerCase().indexOf(this.value);
+        let numero = data[i].numero.toLowerCase().indexOf(this.value);
+        if (nom > -1 || numero > -1) {
+          this.data.push(data[i]);
+        }
+      }
     },
   },
 };

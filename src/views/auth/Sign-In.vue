@@ -5,66 +5,66 @@
 
 <template >
   <div class="sign-in" style="height: 75vh">
-    <a-row type="flex" :gutter="[24, 24]" justify="space-around" align="middle">
+    <a-row type="flex" :gutter="24" justify="space-around" align="center">
       <!-- Sign In Form Column -->
-      <a-col
-        :span="24"
-        :md="12"
-        :lg="{ span: 12, offset: 0 }"
-        :xl="{ span: 6, offset: 2 }"
-        class="col-form"
-      >
-        <h3 class="mb-15">GesCaPro</h3>
-        <h5 class="font-regular text-muted">
-          Enter votre email et password pour se connecter
-        </h5>
-
-        <!-- Sign In Form -->
-        <a-form
-          id="components-form-demo-normal-login"
-          :form="form"
-          class="login-form"
-          @submit="LoginSubmit"
-          :hideRequiredMark="true"
-        >
-          <a-form-item class="mb-10" label="Email" :colon="false">
-            <a-input
-              v-decorator="[
-                'email',
-                {
-                  rules: [
-                    { required: true, message: 'Please input your email!' },
-                  ],
-                },
-              ]"
-              placeholder="Email"
-            />
-          </a-form-item>
-          <a-form-item class="mb-5" label="Password" :colon="false">
-            <a-input
-              v-decorator="[
-                'password',
-                {
-                  rules: [
-                    { required: true, message: 'Please input your password!' },
-                  ],
-                },
-              ]"
-              type="password"
-              placeholder="Password"
-            />
-          </a-form-item>
-          <a-form-item>
-            <a-button
-              type="primary"
-              block
-              html-type="submit"
-              class="login-form-button"
-            >
-              CONNEXION
-            </a-button>
-          </a-form-item>
-        </a-form>
+      <a-col :span="24" :md="12" :lg="6" :xl="6"></a-col>
+      <a-col :span="24" :md="12" :lg="6" :xl="6" class="col-form mt-4">
+        <a-card>
+          <h3 class="mb-15 text-center text-primary mt-4">GesCaPro</h3>
+          <h5 class="font-regular text-center text-muted">
+            Enter votre adresse email et password pour se connecter
+          </h5>
+          
+          <!-- Sign In Form -->
+          <a-form
+            id="components-form-demo-normal-login"
+            :form="form"
+            class="login-form mt-4"
+            @submit="LoginSubmit"
+            :hideRequiredMark="true"
+          >
+            <a-form-item class="mb-10" label="Email" :colon="false">
+              <a-input
+                v-decorator="[
+                  'email',
+                  {
+                    rules: [
+                      { required: true, message: 'Please input your email!' },
+                    ],
+                  },
+                ]"
+                placeholder="Email"
+              />
+            </a-form-item>
+            <a-form-item class="mb-5" label="Password" :colon="false">
+              <a-input
+                v-decorator="[
+                  'password',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Please input your password!',
+                      },
+                    ],
+                  },
+                ]"
+                type="password"
+                placeholder="Password"
+              />
+            </a-form-item>
+            <a-form-item>
+              <a-button
+                type="primary"
+                block
+                html-type="submit"
+                class="login-form-button"
+              >
+                CONNEXION
+              </a-button>
+            </a-form-item>
+          </a-form>
+        </a-card>
         <!-- / Sign In Form -->
       </a-col>
       <!-- / Sign In Form Column -->
@@ -111,10 +111,7 @@ export default {
                 session.setItem("id", response.body.info.id);
                 session.setItem("username", response.body.info.username);
                 session.setItem("code_secret", response.body.info.code_secret);
-                session.setItem(
-                  "type",
-                  response.body.info.adminAttributes
-                );
+                session.setItem("type", response.body.info.adminAttributes);
 
                 this.$router.push({ name: "Dashboard" });
               } else {

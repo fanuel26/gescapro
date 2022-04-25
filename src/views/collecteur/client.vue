@@ -23,59 +23,77 @@
     </a-row>
 
     <a-row :gutter="24">
-        
       <a-col :span="12" :lg="12" :xl="24" class="mb-24 text-right">
-            <a-button class="mx-2" @click="$router.go(-1)">Retour</a-button>
+        <a-button class="mx-2" @click="$router.go(-1)">Retour</a-button>
       </a-col>
       <a-col :span="12" :lg="12" :xl="24" class="mb-24">
-          <template>
-            <h6 class="font-semibold m-0">
-              Affecter client a un autre collecteur
-            </h6>
-          </template>
-          <a-form layout="inline"
-            id="components-form-demo-normal-login"
-            :form="form"
-            class="login-form mt-4"
-            @submit="handleSubmit"
-            :hideRequiredMark="true"
-          >
-            <a-form-item v-bind="formItemLayout" label="Selectionnez le collecteur">
-                <a-select style="width: 120px">
-                  <a-select-option value="86"> Agence 1 </a-select-option>
-                  <a-select-option value="87"> Agence 2 </a-select-option>
-                </a-select>
-            </a-form-item>
-            <a-form-item class="" label="Code secret" :colon="false">
-              <a-input
-                v-decorator="[
-                  'Code secret',
-                  {
-                    rules: [
-                      {
-                        required: true,
-                        message: 'Code secret incorrect!',
-                      },
-                    ],
-                  },
-                ]"
-                type="text"
-                placeholder="Code secret"
-              />
-            </a-form-item>
-
-            <a-form-item class="" :colon="false">
-              <a-button
-                type="primary"
-                html-type="submit"
-                class="login-form-button"
+        <template>
+          <h6 class="font-semibold m-0">
+            Affecter client a un autre collecteur
+          </h6>
+        </template>
+        <a-form
+          layout="inline"
+          id="components-form-demo-normal-login"
+          :form="form"
+          class="login-form mt-4"
+          @submit="handleSubmit"
+          :hideRequiredMark="true"
+        >
+          <a-form-item label="Selectionnez le collecteur">
+            <a-select
+              style="width: 120px"
+              v-decorator="[
+                'collecteur',
+                {
+                  rules: [
+                    {
+                      required: true,
+                      message: 'Collecteur incorrect!',
+                    },
+                  ],
+                },
+              ]"
+            >
+              <a-select-option
+                :value="item.id"
+                v-for="item in collecteurs"
+                :key="item.id"
               >
-                Affecter
-              </a-button>
-            </a-form-item>
-          </a-form>
+                {{ item.nom }} {{ item.prenom }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+          <a-form-item class="" label="Code secret" :colon="false">
+            <a-input
+              v-decorator="[
+                'code_secret',
+                {
+                  rules: [
+                    {
+                      required: true,
+                      message: 'Code secret incorrect!',
+                    },
+                  ],
+                },
+              ]"
+              type="text"
+              placeholder="Code secret"
+            />
+          </a-form-item>
+
+          <a-form-item class="" :colon="false">
+            <a-button
+              type="primary"
+              html-type="submit"
+              class="login-form-button"
+            >
+              Affecter
+            </a-button>
+          </a-form-item>
+        </a-form>
       </a-col>
-      
+
       <a-col :span="12" :lg="12" :xl="24" class="mb-24">
         <a-card class="card card-body border-0">
           <a-table
@@ -109,23 +127,29 @@ const stats = [
   },
 ];
 
-
 export default {
   components: {
     WidgetCounter,
   },
+
+  beforeCreate() {
+    this.form = this.$form.createForm(this, { name: "check form" });
+  },
   data() {
     return {
+      callback: "http://egal.iziway.tk/api/auth/admin",
+      token_admin: null,
       stats,
       columns: null,
       data: null,
       buttonText: "Détail",
       rowSelection: {},
       expandedRowKeys: [],
+      selected: null,
+      collecteurs: null,
     };
   },
   mounted() {
-
     this.columns = [
       {
         title: "Date de creation",
@@ -160,61 +184,9 @@ export default {
       },
     ];
 
-    this.data = [
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        profession: "Informaticien",
-        quartier: "Totsi",
-        collecteur: "Elise marc",
-      },
-      {
-        key: "2",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        profession: "Informaticien",
-        quartier: "Totsi",
-        collecteur: "Elise marc",
-      },
-      {
-        key: "3",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        profession: "Informaticien",
-        quartier: "Totsi",
-        collecteur: "Elise marc",
-      },
-      {
-        key: "4",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        profession: "Informaticien",
-        quartier: "Totsi",
-        collecteur: "Elise marc",
-      },
-      {
-        key: "5",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        profession: "Informaticien",
-        quartier: "Totsi",
-        collecteur: "Elise marc",
-      },
-    ];
-
     this.rowSelection = {
       onChange: (selectedRowKeys, selectedRows) => {
-        console.log(
-          `selectedRowKeys: ${selectedRowKeys}`,
-          "selectedRows: ",
-          selectedRows
-        );
+        this.selected = selectedRowKeys;
       },
       onSelect: (record, selected, selectedRows) => {
         console.log(record, selected, selectedRows);
@@ -223,7 +195,114 @@ export default {
         console.log(selected, selectedRows, changeRows);
       },
     };
+
+    this.listeClient();
+    this.listeCollecteur();
   },
-  methods: {},
+  methods: {
+    showAlert(type, title, description) {
+      this.$notification[type]({
+        message: title,
+        description: description,
+      });
+    },
+
+    listeClient() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(
+          `${this.callback}/agent_collecteur/client/${this.$route.params.id}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let data = response.body.data;
+
+            this.stats[0].value = data.length;
+            this.data = [];
+
+            for (let i = 0; i < data.length; i++) {
+              this.data.push({
+                key: data[i].id,
+                created_at: data[i].created_at,
+                nom: data[i].nom,
+                numero: data[i].numero,
+                profession: data[i].profession,
+                quartier: data[i].quartier,
+                collecteur: data[i].collecteur,
+              });
+            }
+          },
+          (response) => {
+            flash(response.body.message, "Erreur", "fa fa-times", "danger");
+          }
+        );
+    },
+
+    listeCollecteur() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(`${this.callback}/agent_collecteur/list`, {}, headers)
+        .then((response) => {
+          let data = response.body.data;
+          this.collecteurs = data;
+        });
+    },
+
+    handleSubmit(e) {
+      e.preventDefault();
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          if (values.code_secret == localStorage.getItem("code_secret")) {
+            console.log(this.selected);
+            console.log(values);
+
+            let session = localStorage;
+            this.token_admin = session.getItem("token");
+
+            let headers = { headers: { Authorization: this.token_admin } };
+            let val = {
+              clients: this.selected,
+              id_collecteur: values.collecteur,
+            };
+
+            this.$http
+              .post(
+                `${this.callback}/affectation/client/collecteur`,
+                val,
+                headers
+              )
+              .then((response) => {
+                let data = response.body;
+
+                console.log(data);
+                if (data.status == true) {
+                  this.showAlert(
+                    "success",
+                    "Success",
+                    "Affectation effectuer avec success!"
+                  );
+                  this.listeClient()
+                  this.form.resetFields()
+                }
+              });
+          } else {
+            this.showAlert("error", "Erreur", "Code secret incorrect!");
+          }
+        } else {
+          console.log("error");
+        }
+      });
+    },
+  },
 };
 </script>

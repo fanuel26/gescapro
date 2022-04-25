@@ -25,16 +25,24 @@
     <a-row :gutter="24">
       <a-col :span="12" :lg="12" :xl="24" class="mb-24">
         <a-card class="card card-body border-0">
-          <div class="mb-4 text-right">
-            <router-link :to="{name: 'Caissier'}"
-              ><a-button class="mx-2">
-                Liste des gerants
-              </a-button></router-link
-            >
+          <div class="d-flex justify-content-between align-items-center">
+            <a-input-search
+              v-model="value"
+              placeholder="Recherche ici"
+              style="width: 300px"
+              @change="onSearch"
+            />
+            <div class="mb-4 text-right">
+              <router-link :to="{ name: 'Caissier' }"
+                ><a-button class="mx-2">
+                  Liste des gerants
+                </a-button></router-link
+              >
 
-            <a-button type="primary" @click="showModal">
-              Créer une agence
-            </a-button>
+              <a-button type="primary" @click="showModal">
+                Créer une agence
+              </a-button>
+            </div>
           </div>
 
           <a-modal
@@ -148,7 +156,7 @@
               </a-col>
             </a-row>
           </a-modal>
-          <a-table :columns="columns" :data-source="data">
+          <a-table :columns="columns" :data-source="data" :pagination="false">
             <template slot="operation" slot-scope="text, record">
               <router-link
                 class="mx-2"
@@ -159,6 +167,11 @@
               >
             </template>
           </a-table>
+
+          <div class="text-right mt-4">
+            <a-button class="mx-2" @click="preview()"> Retour </a-button>
+            <a-button class="mx-2" @click="next()"> Suivant </a-button>
+          </div>
         </a-card>
       </a-col>
     </a-row>
@@ -184,12 +197,17 @@ export default {
       width: 1000,
       columns: [],
       data: [],
+      data_s: [],
+      value: null,
       buttonText: "Détail",
       visible: false,
       confirmLoading: false,
 
       villes: null,
       quartiers: null,
+
+      row: 5,
+      page: 1,
 
       nom: null,
       ville: null,
@@ -299,11 +317,11 @@ export default {
 
       let headers = { headers: { Authorization: this.token_admin } };
 
-      this.$http.post(`${this.callback}/agence/list`, {}, headers).then(
+      this.$http.post(`${this.callback}/agence/list?row=${this.row}&page=${this.page}`, {}, headers).then(
         (response) => {
           let data = response.body.data;
 
-          this.stats[0].value = data.length;
+          this.stats[0].value = response.body.total;
           this.data = [];
           console.log(data);
           for (let i = data.length - 1; i >= 0; i--) {
@@ -314,6 +332,73 @@ export default {
               ville: data[i].quartier.ville.libelle,
               quartier: data[i].quartier.libelle,
             });
+
+            this.data_s = this.data;
+          }
+        },
+        (response) => {
+          this.showAlert("error", "Error", response.body.message);
+        }
+      );
+    },
+
+
+    next() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.page += 1
+
+      this.$http.post(`${this.callback}/agence/list?row=${this.row}&page=${this.page}`, {}, headers).then(
+        (response) => {
+          let data = response.body.data;
+
+          this.data = [];
+          console.log(data);
+          for (let i = data.length - 1; i >= 0; i--) {
+            this.data.push({
+              key: data[i].id,
+              created_at: data[i].created_at,
+              nom: data[i].nom_agence,
+              ville: data[i].quartier.ville.libelle,
+              quartier: data[i].quartier.libelle,
+            });
+
+            this.data_s = this.data;
+          }
+        },
+        (response) => {
+          this.showAlert("error", "Error", response.body.message);
+        }
+      );
+    },
+
+    preview() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.page -= 1
+      
+      this.$http.post(`${this.callback}/agence/list?row=${this.row}&page=${this.page}`, {}, headers).then(
+        (response) => {
+          let data = response.body.data;
+
+          this.data = [];
+          console.log(data);
+          for (let i = data.length - 1; i >= 0; i--) {
+            this.data.push({
+              key: data[i].id,
+              created_at: data[i].created_at,
+              nom: data[i].nom_agence,
+              ville: data[i].quartier.ville.libelle,
+              quartier: data[i].quartier.libelle,
+            });
+
+            this.data_s = this.data;
           }
         },
         (response) => {
@@ -368,6 +453,48 @@ export default {
         (response) => {
           console.log(response);
           this.showAlert("error", "Erreur", response.body.message);
+        }
+      );
+    },
+
+    onSearch() {
+      /*this.value = this.value.toLowerCase();
+
+      let data = this.data_s;
+
+      this.data = [];
+      for (let i = 0; i < data.length; i++) {
+        let nom = data[i].nom.toLowerCase().indexOf(this.value);
+        if (nom > -1) {
+          this.data.push(data[i]);
+        }
+      }*/
+
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http.post(`${this.callback}/agence/list?row=${this.row}&page=1&search=${this.value}`, {}, headers).then(
+        (response) => {
+          let data = response.body.data;
+
+          this.data = [];
+          console.log(data);
+          for (let i = data.length - 1; i >= 0; i--) {
+            this.data.push({
+              key: data[i].id,
+              created_at: data[i].created_at,
+              nom: data[i].nom_agence,
+              ville: data[i].quartier.ville.libelle,
+              quartier: data[i].quartier.libelle,
+            });
+
+            this.data_s = this.data;
+          }
+        },
+        (response) => {
+          this.showAlert("error", "Error", response.body.message);
         }
       );
     },

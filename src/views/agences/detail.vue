@@ -9,8 +9,11 @@
           :bodyStyle="{ paddingTop: 0, paddingBottom: '16px' }"
         >
           <div class="text-right mb-4">
-            <a-button type="primary" class="mx-2"
-              >Liste des versements</a-button
+            <router-link
+              :to="{ name: 'Agence_depot', params: { id: agence.id } }"
+              ><a-button type="primary" class="mx-2"
+                >Liste des versements</a-button
+              ></router-link
             >
             <a-button class="mx-2" @click="$router.go(-1)">Retour</a-button>
           </div>
@@ -528,7 +531,7 @@ export default {
     this.listeCollecteur();
     this.listeCaissier();
     this.listeLivreur();
-    this.listeSuperviseur()
+    this.listeSuperviseur();
   },
 
   methods: {
@@ -680,17 +683,15 @@ export default {
 
       let headers = { headers: { Authorization: this.token_admin } };
 
-      this.$http
-        .post(`${this.callback}/livreur/list`, {}, headers)
-        .then(
-          (response) => {
-            let data = response.body.data;
-            this.livreurs = data;
-          },
-          (response) => {
-            this.showAlert("error", "Error", response.body.message);
-          }
-        );
+      this.$http.post(`${this.callback}/livreur/list`, {}, headers).then(
+        (response) => {
+          let data = response.body.data;
+          this.livreurs = data;
+        },
+        (response) => {
+          this.showAlert("error", "Error", response.body.message);
+        }
+      );
     },
 
     listeCaissier() {
@@ -791,7 +792,6 @@ export default {
       });
     },
 
-    
     agentSuperviseurSubmit(e) {
       e.preventDefault();
       this.formSuperviseurAffect.validateFields((err, values) => {
@@ -875,5 +875,4 @@ export default {
 </script>
 
 <style lang="scss">
-  
 </style>

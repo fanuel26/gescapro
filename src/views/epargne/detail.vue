@@ -208,12 +208,15 @@ export default {
             this.profession = this.client.profession;
             this.quartier = this.client.quartier.libelle;
             let dd = this.client.carnets;
-            this.stats[0].value = this.client.carnets.length;
 
             let n_s = 0;
             let n_l = 0;
+            let n_e = 0;
             for (let i = 0; i < dd.length; i++) {
               if (dd[i].id_pack == 1) {
+                n_e = n_e + 1;
+
+                this.stats[0].value = n_e;
                 this.carnets.push({
                   title: `${dd[i].carnet.libelle.substr(0, 30)} ..., N° ${
                     dd[i].ids

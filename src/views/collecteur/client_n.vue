@@ -65,6 +65,8 @@ export default {
   },
   data() {
     return {
+      callback: "http://egal.iziway.tk/api/auth/admin",
+      token_admin: null,
       stats,
       columns: [],
       data: [],
@@ -111,54 +113,46 @@ export default {
       },
     ];
 
-    this.data = [
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        profession: "Informaticien",
-        quartier: "Totsi",
-        collecteur: "Elise marc",
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        profession: "Informaticien",
-        quartier: "Totsi",
-        collecteur: "Elise marc",
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        profession: "Informaticien",
-        quartier: "Totsi",
-        collecteur: "Elise marc",
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        profession: "Informaticien",
-        quartier: "Totsi",
-        collecteur: "Elise marc",
-      },
-      {
-        key: "1",
-        created_at: "12/04/2022 à 15:30",
-        nom: "Franck Louis",
-        numero: "(+228) 92580305",
-        profession: "Informaticien",
-        quartier: "Totsi",
-        collecteur: "Elise marc",
-      },
-    ];
+    this.listeClient()
   },
-  methods: {},
+  methods: {
+
+    listeClient() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(
+          `${this.callback}/clients/currently/not-visited/${this.$route.params.id}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let data = response.body.data;
+            
+            this.stats[0].value = data.length
+            this.data = [];
+
+            for (let i = 0; i < data.length; i++) {
+              this.data.push({
+                key: data[i].id,
+                created_at: data[i].created_at,
+                nom: data[i].nom,
+                numero: data[i].numero,
+                profession: data[i].profession,
+                quartier: data[i].quartier,
+                collecteur: data[i].collecteur,
+              });
+            }
+          },
+          (response) => {
+            flash(response.body.message, "Erreur", "fa fa-times", "danger");
+          }
+        );
+    },
+  },
 };
 </script>
