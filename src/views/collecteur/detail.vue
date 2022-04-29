@@ -14,14 +14,14 @@
           :bodyStyle="{ paddingTop: 0, paddingBottom: '16px' }"
         >
           <div class="text-right mb-4">
-            <!--<router-link
+            <router-link
               class="mx-2"
-              :to="{ name: 'Collecteur_client_non_visité', params: { id: this.$route.params.id } }"
+              :to="{ name: 'Collecteur_depot', params: { id: this.$route.params.id } }"
             >
-              <a-button type="danger"
-                >Liste des clients non visités par jour</a-button
+              <a-button type="primary"
+                >Deversement collecteur</a-button
               >
-            </router-link>-->
+            </router-link>
             <router-link
               class="mx-2"
               :to="{ name: 'Collecteur_client', params: { id:  this.$route.params.id} }"

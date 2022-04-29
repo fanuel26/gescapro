@@ -147,6 +147,12 @@ let routes = [
 		component: () => import('../views/collecteur/client.vue'),
 	},
 	{
+		path: '/collecteur/:id/depot',
+		name: 'Collecteur_depot',
+		layout: "dashboard",
+		component: () => import('../views/collecteur/depot.vue'),
+	},
+	{
 		path: '/collecteur/:id/visite/none',
 		name: 'Collecteur_client_non_visité',
 		layout: "dashboard",

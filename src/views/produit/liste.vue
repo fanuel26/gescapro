@@ -115,9 +115,14 @@
             </template>
           </a-table>
 
-          <div class="text-right mt-4">
-            <a-button class="mx-2" @click="preview()"> Retour </a-button>
-            <a-button class="mx-2" @click="next()"> Suivant </a-button>
+          <div class="d-flex justify-content-between align-items-center mt-4">
+            <div>
+              <p>Page {{ page }}/{{ total_page }}</p>
+            </div>
+            <div>
+              <a-button class="mx-2" @click="preview()"> Retour </a-button>
+              <a-button class="mx-2" @click="next()"> Suivant </a-button>
+            </div>
           </div>
         </a-card>
       </a-col>
@@ -146,6 +151,7 @@ export default {
       data: [],
       row: 5,
       page: 1,
+      total_page: 0,
       value: null,
       buttonText: "Détail",
       visible: false,
@@ -213,6 +219,9 @@ export default {
             let data = response.body.data;
 
             this.stats[0].value = response.body.total;
+            this.total_page = response.body.total_pages;
+
+            console.log(this.total_page);
             this.data = [];
             console.log(data);
             for (let i = data.length - 1; i >= 0; i--) {

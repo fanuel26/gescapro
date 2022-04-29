@@ -168,9 +168,14 @@
             </template>
           </a-table>
 
-          <div class="text-right mt-4">
-            <a-button class="mx-2" @click="preview()"> Retour </a-button>
-            <a-button class="mx-2" @click="next()"> Suivant </a-button>
+          <div class="d-flex justify-content-between align-items-center mt-4">
+            <div>
+              <p>Page {{ page }}/{{ total_page }}</p>
+            </div>
+            <div>
+              <a-button class="mx-2" @click="preview()"> Retour </a-button>
+              <a-button class="mx-2" @click="next()"> Suivant </a-button>
+            </div>
           </div>
         </a-card>
       </a-col>
@@ -208,6 +213,7 @@ export default {
 
       row: 5,
       page: 1,
+      total_page: 0,
 
       nom: null,
       ville: null,
@@ -277,7 +283,6 @@ export default {
 
       this.$http.post(`${this.callback}/ville/liste`, {}, headers).then(
         (response) => {
-          console.log(response);
           let data = response.body.data;
 
           this.villes = data;
@@ -295,7 +300,6 @@ export default {
 
       this.$http.post(`${this.callback}/quartier/liste`, {}, headers).then(
         (response) => {
-          console.log(response);
           let data = response.body.data;
 
           this.quartiers = [];
@@ -321,9 +325,11 @@ export default {
         (response) => {
           let data = response.body.data;
 
+          console.log(response)
+
           this.stats[0].value = response.body.total;
+          this.total_page = response.body.total_pages;
           this.data = [];
-          console.log(data);
           for (let i = data.length - 1; i >= 0; i--) {
             this.data.push({
               key: data[i].id,
@@ -356,7 +362,6 @@ export default {
           let data = response.body.data;
 
           this.data = [];
-          console.log(data);
           for (let i = data.length - 1; i >= 0; i--) {
             this.data.push({
               key: data[i].id,
@@ -388,7 +393,6 @@ export default {
           let data = response.body.data;
 
           this.data = [];
-          console.log(data);
           for (let i = data.length - 1; i >= 0; i--) {
             this.data.push({
               key: data[i].id,
@@ -415,7 +419,6 @@ export default {
       e.preventDefault();
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log(values);
           this.ModalText = "The modal will be closed after two seconds";
           this.confirmLoading = true;
           this.agenceSubmit(values);

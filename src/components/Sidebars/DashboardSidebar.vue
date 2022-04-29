@@ -74,7 +74,7 @@
               />
             </svg>
           </span>
-          <span class="label">Carnets</span>
+          <span class="label">Carnets stock</span>
         </router-link>
       </a-menu-item>
       <a-menu-item v-if="type.carnet == true">
@@ -99,7 +99,7 @@
               />
             </svg>
           </span>
-          <span class="label">Carnets stock</span>
+          <span class="label">Carnets</span>
         </router-link>
       </a-menu-item>
       <a-menu-item v-if="type.epargne == true">

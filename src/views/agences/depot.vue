@@ -25,14 +25,35 @@
     <a-row :gutter="24">
       <a-col :span="12" :lg="12" :xl="24" class="mb-24">
         <a-card class="card card-body border-0">
-          <div class="d-flex justify-content-between align-items-center">
-            <a-input-search
-              v-model="value"
-              placeholder="Recherche ici"
-              style="width: 300px"
-              @change="onSearch"
-            />
-            <div class="mb-4 text-right">
+          <h6 class="mb-4">
+            Liste des versements
+            <span v-if="type == 1">epargnes</span>
+            <span v-if="type == 0">produits</span>
+          </h6>
+          <div class="d-flex justify-content-between align-items-center mb-24">
+            <div>
+              <a-button
+                class="mx-2"
+                :type="type == 1 ? 'primary' : ''"
+                @click="stateChange(1)"
+                >Transaction Epargnes</a-button
+              >
+              <a-button
+                class="mx-2"
+                :type="type == 0 ? 'primary' : ''"
+                @click="stateChange(0)"
+                >Transaction Produits</a-button
+              >
+            </div>
+            <div>
+              <a-input-search
+                v-model="value"
+                placeholder="Recherche ici"
+                style="width: 300px"
+                @change="onSearch"
+              />
+            </div>
+            <div>
               <a-button class="mx-2" @click="$router.go(-1)">Retour</a-button>
             </div>
           </div>
@@ -73,6 +94,8 @@ export default {
       nom: null,
       ville: null,
       quartier: null,
+
+      type: 0,
     };
   },
   mounted() {
@@ -120,9 +143,14 @@ export default {
         scopedSlots: { customRender: "name" },
       },
       {
-        title: "Somme deposer",
+        title: "Somme deposée",
         dataIndex: "somme",
         key: "somme",
+      },
+      {
+        title: "Somme à deposer",
+        dataIndex: "somme_a",
+        key: "somme_a",
       },
       {
         title: "Nom collecteur",
@@ -135,12 +163,12 @@ export default {
         key: "numero",
       },
       {
-        title: "Nom gerant",
+        title: "Nom caissier",
         dataIndex: "nom_gerant",
         key: "nom_gerant",
       },
       {
-        title: "Numero gerant",
+        title: "Numero caissier",
         dataIndex: "numero_gerant",
         key: "numero_gerant",
       },
@@ -164,7 +192,7 @@ export default {
 
       this.$http
         .post(
-          `${this.callback}/transaction/agence/${this.$route.params.id}`,
+          `${this.callback}/transaction/agence/${this.$route.params.id}/${this.type}`,
           {},
           headers
         )
@@ -180,14 +208,14 @@ export default {
                 key: data[i].id,
                 created_at: data[i].created_at,
                 somme: `${data[i].montant} Fcfa`,
+                somme_a: `${data[i].montant + data[i].reste} Fcfa`,
                 nom: `${data[i].collecteurs.nom} ${data[i].collecteurs.prenom}`,
                 numero: data[i].collecteurs.numero,
                 nom_gerant: `${data[i].agent.nom} ${data[i].agent.prenom}`,
                 numero_gerant: data[i].agent.numero,
               });
 
-              
-            this.data_s = this.data
+              this.data_s = this.data;
             }
           },
           (response) => {
@@ -227,7 +255,6 @@ export default {
       this.visible = false;
     },
 
-    
     onSearch() {
       this.value = this.value.toLowerCase();
 
@@ -239,11 +266,24 @@ export default {
         let nom_col = data[i].nom.toLowerCase().indexOf(this.value);
         let numero_col = data[i].numero.toLowerCase().indexOf(this.value);
         let nom_ger = data[i].nom_gerant.toLowerCase().indexOf(this.value);
-        let numero_ger = data[i].numero_gerant.toLowerCase().indexOf(this.value);
-        if (somme > -1 || nom_col > -1 || nom_ger > -1 || numero_col > -1 || numero_ger > -1) {
+        let numero_ger = data[i].numero_gerant
+          .toLowerCase()
+          .indexOf(this.value);
+        if (
+          somme > -1 ||
+          nom_col > -1 ||
+          nom_ger > -1 ||
+          numero_col > -1 ||
+          numero_ger > -1
+        ) {
           this.data.push(data[i]);
         }
       }
+    },
+
+    stateChange(type) {
+      this.type = type;
+      this.listeVersement();
     },
   },
 };

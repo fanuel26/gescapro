@@ -87,6 +87,22 @@
     </a-row>
     <!-- / Table & Timeline -->
 
+    <a-row :gutter="24" type="flex" align="stretch">
+      <a-col :span="24" :xl="24" class="mb-24">
+        <a-card
+          :bordered="false"
+          class="header-solid h-full"
+          :bodyStyle="{ paddingTop: '12px' }"
+        >
+        
+          <template #title>
+            <h6>Livraison à 2 mois</h6>
+          </template>
+        <a-table :columns="columnsCarnet" :data-source="dataCarnets">
+        </a-table>
+        </a-card>
+      </a-col>
+    </a-row>
     <!-- Cards -->
     <a-row :gutter="24" type="flex" align="stretch">
       <a-col :span="24" :xl="14" class="mb-24">
@@ -142,6 +158,8 @@ export default {
       token_admin: null,
       dataCollecteur: null,
       columnCollecteur: null,
+      columnsCarnet: null,
+      dataCarnets: null,
       dataCarnet: null,
       stats: [],
       timelineReverse: false,
@@ -149,6 +167,34 @@ export default {
   },
 
   mounted() {
+    this.columnsCarnet = [
+      {
+        title: "Nom du carnet",
+        dataIndex: "libelle",
+        key: "libelle",
+      },
+      {
+        title: "Nombre mois",
+        dataIndex: "nbr_mois",
+        key: "nbr_mois",
+      },
+      {
+        title: "Prix par jour (Fcfa)",
+        dataIndex: "prix_jour",
+        key: "prix_jour",
+      },
+      {
+        title: "Nom client",
+        dataIndex: "nom_client",
+        key: "nom_client",
+      },
+      {
+        title: "Numero client",
+        dataIndex: "numero_client",
+        key: "numero_client",
+      },
+    ];
+
     this.columnCollecteur = [
       {
         title: "Nom",
@@ -253,26 +299,26 @@ export default {
 							<path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C7.79086 2 6 3.79086 6 6V7H5C4.49046 7 4.06239 7.38314 4.00612 7.88957L3.00612 16.8896C2.97471 17.1723 3.06518 17.455 3.25488 17.6669C3.44458 17.8789 3.71556 18 4 18H16C16.2844 18 16.5554 17.8789 16.7451 17.6669C16.9348 17.455 17.0253 17.1723 16.9939 16.8896L15.9939 7.88957C15.9376 7.38314 15.5096 7 15 7H14V6C14 3.79086 12.2091 2 10 2ZM12 7V6C12 4.89543 11.1046 4 10 4C8.89543 4 8 4.89543 8 6V7H12ZM6 10C6 9.44772 6.44772 9 7 9C7.55228 9 8 9.44772 8 10C8 10.5523 7.55228 11 7 11C6.44772 11 6 10.5523 6 10ZM13 9C12.4477 9 12 9.44772 12 10C12 10.5523 12.4477 11 13 11C13.5523 11 14 10.5523 14 10C14 9.44772 13.5523 9 13 9Z" fill="#111827"/>
 						</svg>`,
       },
-      {
-        title: "livraison dans 2 mois",
-        value: 0,
-        prefix: "",
-        status: "danger",
-        suffix: "",
-        icon: `
-						<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path fill-rule="evenodd" clip-rule="evenodd" d="M3.17157 5.17157C4.73367 3.60948 7.26633 3.60948 8.82843 5.17157L10 6.34315L11.1716 5.17157C12.7337 3.60948 15.2663 3.60948 16.8284 5.17157C18.3905 6.73367 18.3905 9.26633 16.8284 10.8284L10 17.6569L3.17157 10.8284C1.60948 9.26633 1.60948 6.73367 3.17157 5.17157Z" fill="#111827"/>
-					%	</svg>`,
-      },
+      // {
+      //   title: "livraison dans 2 mois",
+      //   value: 0,
+      //   prefix: "",
+      //   status: "danger",
+      //   suffix: "",
+      //   icon: `
+			// 			<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+			// 				<path fill-rule="evenodd" clip-rule="evenodd" d="M3.17157 5.17157C4.73367 3.60948 7.26633 3.60948 8.82843 5.17157L10 6.34315L11.1716 5.17157C12.7337 3.60948 15.2663 3.60948 16.8284 5.17157C18.3905 6.73367 18.3905 9.26633 16.8284 10.8284L10 17.6569L3.17157 10.8284C1.60948 9.26633 1.60948 6.73367 3.17157 5.17157Z" fill="#111827"/>
+			// 		%	</svg>`,
+      // },
       // {
       //   title: "Collectes global épargnes du jour",
       //   value: 0,
       //   prefix: "",
       //   suffix: "Fcfa",
       //   icon: `
-			// 			<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-			// 				<path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C7.79086 2 6 3.79086 6 6V7H5C4.49046 7 4.06239 7.38314 4.00612 7.88957L3.00612 16.8896C2.97471 17.1723 3.06518 17.455 3.25488 17.6669C3.44458 17.8789 3.71556 18 4 18H16C16.2844 18 16.5554 17.8789 16.7451 17.6669C16.9348 17.455 17.0253 17.1723 16.9939 16.8896L15.9939 7.88957C15.9376 7.38314 15.5096 7 15 7H14V6C14 3.79086 12.2091 2 10 2ZM12 7V6C12 4.89543 11.1046 4 10 4C8.89543 4 8 4.89543 8 6V7H12ZM6 10C6 9.44772 6.44772 9 7 9C7.55228 9 8 9.44772 8 10C8 10.5523 7.55228 11 7 11C6.44772 11 6 10.5523 6 10ZM13 9C12.4477 9 12 9.44772 12 10C12 10.5523 12.4477 11 13 11C13.5523 11 14 10.5523 14 10C14 9.44772 13.5523 9 13 9Z" fill="#111827"/>
-			// 			</svg>`,
+      // 			<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      // 				<path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C7.79086 2 6 3.79086 6 6V7H5C4.49046 7 4.06239 7.38314 4.00612 7.88957L3.00612 16.8896C2.97471 17.1723 3.06518 17.455 3.25488 17.6669C3.44458 17.8789 3.71556 18 4 18H16C16.2844 18 16.5554 17.8789 16.7451 17.6669C16.9348 17.455 17.0253 17.1723 16.9939 16.8896L15.9939 7.88957C15.9376 7.38314 15.5096 7 15 7H14V6C14 3.79086 12.2091 2 10 2ZM12 7V6C12 4.89543 11.1046 4 10 4C8.89543 4 8 4.89543 8 6V7H12ZM6 10C6 9.44772 6.44772 9 7 9C7.55228 9 8 9.44772 8 10C8 10.5523 7.55228 11 7 11C6.44772 11 6 10.5523 6 10ZM13 9C12.4477 9 12 9.44772 12 10C12 10.5523 12.4477 11 13 11C13.5523 11 14 10.5523 14 10C14 9.44772 13.5523 9 13 9Z" fill="#111827"/>
+      // 			</svg>`,
       // },
       // {
       //   title: "Collectes global produits du jour",
@@ -280,9 +326,9 @@ export default {
       //   prefix: "",
       //   suffix: "Fcfa",
       //   icon: `
-			// 			<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-			// 				<path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C7.79086 2 6 3.79086 6 6V7H5C4.49046 7 4.06239 7.38314 4.00612 7.88957L3.00612 16.8896C2.97471 17.1723 3.06518 17.455 3.25488 17.6669C3.44458 17.8789 3.71556 18 4 18H16C16.2844 18 16.5554 17.8789 16.7451 17.6669C16.9348 17.455 17.0253 17.1723 16.9939 16.8896L15.9939 7.88957C15.9376 7.38314 15.5096 7 15 7H14V6C14 3.79086 12.2091 2 10 2ZM12 7V6C12 4.89543 11.1046 4 10 4C8.89543 4 8 4.89543 8 6V7H12ZM6 10C6 9.44772 6.44772 9 7 9C7.55228 9 8 9.44772 8 10C8 10.5523 7.55228 11 7 11C6.44772 11 6 10.5523 6 10ZM13 9C12.4477 9 12 9.44772 12 10C12 10.5523 12.4477 11 13 11C13.5523 11 14 10.5523 14 10C14 9.44772 13.5523 9 13 9Z" fill="#111827"/>
-			// 			</svg>`,
+      // 			<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      // 				<path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C7.79086 2 6 3.79086 6 6V7H5C4.49046 7 4.06239 7.38314 4.00612 7.88957L3.00612 16.8896C2.97471 17.1723 3.06518 17.455 3.25488 17.6669C3.44458 17.8789 3.71556 18 4 18H16C16.2844 18 16.5554 17.8789 16.7451 17.6669C16.9348 17.455 17.0253 17.1723 16.9939 16.8896L15.9939 7.88957C15.9376 7.38314 15.5096 7 15 7H14V6C14 3.79086 12.2091 2 10 2ZM12 7V6C12 4.89543 11.1046 4 10 4C8.89543 4 8 4.89543 8 6V7H12ZM6 10C6 9.44772 6.44772 9 7 9C7.55228 9 8 9.44772 8 10C8 10.5523 7.55228 11 7 11C6.44772 11 6 10.5523 6 10ZM13 9C12.4477 9 12 9.44772 12 10C12 10.5523 12.4477 11 13 11C13.5523 11 14 10.5523 14 10C14 9.44772 13.5523 9 13 9Z" fill="#111827"/>
+      // 			</svg>`,
       // },
       {
         title: "Cumule total de cotisations produits",
@@ -350,22 +396,34 @@ export default {
           // this.stats[4].value = data.agence
           this.stats[3].value = data.carnet;
           this.stats[4].value = data.CardLineChart;
-          this.stats[5].value = 0;
+          //this.stats[5].value = 0;
           // this.stats[6].value = data.collecte;
           // this.stats[7].value = data.collecte;
-          this.stats[6].value = data.totalProduit;
-          this.stats[7].value = data.totalEpargne;
-          this.stats[8].value = data.totalDeversementJournalier;
-          this.stats[9].value = data.totalDeversement;
+          this.stats[5].value = data.totalProduit;
+          this.stats[6].value = data.totalEpargne;
+          this.stats[7].value = data.totalDeversementJournalier;
+          this.stats[8].value = data.totalDeversement;
         });
 
       this.$http
         .post(`${this.callback}/carnet-clients`, {}, headers)
         .then((response) => {
-          let data = response.body;
+          let data = response.body.data;
 
           console.log(data);
-          this.stats[5].value = data.data.length;
+          // this.stats[5].value = data.length;
+
+          this.dataCarnets = [];
+          for (let i = data.length - 1; i >= 0; i--) {
+            this.dataCarnets.push({
+              key: data[i].id,
+              libelle: data[i].carnet.libelle,
+              nbr_mois: data[i].carnet.period / 31,
+              prix_jour: data[i].carnet.tarif,
+              nom_client: `${data[i].client.nom} ${data[i].client.prenom}`,
+              numero_client: data[i].client.numero,
+            });
+          }
         });
     },
 
@@ -380,7 +438,6 @@ export default {
         .then((response) => {
           let data = response.body.data;
 
-          console.log(data);
           this.dataCollecteur = [];
           for (let i = 0; i < data.length; i++) {
             this.dataCollecteur.push({
@@ -404,8 +461,6 @@ export default {
         .post(`${this.callback}/classement/carnet`, {}, headers)
         .then((response) => {
           let data = response.body.data;
-
-          console.log(data);
 
           this.dataCarnet = [];
           for (let i = 0; i < 5; i++) {

@@ -81,55 +81,63 @@
               </span>
             </div>
 
-            <div class="d-flex mt-2">
-              <a-popconfirm
-                title="Voulez vous vraiment faire cette action"
-                ok-text="Oui"
-                cancel-text="Non"
-                @confirm="confirm(item.id)"
-                @cancel="cancel()"
-              >
-                <a-button size="small">Suspendre</a-button>
-              </a-popconfirm>
-            </div>
+            <a-button size="small" @click="confirm(item.id)">Actions</a-button>
+
             <a-drawer
-              title="Suspendre le carnet"
+              title="Actions"
               placement="right"
               :closable="false"
               :visible="visible"
             >
-              <a-form
-                ref="formRef"
-                :form="form"
-                class="login-form"
-                @submit="onSubmit"
-              >
-                <a-form-item label="Motif de suspension" name="desc">
-                  <a-textarea
-                    v-decorator="[
-                      'motif',
-                      {
-                        rules: [
-                          {
-                            required: true,
-                            message: 'Motif est vide!',
-                          },
-                        ],
-                      },
-                    ]"
-                    placeholder="Motif"
-                  />
-                </a-form-item>
-                <a-form-item class="text-right">
-                  <a-button @click="resetForm">Annuler</a-button>
-                  <a-button
-                    type="primary"
-                    @click="onSubmit"
-                    style="margin-left: 10px"
-                    >Suspendre</a-button
+              <a-card>
+                <h6>Suspendre le carnet</h6>
+                <a-form
+                  ref="formRef"
+                  :form="form"
+                  class="login-form"
+                  @submit="onSubmit"
+                >
+                  <a-form-item label="Motif de suspension" name="desc">
+                    <a-textarea
+                      v-decorator="[
+                        'motif',
+                        {
+                          rules: [
+                            {
+                              required: true,
+                              message: 'Motif est vide!',
+                            },
+                          ],
+                        },
+                      ]"
+                      placeholder="Motif"
+                    />
+                  </a-form-item>
+                  <a-form-item class="text-right">
+                    <a-button
+                      type="primary"
+                      @click="onSubmit"
+                      style="margin-left: 10px"
+                      >Suspendre</a-button
+                    >
+                  </a-form-item>
+                </a-form>
+              </a-card>
+              <div class="my-4">
+                <a-popconfirm
+                  title="Voulez vous vraiment supprimer la dernière cotisation?"
+                  ok-text="Oui! Supprimer"
+                  cancel-text="Non"
+                  @confirm="delete_cotisation()"
+                  @cancel="cancel"
+                >
+                  <a-button type="danger" v-if="item.nbcotisattion != 0"
+                    >Supprimer dernière cotisation</a-button
                   >
-                </a-form-item>
-              </a-form>
+                </a-popconfirm>
+              </div>
+
+              <a-button @click="resetForm">Fermer</a-button>
             </a-drawer>
           </div>
         </template>
@@ -159,7 +167,6 @@ export default {
       id: null,
     };
   },
-
   methods: {
     showAlert(type, title, description) {
       this.$notification[type]({
@@ -170,7 +177,7 @@ export default {
 
     confirm(id) {
       console.log(id);
-      this.id = id
+      this.id = id;
       this.visible = true;
     },
 
@@ -216,6 +223,30 @@ export default {
           this.showAlert("error", "Erreur", "Veillez mettre la motif");
         }
       });
+    },
+
+    delete_cotisation() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      console.log(headers);
+      this.$http
+        .post(`${this.callback}/cotisation/delete/last/${this.id}`, {}, headers)
+        .then(
+          (response) => {
+            if (response) {
+              this.showAlert(
+                "success",
+                "Success",
+                "Operation effectuer avec success"
+              );
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Erreur", response.body.message);
+          }
+        );
     },
   },
 };

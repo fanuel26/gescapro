@@ -260,6 +260,8 @@ export default {
                 this.stats[3].value = n_l;
               }
             }
+
+            console.log(this.carnets)
           },
           (response) => {
             flash(response.body.message, "Erreur", "fa fa-times", "danger");

@@ -25,19 +25,35 @@
     <a-row :gutter="24">
       <a-col :span="12" :lg="12" :xl="24" class="mb-24">
         <a-card class="card card-body border-0">
-          <div class="text-right mb-24">
-            <a-button class="mx-2" @click="showModal"
-              >Creation de chef agence</a-button
-            >
-            <router-link :to="{ name: 'Chef_agence_historique' }">
-              <a-button class="mx-2">Historique des demandes</a-button>
-            </router-link>
-            <router-link :to="{ name: 'Chef_agence_transaction' }">
-              <a-button type="primary" class="mx-2"
-                >Liste des transaction</a-button
+          <template #title>
+            <h6>
+              Liste des transactions 
+              <span v-if="type == 1">epargnes</span>
+              <span v-if="type == 0">produits</span>
+            </h6>
+          </template>
+          <div class="d-flex justify-content-between align-items-center mb-24">
+            <div>
+              <a-button class="mx-2" type="primary" v-if="type == 1"
+                >Transaction Epargnes</a-button
               >
-            </router-link>
-
+              <a-button class="mx-2" type="primary" v-if="type == 0"
+                >Transaction Produits</a-button
+              >
+            </div>
+            <div>
+              <a-button class="mx-2" @click="showModal"
+                >Creation de chef agence</a-button
+              >
+              <router-link :to="{ name: 'Chef_agence_historique' }">
+                <a-button class="mx-2">Historique des demandes</a-button>
+              </router-link>
+              <router-link :to="{ name: 'Chef_agence_transaction' }">
+                <a-button type="primary" class="mx-2"
+                  >Liste des transaction</a-button
+                >
+              </router-link>
+            </div>
             <a-modal
               :width="width"
               title="Creer un agent chef"
@@ -133,17 +149,13 @@
                           />
                         </a-form-item>
                       </a-col>
-                      
                     </a-row>
                   </a-form>
                 </a-col>
                 <a-col :span="8" :md="8" class="mt-4">
                   <a-card :bordered="false" class="card-billing-info">
                     <div class="col-info">
-                      <a-descriptions
-                        title="Information du chef"
-                        :column="1"
-                      >
+                      <a-descriptions title="Information du chef" :column="1">
                         <a-descriptions-item label="Nom">
                           {{ nom }}
                         </a-descriptions-item>
@@ -263,6 +275,8 @@ export default {
       ville: null,
       quartier: null,
       password: null,
+
+      type: 0,
     };
   },
   mounted() {
@@ -313,7 +327,7 @@ export default {
                 nom: `${data[i].agent.nom} ${data[i].agent.prenom}`,
                 numero: `(+228) ${data[i].agent.numero}`,
                 montant: data[i].reste + data[i].montant,
-                type: data[i].type == 1 ? 'Epargne': 'Produit',
+                type: data[i].type == 1 ? "Epargne" : "Produit",
                 cotiser: data[i].montant,
               });
             }
@@ -382,7 +396,7 @@ export default {
     showModal() {
       this.visible = true;
     },
-    
+
     handleOk(e) {
       e.preventDefault();
       this.form.validateFields((err, values) => {
@@ -406,7 +420,7 @@ export default {
       this.visible = false;
     },
 
-chefSubmit() {},
+    chefSubmit() {},
   },
 };
 </script>
