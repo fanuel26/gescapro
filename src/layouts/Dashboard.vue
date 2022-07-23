@@ -39,11 +39,8 @@
 				<DashboardFooter></DashboardFooter>
 				<!-- / Layout Footer -->
 
-				
 				<!-- Floating Action Button For Toggling Settings Drawer -->
-    			<a href="https://wa.me/22892432861" target="_brank"><a-button class="fab" shape="circle">
-					<a-icon type="wechat" theme="filled" />
-				</a-button></a>
+    			
 				<!-- / Floating Action Button For Toggling Settings Drawer -->
 
 				<!-- Sidebar Overlay -->
@@ -52,7 +49,7 @@
 
 			</a-layout>
 			<!-- / Layout Content -->
-			
+
 			<!-- Settings Drawer -->
 			<DashboardSettingsDrawer
 				:showSettingsDrawer="showSettingsDrawer"

@@ -32,192 +32,8 @@
               style="width: 300px"
               @change="onSearch"
             />
-            <a-button type="primary" @click="showModal">
-              Créer un agent collecteur
-            </a-button>
           </div>
-
-          <a-modal
-            :width="width"
-            title="Creer un agent collecteur"
-            :visible="visible"
-            :confirm-loading="confirmLoading"
-            @ok="handleOk"
-            @cancel="handleCancel"
-          >
-            <a-row type="flex" :gutter="24">
-              <!-- Billing Information Column -->
-              <a-col :span="16" :md="16" class="">
-                <a-form
-                  id="components-form-demo-normal-login"
-                  :form="form"
-                  class="login-form"
-                  @submit="collecteurSubmit"
-                  :hideRequiredMark="true"
-                >
-                  <a-row type="flex" :gutter="24">
-                    <!-- Billing Information Column -->
-                    <a-col :span="12" :md="12" class="">
-                      <a-form-item
-                        class=""
-                        label="Nom du collecteur"
-                        :colon="false"
-                      >
-                        <a-input
-                          v-model="nom"
-                          v-decorator="[
-                            'nom',
-                            {
-                              initialValue: nom,
-                              rules: [
-                                {
-                                  required: true,
-                                  message: 'Nom du collecteur est vide!',
-                                },
-                              ],
-                            },
-                          ]"
-                          type="text"
-                          placeholder="Nom agent collecteur"
-                        />
-                      </a-form-item>
-                    </a-col>
-                    <a-col :span="12" :md="12" class="">
-                      <a-form-item
-                        class=""
-                        label="Prénom du collecteur"
-                        :colon="false"
-                      >
-                        <a-input
-                          v-model="prenom"
-                          v-decorator="[
-                            'prenom',
-                            {
-                              initialValue: prenom,
-                              rules: [
-                                {
-                                  required: true,
-                                  message: 'Prénom du collecteur est vide!',
-                                },
-                              ],
-                            },
-                          ]"
-                          type="text"
-                          placeholder="Prénom agent collecteur"
-                        />
-                      </a-form-item>
-                    </a-col>
-                    <a-col :span="12" :md="12" class="">
-                      <a-form-item
-                        class=""
-                        label="Numéro de téléphone"
-                        :colon="false"
-                      >
-                        <a-input
-                          v-model="numero"
-                          v-decorator="[
-                            'numero',
-                            {
-                              initialValue: numero,
-                              rules: [
-                                {
-                                  required: true,
-                                  message: 'Numero est vide!',
-                                },
-                              ],
-                            },
-                          ]"
-                          type="number"
-                          placeholder="Numéro de téléphone"
-                        />
-                      </a-form-item>
-                    </a-col>
-                    <a-col :span="12" :md="12" class="">
-                      <a-form-item class="" label="Ville" :colon="false">
-                        <a-select
-                          v-decorator="[
-                            'ville',
-                            {
-                              initialValue: ville,
-                              rules: [
-                                {
-                                  required: true,
-                                  message: 'ville est vide!',
-                                },
-                              ],
-                            },
-                          ]"
-                          @change="listeQuartier"
-                        >
-                          <a-select-option
-                            v-for="ville in villes"
-                            :value="ville.id"
-                            :key="ville.id"
-                          >
-                            {{ ville.libelle }}
-                          </a-select-option>
-                        </a-select>
-                      </a-form-item>
-                    </a-col>
-                    <a-col :span="12" :md="12" class="">
-                      <a-form-item class="" label="Quartier" :colon="false">
-                        <a-select
-                          v-decorator="[
-                            'quartier',
-                            {
-                              initialValue: quartier,
-                              rules: [
-                                {
-                                  required: true,
-                                  message: 'quartier est vide!',
-                                },
-                              ],
-                            },
-                          ]"
-                        >
-                          <a-select-option
-                            v-for="quartier in quartiers"
-                            :value="quartier.id"
-                            :key="quartier.id"
-                          >
-                            {{ quartier.libelle }}
-                          </a-select-option>
-                        </a-select>
-                      </a-form-item>
-                    </a-col>
-                  </a-row>
-                </a-form>
-              </a-col>
-              <a-col :span="8" :md="8" class="mt-4">
-                <a-card :bordered="false" class="card-billing-info">
-                  <div class="col-info">
-                    <a-descriptions
-                      title="Information du collecteur"
-                      :column="1"
-                    >
-                      <a-descriptions-item label="Nom">
-                        {{ nom }}
-                      </a-descriptions-item>
-                      <a-descriptions-item label="Prenom">
-                        {{ prenom }}
-                      </a-descriptions-item>
-                      <a-descriptions-item label="Numéro de téléphone">
-                        (+228) {{ numero }}
-                      </a-descriptions-item>
-                      <a-descriptions-item label="Mot de passe">
-                        {{ password }}
-                      </a-descriptions-item>
-                    </a-descriptions>
-                  </div>
-                </a-card>
-              </a-col>
-            </a-row>
-          </a-modal>
           <a-table :columns="columns" :data-source="data" :pagination="false">
-            <template slot="etat" slot-scope="text, record">
-              <span v-if="record.etat == 0" class="text-success">Online</span>
-              <span v-if="record.etat == 1" class="text-danger">Offline</span>
-            </template>
             <template slot="operation" slot-scope="text, record">
               <a-row>
                 <a-col :span="12">
@@ -231,25 +47,6 @@
                       >Détail</a-button
                     ></router-link
                   >
-                </a-col>
-                <a-col :span="12">
-                  <a-popconfirm
-                    v-if="record.status == 1"
-                    title="Sûre de bloquer?"
-                    @confirm="() => block(record.key)"
-                    ><a-button type="danger" class="mx-2" size="small"
-                      >Bloquer</a-button
-                    >
-                  </a-popconfirm>
-
-                  <a-popconfirm
-                    v-if="record.status == 0"
-                    title="Sûre de débloquer?"
-                    @confirm="() => block(record.key)"
-                    ><a-button type="success" class="mx-2" size="small"
-                      >Debloquer</a-button
-                    >
-                  </a-popconfirm>
                 </a-col>
               </a-row>
             </template>
@@ -339,10 +136,9 @@ export default {
         key: "agence",
       },
       {
-        title: "Etat",
-        dataIndex: "etat",
-        key: "etat",
-        scopedSlots: { customRender: "etat" },
+        title: "Somme cotisée",
+        dataIndex: "somme",
+        key: "somme",
       },
       {
         title: "Action",
@@ -398,7 +194,6 @@ export default {
       // },
     ];
 
-    this.listeVille();
     this.listeCollecteur();
   },
   methods: {
@@ -409,48 +204,6 @@ export default {
       });
     },
 
-    listeVille() {
-      let session = localStorage;
-      this.token_admin = session.getItem("token");
-
-      let headers = { headers: { Authorization: this.token_admin } };
-
-      this.$http.post(`${this.callback}/ville/liste`, {}, headers).then(
-        (response) => {
-          let data = response.body.data;
-
-          this.villes = data;
-        },
-        (response) => {
-          this.showAlert("error", "Erreur", response.body.message);
-        }
-      );
-    },
-
-    listeQuartier(id) {
-      let session = localStorage;
-      this.token_admin = session.getItem("token");
-      let headers = { headers: { Authorization: this.token_admin } };
-
-      this.$http
-        .post(`${this.callback}/quartier/liste?all=true`, {}, headers)
-        .then(
-          (response) => {
-            let data = response.body.data;
-
-            this.quartiers = [];
-            for (let i = 0; i < data.length; i++) {
-              if (data[i].id_ville == id) {
-                this.quartiers.push(data[i]);
-              }
-            }
-          },
-          (response) => {
-            this.showAlert("error", "Erreur", response.body.message);
-          }
-        );
-    },
-
     listeCollecteur() {
       let session = localStorage;
       this.token_admin = session.getItem("token");
@@ -459,7 +212,7 @@ export default {
 
       this.$http
         .post(
-          `${this.callback}/agent_collecteur/list?row=${this.row}&page=${this.page}`,
+          `${this.callback}/classement/collecteur?row=${this.row}&page=${this.page}`,
           {},
           headers
         )
@@ -479,7 +232,9 @@ export default {
                 numero: `(+228) ${data[i].numero}`,
                 agence: data[i].agc_name,
                 status: data[i].is_active,
-                etat: data[i].is_disconnect,
+                somme: `${
+                  data[i].compte_agent_collecteur + data[i].total_cotisation
+                } Fcfa`,
               });
 
               this.data_s = this.data;
@@ -525,7 +280,9 @@ export default {
                 numero: `(+228) ${data[i].numero}`,
                 agence: data[i].agc_name,
                 status: data[i].is_active,
-                etat: data[i].is_disconnect,
+                somme: `${
+                  data[i].compte_agent_collecteur + data[i].total_cotisation
+                } Fcfa`,
               });
 
               this.data_s = this.data;
@@ -569,7 +326,9 @@ export default {
                 numero: `(+228) ${data[i].numero}`,
                 agence: data[i].agc_name,
                 status: data[i].is_active,
-                etat: data[i].is_disconnect,
+                somme: `${
+                  data[i].compte_agent_collecteur + data[i].total_cotisation
+                } Fcfa`,
               });
 
               this.data_s = this.data;

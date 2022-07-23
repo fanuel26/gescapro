@@ -25,7 +25,15 @@
     <a-row :gutter="24">
       <a-col :span="12" :lg="18" :xl="18" class="mb-24">
         <a-card class="card card-body border-0">
-          <div class="mb-4 text-right">
+          <div class="text-right">
+            <a-button
+              type="primary"
+              v-if="nbr_pays == 0"
+              class="mx-2"
+              @click="showModalPays()"
+            >
+              Créer un pays
+            </a-button>
             <a-button type="primary" class="mx-2" @click="showModalVille()">
               Créer une ville
             </a-button>
@@ -37,6 +45,50 @@
           <a-modal
             :width="width"
             title="Creer un pays"
+            :visible="visiblepays"
+            :confirm-loading="confirmLoading"
+            @ok="handleOkPays"
+            @cancel="handleCancelPays"
+          >
+            <a-row type="flex" :gutter="24">
+              <!-- Billing Information Column -->
+              <a-col :span="24" :md="24" class="">
+                <a-form
+                  id="components-form-demo-normal-login"
+                  :form="form_pays"
+                  class="login-form"
+                  @submit="paysSubmit"
+                  :hideRequiredMark="true"
+                >
+                  <a-row type="flex" :gutter="24">
+                    <a-col :span="24" :md="24" class="">
+                      <a-form-item class="" label="Pays" :colon="false">
+                        <a-input
+                          v-decorator="[
+                            'libelle',
+                            {
+                              rules: [
+                                {
+                                  required: true,
+                                  message: 'Nom du pays est vide!',
+                                },
+                              ],
+                            },
+                          ]"
+                          type="text"
+                          placeholder="Nom du pays"
+                        />
+                      </a-form-item>
+                    </a-col>
+                  </a-row>
+                </a-form>
+              </a-col>
+            </a-row>
+          </a-modal>
+
+          <a-modal
+            :width="width"
+            title="Creer une ville"
             :visible="visibleville"
             :confirm-loading="confirmLoading"
             @ok="handleOkVille"
@@ -71,11 +123,11 @@
                             ]"
                           >
                             <a-select-option
-                              v-for="dt in data"
+                              v-for="dt in dataPays"
                               :key="dt.id"
                               :value="dt.id"
                             >
-                              {{ dt.libelle }}
+                              {{ dt.pays }}
                             </a-select-option>
                           </a-select>
                         </div>
@@ -109,7 +161,7 @@
 
           <a-modal
             :width="width"
-            title="Creer un pays"
+            title="Creer un quartier"
             :visible="visiblequartier"
             :confirm-loading="confirmLoading"
             @ok="handleOkQuartier"
@@ -146,11 +198,11 @@
                             @change="changePays"
                           >
                             <a-select-option
-                              v-for="dt in data"
+                              v-for="dt in dataPays"
                               :key="dt.id"
                               :value="dt.id"
                             >
-                              {{ dt.libelle }}
+                              {{ dt.pays }}
                             </a-select-option>
                           </a-select>
                         </div>
@@ -159,7 +211,7 @@
                     <a-col :span="24" :md="24" class="">
                       <a-form-item label="Selectionnez la ville">
                         <div class="d-flex">
-                          <a-select 
+                          <a-select
                             v-decorator="[
                               'id_ville',
                               {
@@ -170,13 +222,14 @@
                                   },
                                 ],
                               },
-                            ]">
+                            ]"
+                          >
                             <a-select-option
-                              v-for="dt in villes"
+                              v-for="dt in dataVilles"
                               :key="dt.id"
                               :value="dt.id"
                             >
-                              {{ dt.libelle }}
+                              {{ dt.ville }}
                             </a-select-option>
                           </a-select>
                         </div>
@@ -206,8 +259,40 @@
               </a-col>
             </a-row>
           </a-modal>
-
-          <a-table :columns="columns" :data-source="data"> </a-table>
+        </a-card>
+      </a-col>
+      <a-col :span="12" :lg="18" :xl="18" class="mb-24">
+        <a-card class="card card-body border-0">
+          <template #title>
+            <h6>Liste des pays</h6>
+          </template>
+          <a-table :columns="columnsPays" :data-source="dataPays"> </a-table>
+        </a-card>
+      </a-col>
+      <a-col :span="12" :lg="18" :xl="18" class="mb-24">
+        <a-card class="card card-body border-0">
+          <template #title>
+            <h6>Liste des villes</h6>
+          </template>
+          <a-table :columns="columnsVilles" :data-source="dataVilles">
+          </a-table>
+        </a-card>
+      </a-col>
+      <a-col :span="12" :lg="18" :xl="18" class="mb-24">
+        <a-card class="card card-body border-0">
+          <template #title>
+            <div class="d-flex justify-content-between align-items-center">
+              <h6>Liste des quartiers</h6>
+              <a-input-search
+                v-model="value"
+                placeholder="Recherche ici"
+                style="width: 300px"
+                @change="onSearch"
+              />
+            </div>
+          </template>
+          <a-table :columns="columnsQuartier" :data-source="dataQuartier">
+          </a-table>
         </a-card>
       </a-col>
     </a-row>
@@ -260,26 +345,35 @@ export default {
   },
 
   beforeCreate() {
+    this.form_pays = this.$form.createForm(this, { name: "normal_login" });
     this.form_ville = this.$form.createForm(this, { name: "normal_login" });
     this.form_quartier = this.$form.createForm(this, { name: "normal_login" });
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       stats,
       width: 500,
-      columns: [],
-      data: [],
+      columnsPays: [],
+      dataPays: [],
+      columnsVilles: [],
+      dataVilles: [],
+      columnsQuartier: [],
+      dataQuartier: [],
+      dataQuartier_s: [],
       buttonText: "Détail",
+      visiblepays: false,
       visibleville: false,
       visiblequartier: false,
       confirmLoading: false,
       villes: [],
+      nbr_pays: 0,
     };
   },
   mounted() {
-    this.columns = [
+    this.columnsPays = [
       {
         title: "Date de creation",
         dataIndex: "created_at",
@@ -287,12 +381,53 @@ export default {
       },
       {
         title: "Nom pays",
-        dataIndex: "libelle",
-        key: "libelle",
+        dataIndex: "pays",
+        key: "pays",
+      },
+    ];
+    this.columnsVilles = [
+      {
+        title: "Date de creation",
+        dataIndex: "created_at",
+        key: "created_at",
+      },
+      {
+        title: "Nom pays",
+        dataIndex: "pays",
+        key: "pays",
+      },
+      {
+        title: "Nom ville",
+        dataIndex: "ville",
+        key: "ville",
+      },
+    ];
+    this.columnsQuartier = [
+      {
+        title: "Date de creation",
+        dataIndex: "created_at",
+        key: "created_at",
+      },
+      {
+        title: "Nom pays",
+        dataIndex: "pays",
+        key: "pays",
+      },
+      {
+        title: "Nom villes",
+        dataIndex: "ville",
+        key: "ville",
+      },
+      {
+        title: "Nom quartier",
+        dataIndex: "quartier",
+        key: "quartier",
       },
     ];
 
     this.listePays();
+    this.listeVilles();
+    this.listeQuartier();
   },
 
   methods: {
@@ -313,28 +448,15 @@ export default {
         (response) => {
           let data = response.body.data;
 
-          this.stats[0].value = data.length
+          this.stats[0].value = data.length;
+          this.nbr_pays = data.length;
 
-          this.data = data.map((item) => ({
+          this.dataPays = data.map((item) => ({
             id: item.id,
-            key: `pays${item.id}`,
-            created_at: item.created_at,
-            libelle: item.libelle,
-            children: item.villes.map((value) => ({
-              id: value.id,
-              key: `ville${value.id}`,
-              created_at: value.created_at,
-              libelle: value.libelle,
-              children: value.quartiers.map((it) => ({
-                id: it.id,
-                key: `quartier${it.id}`,
-                created_at: it.created_at,
-                libelle: it.libelle,
-              })),
-            })),
+            key: item.id,
+            created_at: new Date(item.created_at).toLocaleString(),
+            pays: item.libelle,
           }));
-
-          console.log(this.data);
         },
         (response) => {
           this.showAlert("error", "Error", response.body.message);
@@ -342,16 +464,78 @@ export default {
       );
     },
 
+    listeVilles() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http.post(`${this.callback}/ville/liste`, {}, headers).then(
+        (response) => {
+          let data = response.body.data;
+
+          console.log(data);
+          this.stats[1].value = data.length;
+
+          this.dataVilles = data.map((item) => ({
+            id: item.id,
+            key: item.id,
+            created_at: new Date(item.created_at).toLocaleString(),
+            pays: item.pays.libelle,
+            ville: item.libelle,
+          }));
+        },
+        (response) => {
+          this.showAlert("error", "Error", response.body.message);
+        }
+      );
+    },
+
+    listeQuartier() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(`${this.callback}/quartier/liste?all=true`, {}, headers)
+        .then(
+          (response) => {
+            let data = response.body.data;
+
+            console.log(data);
+            this.stats[2].value = data.length;
+
+            this.dataQuartier = data.map((item) => ({
+              id: item.id,
+              key: item.id,
+              created_at: new Date(item.created_at).toLocaleString(),
+              pays: item.ville.pays.libelle,
+              ville: item.ville.libelle,
+              quartier: item.libelle,
+            }));
+
+            this.dataQuartier_s = this.dataQuartier;
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
+          }
+        );
+    },
+
     changePays(value) {
-      let data = this.data
+      let data = this.dataPays;
 
       for (let i = 0; i < data.length; i++) {
         if (data[i].id == value) {
-          this.villes = data[i].children
+          this.villes = data[i].children;
         }
       }
     },
 
+    showModalPays() {
+      this.visiblepays = true;
+    },
 
     showModalVille() {
       this.visibleville = true;
@@ -359,6 +543,52 @@ export default {
 
     showModalQuartier() {
       this.visiblequartier = true;
+    },
+
+    handleOkPays(e) {
+      e.preventDefault();
+      this.form_pays.validateFields((err, values) => {
+        if (!err) {
+          console.log(values);
+          this.confirmLoading = true;
+          this.paysSubmit(values);
+          setTimeout(() => {
+            this.listePays();
+            this.visiblepays = false;
+            this.confirmLoading = false;
+          }, 1000);
+        } else {
+          console.log("error");
+        }
+      });
+    },
+
+    handleCancelPays(e) {
+      this.visiblepays = false;
+    },
+
+    paysSubmit(data) {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      let data_create = {
+        libelle: data.libelle,
+      };
+
+      this.$http
+        .post(`${this.callback}/pays/create`, data_create, headers)
+        .then(
+          (response) => {
+            if (response) {
+              this.showAlert("success", "Success", "Pays creer avec success");
+              this.form_pays.resetFields();
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
+          }
+        );
     },
 
     handleOkVille(e) {
@@ -369,7 +599,7 @@ export default {
           this.confirmLoading = true;
           this.villeSubmit(values);
           setTimeout(() => {
-            this.listePays();
+            this.listeVilles();
             this.visibleville = false;
             this.confirmLoading = false;
           }, 1000);
@@ -399,6 +629,7 @@ export default {
           (response) => {
             if (response) {
               this.showAlert("success", "Success", "Ville creer avec success");
+              this.form_ville.resetFields();
             }
           },
           (response) => {
@@ -415,7 +646,7 @@ export default {
           this.confirmLoading = true;
           this.quartierSubmit(values);
           setTimeout(() => {
-            this.listePays();
+            this.listeQuartier();
             this.visiblequartier = false;
             this.confirmLoading = false;
           }, 2000);
@@ -449,12 +680,31 @@ export default {
                 "Success",
                 "Quartier creer avec success"
               );
+              this.form_quartier.resetFields();
             }
           },
           (response) => {
-            this.showAlert("error", "Error", 'Libelle de quartier déjà utiliser');
+            this.showAlert(
+              "error",
+              "Error",
+              "Libelle de quartier déjà utiliser"
+            );
           }
         );
+    },
+
+    onSearch() {
+      this.value = this.value.toLowerCase();
+
+      let data = this.dataQuartier_s;
+
+      this.dataQuartier = [];
+      for (let i = 0; i < data.length; i++) {
+        let libelle = data[i].quartier.toLowerCase();
+        if (libelle.indexOf(this.value) > -1) {
+          this.dataQuartier.push(data[i]);
+        }
+      }
     },
   },
 };

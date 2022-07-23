@@ -5,43 +5,6 @@
 
 <template>
   <div>
-    <!-- Header Background Image -->
-    <div
-      class="profile-nav-bg"
-      style="background-image: url('/images/bg-profile.jpg')"
-    ></div>
-    <!-- / Header Background Image -->
-
-    <!-- User Profile Card -->
-    <a-card
-      :bordered="false"
-      class="card-profile-head"
-      :bodyStyle="{ padding: 0 }"
-    >
-      <template #title>
-        <a-row type="flex" align="middle">
-          <a-col :span="24" :md="12" class="col-info">
-            <a-avatar :size="74" shape="square" src="/images/logo1.png" />
-            <div class="avatar-info">
-              <h4 class="font-semibold m-0">{{ compte.nom }}</h4>
-              <p>{{ compte.username }}</p>
-            </div>
-          </a-col>
-          <a-col
-            :span="24"
-            :md="12"
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: flex-end;
-            "
-          >
-          </a-col>
-        </a-row>
-      </template>
-    </a-card>
-    <!-- User Profile Card -->
-
     <a-row :gutter="24" class="mb-24">
       <!-- Profile Information Column -->
       <a-col :span="12" :md="8" class="mb-24">
@@ -55,17 +18,31 @@
           :headStyle="{ paddingRight: 0 }"
         >
           <template #title>
-            <h6 class="font-semibold m-0">Information du compte</h6>
+            <a-row>
+              <a-col :span="12">
+                <h6 class="font-semibold m-0 my-4">Paramètre de prêt</h6>
+              </a-col>
+              <a-col :span="12">
+                <router-link :to="{ name: 'Pret_type' }">
+                  <a-button type="primary">
+                    Créer type de pret
+                  </a-button></router-link
+                >
+              </a-col></a-row
+            >
           </template>
-          <a-descriptions :title="compte.username" :column="1">
-            <a-descriptions-item label="Nom & Prénom">
-              {{ compte.nom }} {{ compte.prenom }}
+          <a-descriptions :title="Parametre" :column="1">
+            <a-descriptions-item label="Taux d'interet prêt">
+              30%
             </a-descriptions-item>
-            <a-descriptions-item label="Adresse email">
-              {{ compte.email }}
+            <a-descriptions-item label="Taux de pénalité">
+              10%
             </a-descriptions-item>
-            <a-descriptions-item label="Code secret">
-              {{ compte.code_secret }}
+            <a-descriptions-item label="Eligible à partir de:">
+              3 ans
+            </a-descriptions-item>
+            <a-descriptions-item label="Garantie de compte pour le prêt">
+              300000 Fcfa
             </a-descriptions-item>
           </a-descriptions>
         </a-card>
@@ -84,78 +61,12 @@
         >
           <a-row :gutter="24">
             <!-- Profile Information Column -->
-            <a-col :span="12" :md="12" class="mb-24">
+
+            <a-col :span="24" :md="24" class="mb-24">
               <!-- Profile Information Card -->
 
               <template>
-                <h6 class="font-semibold m-0">Generer code secret</h6>
-              </template>
-              <a-form
-                id="components-form-demo-normal-login"
-                :form="form_code_secret"
-                class="login-form"
-                @submit="codeSubmit"
-                :hideRequiredMark="true"
-              >
-                <a-form-item
-                  class=""
-                  label="Code secret generer"
-                  :colon="false"
-                >
-                  <a-input
-                    v-decorator="[
-                      'code_secret_new',
-                      {
-                        initialValue: code_secret,
-                        rules: [
-                          {
-                            required: true,
-                            message: 'Code secret generer incorrect!',
-                          },
-                        ],
-                      },
-                    ]"
-                    disabled
-                    type="text"
-                    placeholder="Code secret"
-                  />
-                </a-form-item>
-
-                <a-form-item class="" label="Code secret" :colon="false">
-                  <a-input
-                    v-decorator="[
-                      'code_secret',
-                      {
-                        rules: [
-                          {
-                            required: true,
-                            message: 'Code secret incorrect!',
-                          },
-                        ],
-                      },
-                    ]"
-                    type="text"
-                    placeholder="Code secret"
-                  />
-                </a-form-item>
-
-                <div class="mb-4 text-right">
-                  <a-button
-                    type="primary"
-                    html-type="submit"
-                    class="login-form-button"
-                  >
-                    Generer
-                  </a-button>
-                </div>
-              </a-form>
-            </a-col>
-
-            <a-col :span="12" :md="12" class="mb-24">
-              <!-- Profile Information Card -->
-
-              <template>
-                <h6 class="font-semibold m-0">Generer mot de passe</h6>
+                <h6 class="font-semibold m-0">Parametres généraux</h6>
               </template>
               <a-form
                 id="components-form-demo-normal-login"
@@ -164,56 +75,138 @@
                 @submit="passwordSubmit"
                 :hideRequiredMark="true"
               >
-                <a-form-item
-                  class=""
-                  label="Mot de passe generer"
-                  :colon="false"
-                >
-                  <a-input
-                    v-decorator="[
-                      'password',
-                      {
-                        initialValue: password,
-                        rules: [
-                          {
-                            required: true,
-                            message: 'Mot de passe generer incorrect!',
-                          },
-                        ],
-                      },
-                    ]"
-                    disabled
-                    type="text"
-                    placeholder="Mot de passe"
-                  />
-                </a-form-item>
+                <a-row :gutter="24">
+                  <!-- Profile Information Column -->
 
-                <a-form-item class="" label="Code secret" :colon="false">
-                  <a-input
-                    v-decorator="[
-                      'code_secret',
-                      {
-                        rules: [
+                  <a-col :span="12" :md="12">
+                    <a-form-item
+                      class=""
+                      label="Taux d'interêt de prêt (%)"
+                      :colon="false"
+                    >
+                      <a-input
+                        v-decorator="[
+                          'taux_interet',
                           {
-                            required: true,
-                            message: 'Code secret incorrect!',
+                            initialValue: 0,
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Taux de penalite generer incorrect!',
+                              },
+                            ],
                           },
-                        ],
-                      },
-                    ]"
-                    type="text"
-                    placeholder="Code secret"
-                  />
-                </a-form-item>
-                <div class="mb-4 text-right">
-                  <a-button
-                    type="primary"
-                    html-type="submit"
-                    class="login-form-button"
-                  >
-                    Generer
-                  </a-button>
-                </div>
+                        ]"
+                        type="number"
+                        placeholder="Taux d'interêt"
+                      />
+                    </a-form-item>
+                  </a-col>
+                  <a-col :span="12" :md="12">
+                    <a-form-item
+                      class=""
+                      label="Taux de pénalité de prêt (%)"
+                      :colon="false"
+                    >
+                      <a-input
+                        v-decorator="[
+                          'taux_penalite',
+                          {
+                            initialValue: 0,
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Taux de penalite generer incorrect!',
+                              },
+                            ],
+                          },
+                        ]"
+                        type="number"
+                        placeholder="Taux de penalité"
+                      />
+                    </a-form-item>
+                  </a-col>
+                  <a-col :span="12" :md="12">
+                    <a-form-item
+                      class=""
+                      label="Temps d'eligibilité  (Mois)"
+                      :colon="false"
+                    >
+                      <a-input
+                        v-decorator="[
+                          'temps',
+                          {
+                            initialValue: 0,
+                            rules: [
+                              {
+                                required: true,
+                                message:
+                                  'Temps d\'éligibilité generer incorrect!',
+                              },
+                            ],
+                          },
+                        ]"
+                        type="number"
+                        placeholder="Taux d'eligibilite"
+                      />
+                    </a-form-item>
+                  </a-col>
+                  <a-col :span="12" :md="12">
+                    <a-form-item
+                      class=""
+                      label="Garantie du compte (Fcfa)"
+                      :colon="false"
+                    >
+                      <a-input
+                        v-decorator="[
+                          'garantie',
+                          {
+                            initialValue: 0,
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Garantie generer incorrect!',
+                              },
+                            ],
+                          },
+                        ]"
+                        type="number"
+                        placeholder="Garantie du compte"
+                      />
+                    </a-form-item>
+                  </a-col>
+                  <a-col :span="12" :md="12">
+                    <a-form-item class="" label="Code secret" :colon="false">
+                      <a-input
+                        v-decorator="[
+                          'code_secret',
+                          {
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Code secret incorrect!',
+                              },
+                            ],
+                          },
+                        ]"
+                        type="text"
+                        placeholder="Code secret"
+                      />
+                    </a-form-item>
+                  </a-col>
+
+                  <a-col :span="24" :md="24">
+                    <div class="mb-4 text-right">
+                      <a-button
+                        type="primary"
+                        html-type="submit"
+                        class="login-form-button"
+                      >
+                        Generer
+                      </a-button>
+                    </div>
+                  </a-col>
+                </a-row>
               </a-form>
             </a-col>
           </a-row>
@@ -221,10 +214,6 @@
       </a-col>
       <!-- / Platform Settings Column -->
     </a-row>
-    <a href="https://wa.me/22892432861" target="_brank"
-      ><a-button class="fab" shape="circle">
-        <a-icon type="wechat" theme="filled" /> </a-button
-    ></a>
   </div>
 </template>
 
@@ -327,6 +316,7 @@ export default {
   },
   data() {
     return {
+      
       callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       profileHeaderBtns: "overview",

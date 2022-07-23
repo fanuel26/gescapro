@@ -41,8 +41,8 @@
         <!-- Sales Overview Card -->
         <CardLineChart></CardLineChart>
         <!-- / Sales Overview Card -->
-      </a-col>
-    </a-row>
+      </a-col> </a-row
+    >*
     <!-- / Charts -->
 
     <!-- Table & Timeline -->
@@ -53,6 +53,10 @@
         <CardProjectTable
           :data="dataCollecteur"
           :columns="columnCollecteur"
+          :data_c="dataCollecteur_c"
+          :columns_c="columnCollecteur_c"
+          :data_cli="dataCollecteur_cli"
+          :columns_cli="columnCollecteur_cli"
         ></CardProjectTable>
         <!-- / Projects Table Card -->
       </a-col>
@@ -70,7 +74,7 @@
         >
           <template #title>
             <h6>Carnets les plus vendus</h6>
-            <p>par jour</p>
+            <p></p>
           </template>
           <a-timeline>
             <a-timeline-item v-for="dc in dataCarnet" :key="dc" color="green">
@@ -78,6 +82,11 @@
               <p>{{ dc.vendu }} ventes</p>
             </a-timeline-item>
           </a-timeline>
+          <div class="d-flex justify-content-end">
+            <router-link :to="{ name: 'Classement_carnet' }">
+              <a-button type="primary" size="small">Voire plus</a-button>
+            </router-link>
+          </div>
         </a-card>
         <!-- / Orders History Timeline Card -->
 
@@ -94,12 +103,11 @@
           class="header-solid h-full"
           :bodyStyle="{ paddingTop: '12px' }"
         >
-        
           <template #title>
             <h6>Livraison à 2 mois</h6>
           </template>
-        <a-table :columns="columnsCarnet" :data-source="dataCarnets">
-        </a-table>
+          <a-table :columns="columnsCarnet" :data-source="dataCarnets">
+          </a-table>
         </a-card>
       </a-col>
     </a-row>
@@ -154,10 +162,14 @@ export default {
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       dataCollecteur: null,
       columnCollecteur: null,
+      dataCollecteur_c: null,
+      columnCollecteur_c: null,
+      dataCollecteur_cli: null,
+      columnCollecteur_cli: null,
       columnsCarnet: null,
       dataCarnets: null,
       dataCarnet: null,
@@ -184,6 +196,11 @@ export default {
         key: "prix_jour",
       },
       {
+        title: "Nombre de cotisation",
+        dataIndex: "nbr_cot",
+        key: "nbr_cot",
+      },
+      {
         title: "Nom client",
         dataIndex: "nom_client",
         key: "nom_client",
@@ -207,9 +224,60 @@ export default {
         key: "numero",
       },
       {
-        title: "Somme collecté",
+        title: "Somme collectée (Fcfa)",
         dataIndex: "somme",
         key: "somme",
+        scopedSlots: { customRender: "action" },
+      },
+      {
+        title: "Agence",
+        dataIndex: "agence",
+        key: "agence",
+      },
+    ];
+
+    this.columnCollecteur_c = [
+      {
+        title: "Nom",
+        dataIndex: "nom",
+        key: "nom",
+      },
+      {
+        title: "Numéro de téléphone",
+        dataIndex: "numero",
+        key: "numero",
+      },
+      {
+        title: "Carnet vendus",
+        dataIndex: "carnet_vendu",
+        key: "carnet_vendu",
+
+        scopedSlots: { customRender: "action" },
+      },
+      {
+        title: "Agence",
+        dataIndex: "agence",
+        key: "agence",
+      },
+    ];
+
+    this.columnCollecteur_cli = [
+      {
+        title: "Nom",
+        dataIndex: "nom",
+        key: "nom",
+      },
+      {
+        title: "Numéro de téléphone",
+        dataIndex: "numero",
+        key: "numero",
+      },
+      {
+        title: "Nombre clients",
+        dataIndex: "client",
+        key: "client",
+
+        scopedSlots: { customRender: "action" },
       },
       {
         title: "Agence",
@@ -306,9 +374,9 @@ export default {
       //   status: "danger",
       //   suffix: "",
       //   icon: `
-			// 			<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-			// 				<path fill-rule="evenodd" clip-rule="evenodd" d="M3.17157 5.17157C4.73367 3.60948 7.26633 3.60948 8.82843 5.17157L10 6.34315L11.1716 5.17157C12.7337 3.60948 15.2663 3.60948 16.8284 5.17157C18.3905 6.73367 18.3905 9.26633 16.8284 10.8284L10 17.6569L3.17157 10.8284C1.60948 9.26633 1.60948 6.73367 3.17157 5.17157Z" fill="#111827"/>
-			// 		%	</svg>`,
+      // 			<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      // 				<path fill-rule="evenodd" clip-rule="evenodd" d="M3.17157 5.17157C4.73367 3.60948 7.26633 3.60948 8.82843 5.17157L10 6.34315L11.1716 5.17157C12.7337 3.60948 15.2663 3.60948 16.8284 5.17157C18.3905 6.73367 18.3905 9.26633 16.8284 10.8284L10 17.6569L3.17157 10.8284C1.60948 9.26633 1.60948 6.73367 3.17157 5.17157Z" fill="#111827"/>
+      // 		%	</svg>`,
       // },
       // {
       //   title: "Collectes global épargnes du jour",
@@ -370,6 +438,16 @@ export default {
 							<path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C7.79086 2 6 3.79086 6 6V7H5C4.49046 7 4.06239 7.38314 4.00612 7.88957L3.00612 16.8896C2.97471 17.1723 3.06518 17.455 3.25488 17.6669C3.44458 17.8789 3.71556 18 4 18H16C16.2844 18 16.5554 17.8789 16.7451 17.6669C16.9348 17.455 17.0253 17.1723 16.9939 16.8896L15.9939 7.88957C15.9376 7.38314 15.5096 7 15 7H14V6C14 3.79086 12.2091 2 10 2ZM12 7V6C12 4.89543 11.1046 4 10 4C8.89543 4 8 4.89543 8 6V7H12ZM6 10C6 9.44772 6.44772 9 7 9C7.55228 9 8 9.44772 8 10C8 10.5523 7.55228 11 7 11C6.44772 11 6 10.5523 6 10ZM13 9C12.4477 9 12 9.44772 12 10C12 10.5523 12.4477 11 13 11C13.5523 11 14 10.5523 14 10C14 9.44772 13.5523 9 13 9Z" fill="#111827"/>
 						</svg>`,
       },
+      {
+        title: "Collectes globale en cours",
+        value: 0,
+        prefix: "",
+        suffix: "Fcfa",
+        icon: `
+						<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C7.79086 2 6 3.79086 6 6V7H5C4.49046 7 4.06239 7.38314 4.00612 7.88957L3.00612 16.8896C2.97471 17.1723 3.06518 17.455 3.25488 17.6669C3.44458 17.8789 3.71556 18 4 18H16C16.2844 18 16.5554 17.8789 16.7451 17.6669C16.9348 17.455 17.0253 17.1723 16.9939 16.8896L15.9939 7.88957C15.9376 7.38314 15.5096 7 15 7H14V6C14 3.79086 12.2091 2 10 2ZM12 7V6C12 4.89543 11.1046 4 10 4C8.89543 4 8 4.89543 8 6V7H12ZM6 10C6 9.44772 6.44772 9 7 9C7.55228 9 8 9.44772 8 10C8 10.5523 7.55228 11 7 11C6.44772 11 6 10.5523 6 10ZM13 9C12.4477 9 12 9.44772 12 10C12 10.5523 12.4477 11 13 11C13.5523 11 14 10.5523 14 10C14 9.44772 13.5523 9 13 9Z" fill="#111827"/>
+						</svg>`,
+      },
     ];
 
     this.statistique();
@@ -389,13 +467,15 @@ export default {
         .then((response) => {
           let data = response.body;
 
+          console.log(data)
+
           this.stats[0].value = data.client_produit;
           this.stats[1].value = data.client_epargne;
           this.stats[2].value = data.client_all;
           // this.stats[3].value = data.agent_collecteur
           // this.stats[4].value = data.agence
-          this.stats[3].value = data.carnet;
-          this.stats[4].value = data.CardLineChart;
+          this.stats[3].value = data.carnetProduit;
+          this.stats[4].value = data.carnetEpargne;
           //this.stats[5].value = 0;
           // this.stats[6].value = data.collecte;
           // this.stats[7].value = data.collecte;
@@ -403,27 +483,31 @@ export default {
           this.stats[6].value = data.totalEpargne;
           this.stats[7].value = data.totalDeversementJournalier;
           this.stats[8].value = data.totalDeversement;
+          this.stats[9].value = data.cotisationNonDeverse;
         });
 
       this.$http
         .post(`${this.callback}/carnet-clients`, {}, headers)
         .then((response) => {
           let data = response.body.data;
-
-          console.log(data);
           // this.stats[5].value = data.length;
 
           this.dataCarnets = [];
-          for (let i = data.length - 1; i >= 0; i--) {
-            this.dataCarnets.push({
-              key: data[i].id,
-              libelle: data[i].carnet.libelle,
-              nbr_mois: data[i].carnet.period / 31,
-              prix_jour: data[i].carnet.tarif,
-              nom_client: `${data[i].client.nom} ${data[i].client.prenom}`,
-              numero_client: data[i].client.numero,
-            });
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].nbcotisattion > 31 * 12 - 62) {
+              this.dataCarnets.push({
+                key: data[i].id,
+                libelle: data[i].carnet.libelle,
+                nbr_mois: data[i].carnet.period / 31,
+                prix_jour: data[i].carnet.tarif,
+                nbr_cot: data[i].nbcotisattion,
+                nom_client: `${data[i].client.nom} ${data[i].client.prenom}`,
+                numero_client: data[i].client.numero,
+              });
+            }
           }
+
+          console.log(this.dataCarnets);
         });
     },
 
@@ -434,20 +518,68 @@ export default {
       let headers = { headers: { Authorization: this.token_admin } };
 
       this.$http
-        .post(`${this.callback}/classement/collecteur`, {}, headers)
+        .post(`${this.callback}/classement/collecteur?all=true`, {}, headers)
         .then((response) => {
           let data = response.body.data;
 
+          console.log(data);
           this.dataCollecteur = [];
+          this.dataCollecteur_c = [];
+          this.dataCollecteur_cli = [];
           for (let i = 0; i < data.length; i++) {
             this.dataCollecteur.push({
               key: data[i].id,
               nom: `${data[i].nom} ${data[i].prenom}`,
               numero: data[i].numero,
-              somme: `${data[i].total_cotisation} Fcfa`,
+              frais: data[i].compte_agent_collecteur + data[i].total_cotisation,
+              somme: `${
+                data[i].compte_agent_collecteur + data[i].total_cotisation
+              }`,
               agence: data[i].agc_name,
+              carnet_vendu: data[i].carnet_vendu,
+              client: data[i].nbr_cli,
+            });
+
+            this.dataCollecteur_c.push({
+              key: data[i].id,
+              nom: `${data[i].nom} ${data[i].prenom}`,
+              numero: data[i].numero,
+              frais: data[i].compte_agent_collecteur + data[i].total_cotisation,
+              somme: `${
+                data[i].compte_agent_collecteur + data[i].total_cotisation
+              }`,
+              agence: data[i].agc_name,
+              carnet_vendu: data[i].carnet_vendu,
+              client: data[i].nbr_cli,
+            });
+
+            this.dataCollecteur_cli.push({
+              key: data[i].id,
+              nom: `${data[i].nom} ${data[i].prenom}`,
+              numero: data[i].numero,
+              frais: data[i].compte_agent_collecteur + data[i].total_cotisation,
+              somme: `${
+                data[i].compte_agent_collecteur + data[i].total_cotisation
+              }`,
+              agence: data[i].agc_name,
+              carnet_vendu: data[i].carnet_vendu,
+              client: data[i].nbr_cli,
             });
           }
+
+          this.dataCollecteur.sort(function (a, b) {
+            return b.frais - a.frais;
+          });
+
+          this.dataCollecteur_c.sort(function (a, b) {
+            return b.carnet_vendu - a.carnet_vendu;
+          });
+
+          console.log(this.dataCollecteur_cli);
+
+          this.dataCollecteur_cli.sort(function (a, b) {
+            return b.client - a.client;
+          });
         });
     },
 
@@ -458,12 +590,13 @@ export default {
       let headers = { headers: { Authorization: this.token_admin } };
 
       this.$http
-        .post(`${this.callback}/classement/carnet`, {}, headers)
+        .post(`${this.callback}/classement/carnet?all=true`, {}, headers)
         .then((response) => {
           let data = response.body.data;
 
+          console.log(response);
           this.dataCarnet = [];
-          for (let i = 0; i < 5; i++) {
+          for (let i = 0; i < 10; i++) {
             this.dataCarnet.push(data[i]);
           }
         });

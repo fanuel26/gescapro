@@ -59,7 +59,8 @@ export default {
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       stats: [],
       width: 1000,
@@ -183,10 +184,10 @@ export default {
             this.stats[0].value = data.length;
             this.data = [];
             console.log(data);
-            for (let i = 0; i < data.length; i++) {
+            for (let i = data.length - 1; i >=0 ; i--) {
               this.data.push({
                 key: data[i].id,
-                created_at: data[i].created_at,
+                created_at: new Date(data[i].created_at).toLocaleString(),
                 somme: `${data[i].montant} Fcfa`,
                 somme_a: `${data[i].montant + data[i].reste} Fcfa`,
                 nom: `${data[i].collecteurs.nom} ${data[i].collecteurs.prenom}`,

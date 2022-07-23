@@ -139,7 +139,7 @@
                         :colon="false"
                       >
                         <a-input
-                          v-model="username"
+                        v-model="username"
                           v-decorator="[
                             'username',
                             {
@@ -160,7 +160,6 @@
                     <a-col :span="12" :md="12" class="">
                       <a-form-item class="" label="Code secret" :colon="false">
                         <a-input
-                          v-model="username"
                           v-decorator="[
                             'code_secret',
                             {
@@ -223,7 +222,7 @@
                 <a-col :span="12">
                   <a-popconfirm
                     v-if="record.status == 1"
-                    title="Sure de bloquer?"
+                    title="Sûre de bloquer?"
                     @confirm="() => block(record.key)"
                     ><a-button type="danger" class="mx-2" size="small"
                       >Bloquer</a-button
@@ -232,7 +231,7 @@
 
                   <a-popconfirm
                     v-if="record.status == 0"
-                    title="Sure de débloquer?"
+                    title="Sûre de débloquer?"
                     @confirm="() => block(record.key)"
                     ><a-button type="success" class="mx-2" size="small"
                       >Debloquer</a-button
@@ -276,7 +275,7 @@ export default {
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       stats,
       width: 1000,
@@ -354,7 +353,7 @@ export default {
           for (let i = data.length - 1; i >= 0; i--) {
             this.data.push({
               key: data[i].id,
-              created_at: data[i].created_at,
+              created_at: new Date(data[i].created_at).toLocaleString(),
               nom: `${data[i].nom} ${data[i].prenom}`,
               numero: `(+228) ${data[i].numero}`,
               email: data[i].email,
@@ -406,7 +405,8 @@ export default {
               this.confirmLoading = false;
               this.form.resetFields();
             }, 2000);
-          } else {s
+          } else {
+            s;
             this.showAlert("error", "Erreur", "Code secret incorrect");
           }
         } else {
@@ -429,7 +429,7 @@ export default {
         nom: this.nom,
         prenom: this.prenom,
         email: this.email,
-        id_type_administrateur: 1,
+        id_type_administrateur: 4,
         username: this.username,
         password: this.password,
       };
@@ -437,7 +437,11 @@ export default {
       this.$http.post(`${this.callback}/register`, data_create, headers).then(
         (response) => {
           console.log(response);
-          this.showAlert("success", "Success", "Admin creer avec success");
+          if (response.body.status == true) {
+            this.showAlert("success", "Success", "Admin creer avec success");
+          } else {
+            this.showAlert("error", "Error", response.body.message);
+          }
         },
         (response) => {
           this.showAlert("error", "Error", response.body.message);

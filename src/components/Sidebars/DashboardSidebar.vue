@@ -74,7 +74,7 @@
               />
             </svg>
           </span>
-          <span class="label">Carnets stock</span>
+          <span class="label">Carnets</span>
         </router-link>
       </a-menu-item>
       <a-menu-item v-if="type.carnet == true">
@@ -99,34 +99,10 @@
               />
             </svg>
           </span>
-          <span class="label">Carnets</span>
+          <span class="label">Carnets stock</span>
         </router-link>
       </a-menu-item>
-      <a-menu-item v-if="type.epargne == true">
-        <router-link :to="{ name: 'Epargne' }">
-          <span class="icon">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M9 2C8.44772 2 8 2.44772 8 3C8 3.55228 8.44772 4 9 4H11C11.5523 4 12 3.55228 12 3C12 2.44772 11.5523 2 11 2H9Z"
-                fill="#111827"
-              />
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M4 5C4 3.89543 4.89543 3 6 3C6 4.65685 7.34315 6 9 6H11C12.6569 6 14 4.65685 14 3C15.1046 3 16 3.89543 16 5V16C16 17.1046 15.1046 18 14 18H6C4.89543 18 4 17.1046 4 16V5ZM7 9C6.44772 9 6 9.44772 6 10C6 10.5523 6.44772 11 7 11H7.01C7.56228 11 8.01 10.5523 8.01 10C8.01 9.44772 7.56228 9 7.01 9H7ZM10 9C9.44772 9 9 9.44772 9 10C9 10.5523 9.44772 11 10 11H13C13.5523 11 14 10.5523 14 10C14 9.44772 13.5523 9 13 9H10ZM7 13C6.44772 13 6 13.4477 6 14C6 14.5523 6.44772 15 7 15H7.01C7.56228 15 8.01 14.5523 8.01 14C8.01 13.4477 7.56228 13 7.01 13H7ZM10 13C9.44772 13 9 13.4477 9 14C9 14.5523 9.44772 15 10 15H13C13.5523 15 14 14.5523 14 14C14 13.4477 13.5523 13 13 13H10Z"
-                fill="#111827"
-              />
-            </svg>
-          </span>
-          <span class="label">Compte épargne</span>
-        </router-link>
-      </a-menu-item>
+
       <a-menu-item v-if="type.produit == true">
         <router-link :to="{ name: 'Produit' }">
           <span class="icon">
@@ -177,6 +153,59 @@
           <span class="label">Produits stocks</span>
         </router-link>
       </a-menu-item>
+
+      <a-menu-item
+        class="menu-item-header"
+        v-if="type.client == true || type.epargne == true"
+      >
+        Comptes
+      </a-menu-item>
+      <a-menu-item v-if="type.epargne == true">
+        <router-link :to="{ name: 'Epargne' }">
+          <span class="icon">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M9 2C8.44772 2 8 2.44772 8 3C8 3.55228 8.44772 4 9 4H11C11.5523 4 12 3.55228 12 3C12 2.44772 11.5523 2 11 2H9Z"
+                fill="#111827"
+              />
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M4 5C4 3.89543 4.89543 3 6 3C6 4.65685 7.34315 6 9 6H11C12.6569 6 14 4.65685 14 3C15.1046 3 16 3.89543 16 5V16C16 17.1046 15.1046 18 14 18H6C4.89543 18 4 17.1046 4 16V5ZM7 9C6.44772 9 6 9.44772 6 10C6 10.5523 6.44772 11 7 11H7.01C7.56228 11 8.01 10.5523 8.01 10C8.01 9.44772 7.56228 9 7.01 9H7ZM10 9C9.44772 9 9 9.44772 9 10C9 10.5523 9.44772 11 10 11H13C13.5523 11 14 10.5523 14 10C14 9.44772 13.5523 9 13 9H10ZM7 13C6.44772 13 6 13.4477 6 14C6 14.5523 6.44772 15 7 15H7.01C7.56228 15 8.01 14.5523 8.01 14C8.01 13.4477 7.56228 13 7.01 13H7ZM10 13C9.44772 13 9 13.4477 9 14C9 14.5523 9.44772 15 10 15H13C13.5523 15 14 14.5523 14 14C14 13.4477 13.5523 13 13 13H10Z"
+                fill="#111827"
+              />
+            </svg>
+          </span>
+          <span class="label">Epargnes</span>
+        </router-link>
+      </a-menu-item>
+      <a-menu-item>
+        <router-link :to="{ name: 'Pret' }">
+          <span class="icon">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M6 2C5.44772 2 5 2.44772 5 3V4H4C2.89543 4 2 4.89543 2 6V16C2 17.1046 2.89543 18 4 18H16C17.1046 18 18 17.1046 18 16V6C18 4.89543 17.1046 4 16 4H15V3C15 2.44772 14.5523 2 14 2C13.4477 2 13 2.44772 13 3V4H7V3C7 2.44772 6.55228 2 6 2ZM6 7C5.44772 7 5 7.44772 5 8C5 8.55228 5.44772 9 6 9H14C14.5523 9 15 8.55228 15 8C15 7.44772 14.5523 7 14 7H6Z"
+                fill="#111827"
+              />
+            </svg>
+          </span>
+          <span class="label">Prêts</span>
+        </router-link>
+      </a-menu-item>
       <a-menu-item v-if="type.client == true">
         <router-link :to="{ name: 'Client' }">
           <span class="icon">
@@ -196,6 +225,31 @@
             </svg>
           </span>
           <span class="label">Clients</span>
+        </router-link>
+      </a-menu-item>
+      <a-menu-item>
+        <router-link :to="{ name: 'Entreprise' }">
+          <span class="icon">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M9 2C8.44772 2 8 2.44772 8 3C8 3.55228 8.44772 4 9 4H11C11.5523 4 12 3.55228 12 3C12 2.44772 11.5523 2 11 2H9Z"
+                fill="#111827"
+              />
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M4 5C4 3.89543 4.89543 3 6 3C6 4.65685 7.34315 6 9 6H11C12.6569 6 14 4.65685 14 3C15.1046 3 16 3.89543 16 5V16C16 17.1046 15.1046 18 14 18H6C4.89543 18 4 17.1046 4 16V5ZM7 9C6.44772 9 6 9.44772 6 10C6 10.5523 6.44772 11 7 11H7.01C7.56228 11 8.01 10.5523 8.01 10C8.01 9.44772 7.56228 9 7.01 9H7ZM10 9C9.44772 9 9 9.44772 9 10C9 10.5523 9.44772 11 10 11H13C13.5523 11 14 10.5523 14 10C14 9.44772 13.5523 9 13 9H10ZM7 13C6.44772 13 6 13.4477 6 14C6 14.5523 6.44772 15 7 15H7.01C7.56228 15 8.01 14.5523 8.01 14C8.01 13.4477 7.56228 13 7.01 13H7ZM10 13C9.44772 13 9 13.4477 9 14C9 14.5523 9.44772 15 10 15H13C13.5523 15 14 14.5523 14 14C14 13.4477 13.5523 13 13 13H10Z"
+                fill="#111827"
+              />
+            </svg>
+          </span>
+          <span class="label">Entreprises</span>
         </router-link>
       </a-menu-item>
       <a-menu-item
@@ -412,7 +466,71 @@
           <span class="label">Déploiement Ville</span>
         </router-link>
       </a-menu-item>
+      <a-menu-item class="menu-item-header"> CARNETS & LIVRAISONS </a-menu-item>
+      <a-menu-item v-if="type.launship == true">
+        <router-link :to="{ name: 'Livraison' }">
+          <span class="icon">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M6 2C5.44772 2 5 2.44772 5 3V4H4C2.89543 4 2 4.89543 2 6V16C2 17.1046 2.89543 18 4 18H16C17.1046 18 18 17.1046 18 16V6C18 4.89543 17.1046 4 16 4H15V3C15 2.44772 14.5523 2 14 2C13.4477 2 13 2.44772 13 3V4H7V3C7 2.44772 6.55228 2 6 2ZM6 7C5.44772 7 5 7.44772 5 8C5 8.55228 5.44772 9 6 9H14C14.5523 9 15 8.55228 15 8C15 7.44772 14.5523 7 14 7H6Z"
+                fill="#111827"
+              />
+            </svg>
+          </span>
+          <span class="label">Livraison statistique</span>
+        </router-link>
+      </a-menu-item>
+      <a-menu-item v-if="type.launship == true">
+        <router-link :to="{ name: 'Etat' }">
+          <span class="icon">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M6 2C5.44772 2 5 2.44772 5 3V4H4C2.89543 4 2 4.89543 2 6V16C2 17.1046 2.89543 18 4 18H16C17.1046 18 18 17.1046 18 16V6C18 4.89543 17.1046 4 16 4H15V3C15 2.44772 14.5523 2 14 2C13.4477 2 13 2.44772 13 3V4H7V3C7 2.44772 6.55228 2 6 2ZM6 7C5.44772 7 5 7.44772 5 8C5 8.55228 5.44772 9 6 9H14C14.5523 9 15 8.55228 15 8C15 7.44772 14.5523 7 14 7H6Z"
+                fill="#111827"
+              />
+            </svg>
+          </span>
+          <span class="label">Etat carnet</span>
+        </router-link>
+      </a-menu-item>
       <a-menu-item class="menu-item-header"> Paramêtre </a-menu-item>
+      <a-menu-item>
+        <router-link :to="{ name: 'Pret_parametre' }">
+          <span class="icon">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M6 2C5.44772 2 5 2.44772 5 3V4H4C2.89543 4 2 4.89543 2 6V16C2 17.1046 2.89543 18 4 18H16C17.1046 18 18 17.1046 18 16V6C18 4.89543 17.1046 4 16 4H15V3C15 2.44772 14.5523 2 14 2C13.4477 2 13 2.44772 13 3V4H7V3C7 2.44772 6.55228 2 6 2ZM6 7C5.44772 7 5 7.44772 5 8C5 8.55228 5.44772 9 6 9H14C14.5523 9 15 8.55228 15 8C15 7.44772 14.5523 7 14 7H6Z"
+                fill="#111827"
+              />
+            </svg>
+          </span>
+          <span class="label">Paramètre Prêt</span>
+        </router-link>
+      </a-menu-item>
       <a-menu-item v-if="type.launship == true">
         <router-link :to="{ name: 'Launship_demande' }">
           <span class="icon">
@@ -521,7 +639,7 @@ export default {
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       // sidebarCollapsedModel: this.sidebarCollapsed,
       type: {},
@@ -533,10 +651,12 @@ export default {
   mounted() {
     let t = localStorage.getItem("type");
 
+    console.log(t);
     if (t == null) {
       this.type = {
         carnet: false,
         epargne: false,
+        pret: false,
         produit: false,
         client: false,
         collecteur: false,
@@ -561,8 +681,6 @@ export default {
       .post(`${this.callback}/statistique`, {}, headers)
       .then((response) => {
         let data = response.body;
-
-        console.log(data);
         this.statistique = data;
       });
 

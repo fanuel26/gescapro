@@ -7,7 +7,7 @@
 			<h6>Statistique de collectes</h6>
 		</div>
 		<div class="card-content">
-			<p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dicta, adipisci!.</p>
+			<!-- <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dicta, adipisci!.</p> -->
 		</div>
 	</a-card>
 	<!-- Active Users Card -->

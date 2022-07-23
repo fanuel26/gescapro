@@ -196,7 +196,8 @@ export default {
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       stats: [],
       width: 1000,
@@ -298,7 +299,7 @@ export default {
       this.token_admin = session.getItem("token");
       let headers = { headers: { Authorization: this.token_admin } };
 
-      this.$http.post(`${this.callback}/quartier/liste`, {}, headers).then(
+      this.$http.post(`${this.callback}/quartier/liste?all=true`, {}, headers).then(
         (response) => {
           let data = response.body.data;
 
@@ -333,7 +334,7 @@ export default {
           for (let i = data.length - 1; i >= 0; i--) {
             this.data.push({
               key: data[i].id,
-              created_at: data[i].created_at,
+              created_at: new Date(data[i].created_at).toLocaleString(),
               nom: data[i].nom_agence,
               ville: data[i].quartier.ville.libelle,
               quartier: data[i].quartier.libelle,
@@ -365,7 +366,7 @@ export default {
           for (let i = data.length - 1; i >= 0; i--) {
             this.data.push({
               key: data[i].id,
-              created_at: data[i].created_at,
+              created_at: new Date(data[i].created_at).toLocaleString(),
               nom: data[i].nom_agence,
               ville: data[i].quartier.ville.libelle,
               quartier: data[i].quartier.libelle,
@@ -396,7 +397,7 @@ export default {
           for (let i = data.length - 1; i >= 0; i--) {
             this.data.push({
               key: data[i].id,
-              created_at: data[i].created_at,
+              created_at: new Date(data[i].created_at).toLocaleString(),
               nom: data[i].nom_agence,
               ville: data[i].quartier.ville.libelle,
               quartier: data[i].quartier.libelle,
@@ -452,6 +453,7 @@ export default {
         (response) => {
           console.log(response);
           this.showAlert("success", "Success", "Agence créer avec success");
+            this.form.resetFields();
         },
         (response) => {
           console.log(response);
@@ -487,7 +489,7 @@ export default {
           for (let i = data.length - 1; i >= 0; i--) {
             this.data.push({
               key: data[i].id,
-              created_at: data[i].created_at,
+              created_at: new Date(data[i].created_at).toLocaleString(),
               nom: data[i].nom_agence,
               ville: data[i].quartier.ville.libelle,
               quartier: data[i].quartier.libelle,

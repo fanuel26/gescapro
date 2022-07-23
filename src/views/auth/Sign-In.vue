@@ -7,70 +7,68 @@
   <div class="sign-in" style="height: 75vh">
     <a-row type="flex" :gutter="24" justify="space-around" align="center">
       <!-- Sign In Form Column -->
-      <a-col :span="24" :md="12" :lg="6" :xl="6"></a-col>
-      <a-col :span="24" :md="12" :lg="6" :xl="6" class="col-form mt-4">
-        <a-card>
-          <h3 class="mb-15 text-center text-primary mt-4">GesCaPro</h3>
-          <h5 class="font-regular text-center text-muted">
-            Enter votre adresse email et password pour se connecter
-          </h5>
-          
-          <!-- Sign In Form -->
-          <a-form
-            id="components-form-demo-normal-login"
-            :form="form"
-            class="login-form mt-4"
-            @submit="LoginSubmit"
-            :hideRequiredMark="true"
-          >
-            <a-form-item class="mb-10" label="Email" :colon="false">
-              <a-input
-                v-decorator="[
-                  'email',
-                  {
-                    rules: [
-                      { required: true, message: 'Please input your email!' },
-                    ],
-                  },
-                ]"
-                placeholder="Email"
-              />
-            </a-form-item>
-            <a-form-item class="mb-5" label="Password" :colon="false">
-              <a-input
-                v-decorator="[
-                  'password',
-                  {
-                    rules: [
-                      {
-                        required: true,
-                        message: 'Please input your password!',
-                      },
-                    ],
-                  },
-                ]"
-                type="password"
-                placeholder="Password"
-              />
-            </a-form-item>
-            <a-form-item>
-              <a-button
-                type="primary"
-                block
-                html-type="submit"
-                class="login-form-button"
-              >
-                CONNEXION
-              </a-button>
-            </a-form-item>
-          </a-form>
-        </a-card>
-        <!-- / Sign In Form -->
-      </a-col>
-      <!-- / Sign In Form Column -->
+      <div style="width: 100vw; display: flex; justify-content: center">
+        <a-col :span="24" :md="12" :lg="6" :xl="6" class="col-form mt-4">
+          <a-card>
+            <h3 class="mb-15 text-center text-primary mt-4">GesCaPro</h3>
+            <h5 class="font-regular text-center text-muted">
+              Entrez l'adresse email et le mot de passe pour se connecter
+            </h5>
 
-      <!-- Sign In Image Column -->
-      <a-col :span="24" :md="12" :lg="12" :xl="12" class="col-img"> </a-col>
+            <!-- Sign In Form -->
+            <a-form
+              id="components-form-demo-normal-login"
+              :form="form"
+              class="login-form mt-4"
+              @submit="LoginSubmit"
+              :hideRequiredMark="true"
+            >
+              <a-form-item class="mb-10" label="Adresse email" :colon="false">
+                <a-input
+                  v-decorator="[
+                    'email',
+                    {
+                      rules: [
+                        { required: true, message: 'Please input your email!' },
+                      ],
+                    },
+                  ]"
+                  placeholder="Adresse email"
+                />
+              </a-form-item>
+              <a-form-item class="mb-5" label="Mot de passe" :colon="false">
+                <a-input
+                  v-decorator="[
+                    'password',
+                    {
+                      rules: [
+                        {
+                          required: true,
+                          message: 'Please input your password!',
+                        },
+                      ],
+                    },
+                  ]"
+                  type="password"
+                  placeholder="Mot de passe"
+                />
+              </a-form-item>
+              <a-form-item>
+                <a-button
+                  type="primary"
+                  block
+                  html-type="submit"
+                  class="login-form-button"
+                >
+                  CONNEXION
+                </a-button>
+              </a-form-item>
+            </a-form>
+          </a-card>
+          <!-- / Sign In Form -->
+        </a-col>
+      </div>
+
       <!-- Sign In Image Column -->
     </a-row>
   </div>
@@ -80,7 +78,8 @@
 export default {
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      
+      callback: process.env.VUE_APP_API_BASE_URL,
     };
   },
   beforeCreate() {

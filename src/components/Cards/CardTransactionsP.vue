@@ -6,7 +6,7 @@
     :bodyStyle="{ paddingTop: 0, paddingBottom: '16px' }"
   >
     <template #title>
-      <h6 class="font-semibold m-0">Liste des carnets epargnes</h6>
+      <h6 class="font-semibold m-0">Liste des prêts</h6>
     </template>
     <a-list
       class="transactions-list"
@@ -16,10 +16,9 @@
     >
       <a-list-item slot="renderItem" slot-scope="item">
         <template>
-          <a-list-item-meta :title="item.title" :description="item.description">
+          <a-list-item-meta :title="item.title" :description="`Somme deposé: 75000 Fcfa, \nTaux d'interet: 30%`">
             <a-avatar
               size="small"
-              v-if="item.type == 1"
               slot="avatar"
               style="background-color: #edf9e7"
             >
@@ -38,64 +37,62 @@
                 />
               </svg>
             </a-avatar>
-            <a-avatar
-              size="small"
-              v-if="item.type == 0"
-              slot="avatar"
-              style="background-color: #fffce7"
-            >
-              <strong class="text-warning"> ! </strong>
-            </a-avatar>
-            <a-avatar
-              size="small"
-              v-if="item.type == -1"
-              slot="avatar"
-              style="background-color: #fee9ea"
-            >
-              <svg
-                width="10"
-                height="10"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  class="fill-danger"
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M5 10C5 9.44772 5.44772 9 6 9L14 9C14.5523 9 15 9.44772 15 10C15 10.5523 14.5523 11 14 11L6 11C5.44772 11 5 10.5523 5 10Z"
-                />
-              </svg>
-            </a-avatar>
           </a-list-item-meta>
           <div>
-            <div class="amount">
-              <span v-if="item.type == 1" class="text-success">
-                {{ item.amount }} Fcfa
-              </span>
-              <span v-if="item.type == 0" class="text-warning">
-                {{ item.amount }} Fcfa
-              </span>
-              <span v-if="item.type == -1" class="text-danger">
-                {{ item.amount }} Fcfa
+            <div class="amount mb-2">
+              <span class="text-success">
+                150000 Fcfa
               </span>
             </div>
 
-            <a-button size="small" @click="showModal(item)">Detail</a-button>
+            <a-button size="small" @click="confirm(item.id)">Actions</a-button>
+
+            <a-drawer
+              title="Actions"
+              placement="right"
+              :closable="false"
+              :visible="visible"
+            >
+              <a-card>
+                <h6>Suspendre le prêt</h6>
+                <a-form
+                  ref="formRef"
+                  :form="form"
+                  class="login-form"
+                  @submit="onSubmit"
+                >
+                  <a-form-item label="Motif de suspension" name="desc">
+                    <a-textarea
+                      v-decorator="[
+                        'motif',
+                        {
+                          rules: [
+                            {
+                              required: true,
+                              message: 'Motif est vide!',
+                            },
+                          ],
+                        },
+                      ]"
+                      placeholder="Motif"
+                    />
+                  </a-form-item>
+                  <a-form-item class="text-right">
+                    <a-button
+                      type="primary"
+                      @click="onSubmit"
+                      style="margin-left: 10px"
+                      >Suspendre</a-button
+                    >
+                  </a-form-item>
+                </a-form>
+              </a-card>
+              <a-button class="my-4" @click="resetForm">Fermer</a-button>
+            </a-drawer>
           </div>
         </template>
       </a-list-item>
     </a-list>
-
-    <a-modal
-      :visible="visible_m"
-      width="1000px"
-      title="Liste des cotisations"
-      @ok="handleOk"
-      @cancel="handleCancel"
-    >
-      <a-table :columns="columns" :data-source="data_f"></a-table>
-    </a-modal>
   </a-card>
   <!-- / Your Transactions Card -->
 </template>
@@ -108,6 +105,9 @@ export default {
       default: () => [],
     },
   },
+  beforeCreate() {
+    this.form = this.$form.createForm(this, { name: "normal_login" });
+  },
   data() {
     return {
       callback: process.env.VUE_APP_API_BASE_URL,
@@ -116,36 +116,7 @@ export default {
       visible: false,
       id: null,
       status: false,
-      visible_m: false,
-      columns: [],
-      data_f: [],
     };
-  },
-
-  mounted() {
-    this.columns = [
-      {
-        title: "Date de creation",
-        dataIndex: "created_at",
-        key: "created_at",
-        scopedSlots: { customRender: "name" },
-      },
-      {
-        title: "Nombre cotisé",
-        dataIndex: "nbr",
-        key: "nbr",
-      },
-      {
-        title: "Mise unitaire",
-        dataIndex: "mise",
-        key: "mise",
-      },
-      {
-        title: "Total cotisation",
-        dataIndex: "total",
-        key: "total",
-      },
-    ];
   },
   methods: {
     showAlert(type, title, description) {
@@ -156,33 +127,36 @@ export default {
     },
 
     confirm(id) {
+      console.log(id);
       this.id = id;
 
-      let session = localStorage;
-      this.token_admin = session.getItem("token");
+      this.visible = true;
+      // let session = localStorage;
+      // this.token_admin = session.getItem("token");
 
-      let headers = { headers: { Authorization: this.token_admin } };
+      // let headers = { headers: { Authorization: this.token_admin } };
 
-      this.$http
-        .post(
-          `${this.callback}/cotisation/delete/last-info/${this.id}`,
-          {},
-          headers
-        )
-        .then(
-          (response) => {
-            if (response) {
-              this.status = response.body.status;
-              if (this.status == false) {
-                this.showAlert("warning", "Warning", response.body.message);
-              }
-              this.visible = true;
-            }
-          },
-          (response) => {
-            this.showAlert("error", "Erreur", response.body.message);
-          }
-        );
+      // this.$http
+      //   .post(
+      //     `${this.callback}/cotisation/delete/last-info/${this.id}`,
+      //     {},
+      //     headers
+      //   )
+      //   .then(
+      //     (response) => {
+      //       console.log(response);
+      //       if (response) {
+      //         this.status = response.body.status;
+      //         if (this.status == false) {
+      //           this.showAlert("warning", "Warning", response.body.message);
+      //         }
+      //         this.visible = true;
+      //       }
+      //     },
+      //     (response) => {
+      //       this.showAlert("error", "Erreur", response.body.message);
+      //     }
+      //   );
     },
 
     cancel(e) {
@@ -234,10 +208,12 @@ export default {
       this.token_admin = session.getItem("token");
       let headers = { headers: { Authorization: this.token_admin } };
 
+      console.log(headers);
       this.$http
         .post(`${this.callback}/cotisation/delete/last/${this.id}`, {}, headers)
         .then(
           (response) => {
+            console.log(response);
             if (response.body.status == true) {
               this.showAlert("success", "Success", response.body.message);
             } else {
@@ -248,30 +224,6 @@ export default {
             this.showAlert("error", "Erreur", response.body.message);
           }
         );
-    },
-
-    showModal(data) {
-      let d = data.cotisations;
-      this.data_f = [];
-      for (let i = d.length - 1; i >= 0; i--) {
-        console.log(d[i]);
-        this.data_f.push({
-          created_at: d[i].date_cotisation,
-          nbr: d[i].nb,
-          mise: `${d[i].mise} Fcfa`,
-          total: `${d[i].mise * d[i].nb} Fcfa`,
-        });
-      }
-      this.visible_m = true;
-    },
-
-    handleOk() {
-      console.log("fermer");
-      this.visible_m = false;
-    },
-
-    handleCancel(e) {
-      this.visible_m = false;
     },
   },
 };

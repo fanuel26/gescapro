@@ -70,18 +70,19 @@
           </a-list-item-meta>
           <div>
             <div class="amount">
-              <span v-if="item.type == 1" class="text-success">
+              <span v-if="item.case != 1" class="text-danger">
                 {{ item.amount }} Fcfa
               </span>
-              <span v-if="item.type == 0" class="text-warning">
-                {{ item.amount }} Fcfa
-              </span>
-              <span v-if="item.type == -1" class="text-danger">
+              <span v-if="item.case == 1" class="text-warning">
                 {{ item.amount }} Fcfa
               </span>
             </div>
 
-            <a-button size="small" @click="confirm(item.id)">Actions</a-button>
+            <a-button size="small" class="mx-2" @click="showModal(item)"
+              >Detail</a-button
+            >
+
+            <a-button size="small" @click="confirm(item.id)">Action</a-button>
 
             <a-drawer
               title="Actions"
@@ -123,26 +124,47 @@
                   </a-form-item>
                 </a-form>
               </a-card>
-              <div class="my-4">
-                <a-popconfirm
-                  title="Voulez vous vraiment supprimer la dernière cotisation?"
-                  ok-text="Oui! Supprimer"
-                  cancel-text="Non"
-                  @confirm="delete_cotisation()"
-                  @cancel="cancel"
-                >
-                  <a-button type="danger" v-if="item.nbcotisattion != 0"
-                    >Supprimer dernière cotisation</a-button
+              <div class="my-4" v-if="state == false">
+                <a-card>
+                  <p>
+                    <small>
+                      Supprimer la derniere cotisation
+                    </small>
+                  </p>
+                  <p>
+                    <small>Somme: <strong>{{ data_suppr.montant }} Fcfa</strong></small><br>
+                    <small>Nbr cotisation: <strong>{{ data_suppr.nbCotisation }}</strong></small><br>
+                    <small>Mise du jour: <strong>{{ data_suppr.unit }} Fcfa</strong></small><br>
+                  </p>
+                  <a-popconfirm
+                    title="Voulez vous vraiment supprimer la dernière cotisation?"
+                    ok-text="Oui! Supprimer"
+                    cancel-text="Non"
+                    @confirm="delete_cotisation()"
+                    @cancel="cancel"
                   >
-                </a-popconfirm>
+                    <a-button type="danger" v-if="status == true"
+                      >Supprimer la cotisation</a-button
+                    >
+                  </a-popconfirm>
+                </a-card>
               </div>
-
-              <a-button @click="resetForm">Fermer</a-button>
+              <a-button class="my-4" @click="resetForm">Fermer</a-button>
             </a-drawer>
           </div>
         </template>
       </a-list-item>
     </a-list>
+
+    <a-modal
+      :visible="visible_m"
+      width="1000px"
+      title="Liste des cotisations"
+      @ok="handleOk"
+      @cancel="handleCancel"
+    >
+      <a-table :columns="columns" :data-source="data_f"></a-table>
+    </a-modal>
   </a-card>
   <!-- / Your Transactions Card -->
 </template>
@@ -160,12 +182,44 @@ export default {
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       motif: null,
       visible: false,
       id: null,
+      status: false,
+      visible_m: false,
+      state: false,
+      columns: [],
+      data_f: [],
+      data_suppr: {},
     };
+  },
+
+  mounted() {
+    this.columns = [
+      {
+        title: "Date de creation",
+        dataIndex: "created_at",
+        key: "created_at",
+        scopedSlots: { customRender: "name" },
+      },
+      {
+        title: "Nombre cotisé",
+        dataIndex: "nbr",
+        key: "nbr",
+      },
+      {
+        title: "Mise unitaire",
+        dataIndex: "mise",
+        key: "mise",
+      },
+      {
+        title: "Total cotisation",
+        dataIndex: "total",
+        key: "total",
+      },
+    ];
   },
   methods: {
     showAlert(type, title, description) {
@@ -176,9 +230,40 @@ export default {
     },
 
     confirm(id) {
-      console.log(id);
       this.id = id;
-      this.visible = true;
+
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(
+          `${this.callback}/cotisation/delete/last-info/${this.id}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            console.log(response.body);
+            if (response) {
+              this.status = response.body.status;
+              if (this.status == false) {
+                this.showAlert("warning", "Warning", response.body.message);
+                this.visible = true;
+                this.state = false;
+              } else {
+                this.data_suppr = response.body.data;
+                console.log(this.data_suppr)
+                this.visible = true;
+                this.state = false;
+              }
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Erreur", response.body.message);
+          }
+        );
     },
 
     cancel(e) {
@@ -230,23 +315,45 @@ export default {
       this.token_admin = session.getItem("token");
       let headers = { headers: { Authorization: this.token_admin } };
 
-      console.log(headers);
       this.$http
         .post(`${this.callback}/cotisation/delete/last/${this.id}`, {}, headers)
         .then(
           (response) => {
-            if (response) {
-              this.showAlert(
-                "success",
-                "Success",
-                "Operation effectuer avec success"
-              );
+            if (response.body.status == true) {
+              this.showAlert("success", "Success", response.body.message);
+              this.state = false;
+            } else {
+              this.showAlert("error", "Erreur", response.body.message);
             }
           },
           (response) => {
             this.showAlert("error", "Erreur", response.body.message);
           }
         );
+    },
+
+    showModal(data) {
+      let d = data.cotisations;
+      this.data_f = [];
+      for (let i = d.length - 1; i >= 0; i--) {
+        console.log(d[i]);
+        this.data_f.push({
+          created_at: d[i].date_cotisation,
+          nbr: d[i].nb,
+          mise: `${d[i].mise} Fcfa`,
+          total: `${d[i].mise * d[i].nb} Fcfa`,
+        });
+      }
+      this.visible_m = true;
+    },
+
+    handleOk() {
+      console.log("fermer");
+      this.visible_m = false;
+    },
+
+    handleCancel(e) {
+      this.visible_m = false;
     },
   },
 };

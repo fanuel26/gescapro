@@ -26,7 +26,10 @@
               <a-card :bordered="false" class="card-billing-info">
                 <div class="col-info">
                   <a-descriptions
-                    :title="'Date de création: ' + agence.created_at"
+                    :title="
+                      'Date de création: ' +
+                      new Date(agence.created_at).toLocaleString()
+                    "
                     :column="3"
                   >
                     <a-descriptions-item label="Nom">
@@ -141,7 +144,7 @@
                 ]"
               >
                 <a-select-option
-                  v-for="(collecteur, index) in collecteurs"
+                  v-for="(collecteur, index) in collecteurs_not_affect"
                   :key="index"
                   :value="collecteur.id"
                 >
@@ -393,7 +396,7 @@
               <router-link
                 class="mx-2"
                 :to="{
-                  name: 'Collecteur_detail',
+                  name: 'Caissier_detail',
                   params: { id: record.key },
                 }"
                 ><a-button type="primary" size="small"
@@ -443,11 +446,12 @@ export default {
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       visible: false,
       confirmLoading: false,
       collecteurs: [],
+      collecteurs_not_affect: [],
       superviseurs: [],
       livreurs: [],
       caissiers: [],
@@ -570,7 +574,6 @@ export default {
         .then(
           (response) => {
             let data = response.body.data;
-            console.log(data);
             this.agence = data;
             this.ville = data.quartier.ville.libelle;
             this.quartier = data.quartier.libelle;
@@ -596,7 +599,6 @@ export default {
             this.showAlert("error", "Erreur", response.body.message);
           }
         );
-
 
       this.$http
         .post(
@@ -624,14 +626,12 @@ export default {
         .then(
           (response) => {
             let data = response.body.data;
-            console.log(data);
-            this.stats[3].value = data.length;
+            this.stats[2].value = data.length;
             this.data = [];
-            console.log(data);
             for (let i = data.length - 1; i >= 0; i--) {
               this.data.push({
                 key: data[i].id,
-                created_at: data[i].created_at,
+                created_at: new Date(data[i].created_at).toLocaleString(),
                 nom: `${data[i].nom} ${data[i].prenom}`,
                 numero: `(+228) ${data[i].numero}`,
               });
@@ -651,13 +651,12 @@ export default {
         .then(
           (response) => {
             let data = response.body.data;
-            this.stats[2].value = data.length;
+            this.stats[3].value = data.length;
             this.data_c = [];
-            console.log(data);
             for (let i = data.length - 1; i >= 0; i--) {
               this.data_c.push({
                 key: data[i].id,
-                created_at: data[i].created_at,
+                created_at: new Date(data[i].created_at).toLocaleString(),
                 nom: `${data[i].nom} ${data[i].prenom}`,
                 numero: `(+228) ${data[i].numero}`,
               });
@@ -681,6 +680,9 @@ export default {
           (response) => {
             let data = response.body.data;
             this.collecteurs = data;
+            this.collecteurs_not_affect = data;
+
+            console.log(this.collecteurs_not_affect);
           },
           (response) => {
             this.showAlert("error", "Error", response.body.message);
@@ -745,7 +747,6 @@ export default {
       e.preventDefault();
       this.formAffect.validateFields((err, values) => {
         if (!err) {
-          console.log(values);
           if (values.code_secret == localStorage.getItem("code_secret")) {
             let session = localStorage;
             this.token_admin = session.getItem("token");
@@ -769,6 +770,7 @@ export default {
 
                     this.formAffect.resetFields();
                     this.detailAgence();
+                    this.listeCollecteur();
                   }
                 },
                 (response) => {
@@ -786,7 +788,6 @@ export default {
       e.preventDefault();
       this.formCaissier.validateFields((err, values) => {
         if (!err) {
-          console.log(values);
           if (values.code_secret == localStorage.getItem("code_secret")) {
             let session = localStorage;
             this.token_admin = session.getItem("token");
@@ -826,7 +827,6 @@ export default {
       e.preventDefault();
       this.formSuperviseurAffect.validateFields((err, values) => {
         if (!err) {
-          console.log(values);
           if (values.code_secret == localStorage.getItem("code_secret")) {
             let session = localStorage;
             this.token_admin = session.getItem("token");

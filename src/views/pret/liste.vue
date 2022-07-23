@@ -36,7 +36,7 @@
           <a-table :columns="columns" :data-source="data">
             <template slot="operation" slot-scope="text, record">
               <router-link
-                :to="{ name: 'Epargne_detail', params: { id: record.key } }"
+                :to="{ name: 'Pret_detail', params: { id: record.key } }"
                 ><a-button type="primary" size="small"
                   >Détail</a-button
                 ></router-link

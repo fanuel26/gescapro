@@ -24,7 +24,7 @@
               <a-card :bordered="false" class="card-billing-info">
                 <div class="col-info">
                   <a-descriptions
-                    :title="'date de création: ' + livreur.created_at"
+                    :title="'date de création: ' + new Date(livreur.created_at).toLocaleString()"
                     :column="2"
                   >
                     <a-descriptions-item label="Nom">
@@ -221,7 +221,8 @@ export default {
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       livreur: {},
       livreurs: null,

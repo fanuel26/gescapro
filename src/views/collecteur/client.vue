@@ -1,23 +1,10 @@
 <template>
   <div>
     <a-row :gutter="24">
-      <a-col
-        :span="24"
-        :lg="12"
-        :xl="6"
-        class="mb-24"
-        v-for="(stat, index) in stats"
-        :key="index"
-      >
+      <a-col :span="24" :lg="12" :xl="6" class="mb-24" v-for="(stat, index) in stats" :key="index">
         <!-- Widget 1 Card -->
-        <WidgetCounter
-          :title="stat.title"
-          :value="stat.value"
-          :prefix="stat.prefix"
-          :suffix="stat.suffix"
-          :icon="stat.icon"
-          :status="stat.status"
-        ></WidgetCounter>
+        <WidgetCounter :title="stat.title" :value="stat.value" :prefix="stat.prefix" :suffix="stat.suffix"
+          :icon="stat.icon" :status="stat.status"></WidgetCounter>
         <!-- / Widget 1 Card -->
       </a-col>
     </a-row>
@@ -32,62 +19,41 @@
             Affecter client a un autre collecteur
           </h6>
         </template>
-        <a-form
-          layout="inline"
-          id="components-form-demo-normal-login"
-          :form="form"
-          class="login-form mt-4"
-          @submit="handleSubmit"
-          :hideRequiredMark="true"
-        >
+        <a-form layout="inline" id="components-form-demo-normal-login" :form="form" class="login-form mt-4"
+          @submit="handleSubmit" :hideRequiredMark="true">
           <a-form-item label="Selectionnez le collecteur">
-            <a-select
-              style="width: 120px"
-              v-decorator="[
-                'collecteur',
-                {
-                  rules: [
-                    {
-                      required: true,
-                      message: 'Collecteur incorrect!',
-                    },
-                  ],
-                },
-              ]"
-            >
-              <a-select-option
-                :value="item.id"
-                v-for="item in collecteurs"
-                :key="item.id"
-              >
+            <a-select style="width: 120px" v-decorator="[
+              'collecteur',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: 'Collecteur incorrect!',
+                  },
+                ],
+              },
+            ]">
+              <a-select-option :value="item.id" v-for="item in collecteurs" :key="item.id">
                 {{ item.nom }} {{ item.prenom }}
               </a-select-option>
             </a-select>
           </a-form-item>
           <a-form-item class="" label="Code secret" :colon="false">
-            <a-input
-              v-decorator="[
-                'code_secret',
-                {
-                  rules: [
-                    {
-                      required: true,
-                      message: 'Code secret incorrect!',
-                    },
-                  ],
-                },
-              ]"
-              type="text"
-              placeholder="Code secret"
-            />
+            <a-input v-decorator="[
+              'code_secret',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: 'Code secret incorrect!',
+                  },
+                ],
+              },
+            ]" type="text" placeholder="Code secret" />
           </a-form-item>
 
           <a-form-item class="" :colon="false">
-            <a-button
-              type="primary"
-              html-type="submit"
-              class="login-form-button"
-            >
+            <a-button type="primary" html-type="submit" class="login-form-button">
               Affecter
             </a-button>
           </a-form-item>
@@ -96,12 +62,13 @@
 
       <a-col :span="12" :lg="12" :xl="24" class="mb-24">
         <a-card class="card card-body border-0">
-          <a-table
-            :columns="columns"
-            :data-source="data"
-            :row-selection="rowSelection"
-            :expanded-row-keys.sync="expandedRowKeys"
-          >
+          <a-table :columns="columns" :data-source="data" :row-selection="rowSelection"
+            :expanded-row-keys.sync="expandedRowKeys">
+            <template slot="operation" slot-scope="text, record">
+              <router-link :to="{ name: 'Client_detail', params: { id: record.key } }">
+                <a-button type="primary" size="small">Détail</a-button>
+              </router-link>
+            </template>
           </a-table>
         </a-card>
       </a-col>
@@ -137,7 +104,8 @@ export default {
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       stats,
       columns: null,
@@ -181,6 +149,11 @@ export default {
         title: "Collecteur en charge",
         dataIndex: "collecteur",
         key: "collecteur",
+      },
+      {
+        title: "Action",
+        key: "Action",
+        scopedSlots: { customRender: "operation" },
       },
     ];
 
@@ -226,10 +199,12 @@ export default {
             this.stats[0].value = data.length;
             this.data = [];
 
-            for (let i = 0; i < data.length; i++) {
+            console.log(this.data)
+
+            for (let i = data.length-1; i >=0; i--) {
               this.data.push({
                 key: data[i].id,
-                created_at: data[i].created_at,
+                created_at: new Date(data[i].created_at).toLocaleString(),
                 nom: data[i].nom,
                 numero: data[i].numero,
                 profession: data[i].profession,
@@ -251,10 +226,15 @@ export default {
       let headers = { headers: { Authorization: this.token_admin } };
 
       this.$http
-        .post(`${this.callback}/agent_collecteur/list`, {}, headers)
+        .post(`${this.callback}/agent_collecteur/list?all=true`, {}, headers)
         .then((response) => {
           let data = response.body.data;
-          this.collecteurs = data;
+          this.collecteurs = []
+          data.forEach(item => {
+            if (item.id != this.$route.params.id) {
+              this.collecteurs.push(item)
+            }
+          });
         });
     },
 

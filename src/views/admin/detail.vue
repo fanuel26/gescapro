@@ -23,7 +23,7 @@
             <a-col :span="24">
               <a-card :bordered="false" class="card-billing-info">
                 <div class="col-info">
-                  <a-descriptions :title="admin.created_at" :column="2">
+                  <a-descriptions :title="new Date(admin.created_at).toLocaleString()" :column="2">
                     <a-descriptions-item label="Nom">
                       {{ admin.nom }}
                     </a-descriptions-item>
@@ -76,6 +76,17 @@
                           v-model="state.epargne"
                         />
                         <p class="mx-2">Compte épargne</p>
+                      </div>
+                    </a-col>
+                    <a-col :span="8">
+                      <div class="d-flex">
+                        <a-switch
+                          checked-children=""
+                          un-checked-children=""
+                          :checked="state.pret"
+                          v-model="state.pret"
+                        />
+                        <p class="mx-2">Prêt</p>
                       </div>
                     </a-col>
                     <a-col :span="8">
@@ -420,7 +431,8 @@ export default {
 
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       admin: {},
       state: {},
@@ -476,6 +488,7 @@ export default {
                   admin: true,
                   ville: true,
                   launship: true,
+                  pret: true,
                 };
               } else {
                 this.state = JSON.parse(data[i].adminAttributes);

@@ -237,21 +237,21 @@
                 >
                 <a-popconfirm
                   v-if="record.status == 1"
-                  title="Sure de bloquer?"
+                  title="Sûre de bloquer?"
                   @confirm="() => block(record.key)"
                   ><a-button type="danger" size="small">Bloquer</a-button>
                 </a-popconfirm>
 
                 <a-popconfirm
                   v-if="record.status == 0"
-                  title="Sure de débloquer?"
+                  title="Sûre de débloquer?"
                   @confirm="() => block(record.key)"
                   ><a-button type="success" size="small">Debloquer</a-button>
                 </a-popconfirm>
               </div>
             </template>
           </a-table>
-          
+
           <div class="text-right mt-4">
             <a-button class="mx-2" @click="preview()"> Retour </a-button>
             <a-button class="mx-2" @click="next()"> Suivant </a-button>
@@ -275,7 +275,8 @@ export default {
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       stats: [],
       width: 1000,
@@ -383,7 +384,7 @@ export default {
       this.token_admin = session.getItem("token");
       let headers = { headers: { Authorization: this.token_admin } };
 
-      this.$http.post(`${this.callback}/quartier/liste`, {}, headers).then(
+      this.$http.post(`${this.callback}/quartier/liste?all=true`, {}, headers).then(
         (response) => {
           console.log(response);
           let data = response.body.data;
@@ -407,92 +408,109 @@ export default {
 
       let headers = { headers: { Authorization: this.token_admin } };
 
-      this.$http.post(`${this.callback}/agent/list?row=${this.row}&page=${this.page}`, {}, headers).then(
-        (response) => {
-          let data = response.body.data;
+      this.$http
+        .post(
+          `${this.callback}/agent/list?row=${this.row}&page=${this.page}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let data = response.body.data;
 
-          console.log(response)
-          this.stats[0].value = response.body.total;
-          this.data = [];
-          console.log(data);
-          for (let i = data.length - 1; i >= 0; i--) {
-            this.data.push({
-              key: data[i].id,
-              created_at: data[i].created_at,
-              nom: `${data[i].nom} ${data[i].prenom}`,
-              numero: `(+228) ${data[i].numero}`,
-              agence: data[i].agence.nom_agence,
-              status: data[i].is_active,
-            });
+            console.log(response);
+            this.stats[0].value = response.body.total;
+            this.data = [];
+            console.log(data);
+            for (let i = 0; i < data.length; i++) {
+              this.data.push({
+                key: data[i].id,
+                created_at: new Date(data[i].created_at).toLocaleString(),
+                nom: `${data[i].nom} ${data[i].prenom}`,
+                numero: `(+228) ${data[i].numero}`,
+                agence: data[i].agence ? data[i].agence.nom_agence : "",
+                status: data[i].is_active,
+              });
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
           }
-        },
-        (response) => {
-          this.showAlert("error", "Error", response.body.message);
-        }
-      );
+        );
     },
 
-    
     next() {
       let session = localStorage;
       this.token_admin = session.getItem("token");
 
       let headers = { headers: { Authorization: this.token_admin } };
 
-      this.page += 1
-      this.$http.post(`${this.callback}/agent/list?row=${this.row}&page=${this.page}`, {}, headers).then(
-        (response) => {
-          let data = response.body.data;
+      this.page += 1;
+      this.$http
+        .post(
+          `${this.callback}/agent/list?row=${this.row}&page=${this.page}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let data = response.body.data;
 
-          console.log(response)
-          this.data = [];
-          console.log(data);
-          for (let i = data.length - 1; i >= 0; i--) {
-            this.data.push({
-              key: data[i].id,
-              created_at: data[i].created_at,
-              nom: `${data[i].nom} ${data[i].prenom}`,
-              numero: `(+228) ${data[i].numero}`,
-              agence: data[i].agence.nom_agence,
-              status: data[i].is_active,
-            });
+            console.log(response);
+            this.data = [];
+            console.log(data);
+            for (let i = data.length - 1; i >= 0; i--) {
+              this.data.push({
+                key: data[i].id,
+                created_at: new Date(data[i].created_at).toLocaleString(),
+                nom: `${data[i].nom} ${data[i].prenom}`,
+                numero: `(+228) ${data[i].numero}`,
+                agence: data[i].agence.nom_agence,
+                status: data[i].is_active,
+              });
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
           }
-        },
-        (response) => {
-          this.showAlert("error", "Error", response.body.message);
-        }
-      );
+        );
     },
-    
+
     preview() {
       let session = localStorage;
       this.token_admin = session.getItem("token");
 
       let headers = { headers: { Authorization: this.token_admin } };
-      this.page -= 1
-      this.$http.post(`${this.callback}/agent/list?row=${this.row}&page=${this.page}`, {}, headers).then(
-        (response) => {
-          let data = response.body.data;
+      this.page -= 1;
+      this.$http
+        .post(
+          `${this.callback}/agent/list?row=${this.row}&page=${this.page}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let data = response.body.data;
 
-          console.log(response)
-          this.stats[0].value = response.body.total;
-          this.data = [];
-          console.log(data);
-          for (let i = data.length - 1; i >= 0; i--) {
-            this.data.push({
-              key: data[i].id,
-              created_at: data[i].created_at,
-              nom: `${data[i].nom} ${data[i].prenom}`,
-              numero: `(+228) ${data[i].numero}`,
-              agence: data[i].agence.nom_agence,
-              status: data[i].is_active,
-            });
+            console.log(response);
+            this.stats[0].value = response.body.total;
+            this.data = [];
+            console.log(data);
+            for (let i = data.length - 1; i >= 0; i--) {
+              this.data.push({
+                key: data[i].id,
+                created_at: new Date(data[i].created_at).toLocaleString(),
+                nom: `${data[i].nom} ${data[i].prenom}`,
+                numero: `(+228) ${data[i].numero}`,
+                agence: data[i].agence.nom_agence,
+                status: data[i].is_active,
+              });
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
           }
-        },
-        (response) => {
-          this.showAlert("error", "Error", response.body.message);
-        }
-      );
+        );
     },
 
     showModal() {
@@ -510,6 +528,7 @@ export default {
         .then(
           (response) => {
             console.log(response);
+
             this.showAlert("success", "Success", response.body.message);
             this.listecaissier();
           },
@@ -523,13 +542,13 @@ export default {
       e.preventDefault();
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log(values);
           this.confirmLoading = true;
           this.caissierSubmit(values);
           setTimeout(() => {
             this.listecaissier();
             this.visible = false;
             this.confirmLoading = false;
+            this.form.resetFields();
           }, 2000);
         } else {
           console.log("error");
@@ -547,6 +566,7 @@ export default {
       this.token_admin = session.getItem("token");
       let headers = { headers: { Authorization: this.token_admin } };
 
+      console.log(data);
       let data_create = {
         nom: data.nom,
         prenom: data.prenom,
@@ -555,6 +575,8 @@ export default {
         password: this.password,
         username: data.nom,
       };
+
+      console.log(data_create);
 
       this.$http
         .post(`${this.callback}/agent/create`, data_create, headers)
@@ -566,6 +588,8 @@ export default {
               "Success",
               "Agent caissier creer avec success"
             );
+
+            this.form.resetFields();
           },
           (response) => {
             this.showAlert("error", "Error", response.body.message);
@@ -579,28 +603,34 @@ export default {
 
       let headers = { headers: { Authorization: this.token_admin } };
 
-      this.$http.post(`${this.callback}/agent/list?row=${this.row}&page=1&search=${this.value}`, {}, headers).then(
-        (response) => {
-          let data = response.body.data;
+      this.$http
+        .post(
+          `${this.callback}/agent/list?row=${this.row}&page=1&search=${this.value}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let data = response.body.data;
 
-          console.log(response)
-          this.data = [];
-          console.log(data);
-          for (let i = data.length - 1; i >= 0; i--) {
-            this.data.push({
-              key: data[i].id,
-              created_at: data[i].created_at,
-              nom: `${data[i].nom} ${data[i].prenom}`,
-              numero: `(+228) ${data[i].numero}`,
-              agence: data[i].agence.nom_agence,
-              status: data[i].is_active,
-            });
+            console.log(response);
+            this.data = [];
+            console.log(data);
+            for (let i = data.length - 1; i >= 0; i--) {
+              this.data.push({
+                key: data[i].id,
+                created_at: new Date(data[i].created_at).toLocaleString(),
+                nom: `${data[i].nom} ${data[i].prenom}`,
+                numero: `(+228) ${data[i].numero}`,
+                agence: data[i].agence.nom_agence,
+                status: data[i].is_active,
+              });
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
           }
-        },
-        (response) => {
-          this.showAlert("error", "Error", response.body.message);
-        }
-      );
+        );
     },
   },
 };

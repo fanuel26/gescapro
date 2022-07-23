@@ -34,9 +34,23 @@
                 style="width: 300px"
                 @change="onSearch"
               />
-              <router-link type="primary" :to="{ name: 'Client_new' }"
-                ><a-button>Nouveaux clients</a-button></router-link
-              >
+              <div>
+                <router-link type="primary" :to="{ name: 'Client_not_visite' }"
+                  ><a-button class="mx-2"
+                    >clients non visité</a-button
+                  ></router-link
+                >
+                <router-link type="primary" :to="{ name: 'Client_classement' }"
+                  ><a-button class="mx-2"
+                    >Classement clients</a-button
+                  ></router-link
+                >
+                <router-link type="primary" :to="{ name: 'Client_new' }"
+                  ><a-button class="mx-2"
+                    >Nouveaux clients</a-button
+                  ></router-link
+                >
+              </div>
             </div>
           </template>
           <a-table :columns="columns" :data-source="data" :pagination="false">
@@ -49,14 +63,18 @@
               >
             </template>
           </a-table>
-          
+
           <div class="d-flex justify-content-between align-items-center mt-4">
             <div>
               <p>Page {{ page }}/{{ total_page }}</p>
             </div>
             <div>
-              <a-button class="mx-2" @click="retourClient()"> Retour </a-button>
-              <a-button class="mx-2" @click="suivantClient()"> Suivant </a-button>
+              <a-button class="mx-2" @click="preview()" v-if="page > 1">
+                Retour
+              </a-button>
+              <a-button class="mx-2" @click="next()" v-if="page != total_page">
+                Suivant
+              </a-button>
             </div>
           </div>
         </a-card>
@@ -75,7 +93,7 @@ export default {
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       stats: [],
       columns: [],
@@ -224,7 +242,7 @@ export default {
             for (let i = 0; i < data.length; i++) {
               this.data.push({
                 key: data[i].id,
-                created_at: data[i].created_at,
+                created_at: new Date(data[i].created_at).toLocaleString(),
                 nom: data[i].nom,
                 numero: data[i].numero,
                 profession: data[i].profession,
@@ -239,7 +257,7 @@ export default {
         );
     },
 
-    suivantClient() {
+    next() {
       let session = localStorage;
       this.token_admin = session.getItem("token");
 
@@ -285,7 +303,7 @@ export default {
         );
     },
 
-    retourClient() {
+    preview() {
       let session = localStorage;
       this.token_admin = session.getItem("token");
 

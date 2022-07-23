@@ -36,7 +36,7 @@
           <a-table :columns="columns" :data-source="data">
             <template slot="operation" slot-scope="text, record">
               <router-link
-                :to="{ name: 'Epargne_detail', params: { id: record.key } }"
+                :to="{ name: 'Entreprise_detail', params: { id: record.key } }"
                 ><a-button type="primary" size="small"
                   >Détail</a-button
                 ></router-link
@@ -55,7 +55,7 @@ import WidgetCounter from "../../components/Widgets/WidgetCounter";
 
 const stats = [
   {
-    title: "Tous les clients epargnes",
+    title: "Tous les compte entreprises",
     value: 0,
     prefix: "",
     suffix: "",
@@ -115,7 +115,7 @@ export default {
         scopedSlots: { customRender: "name" },
       },
       {
-        title: "Nom/Prénom client",
+        title: "Raison social",
         dataIndex: "nom",
         key: "nom",
       },
@@ -125,19 +125,14 @@ export default {
         key: "numero",
       },
       {
-        title: "Profession",
-        dataIndex: "profession",
-        key: "profession",
+        title: "Nom Gerant",
+        dataIndex: "gerant",
+        key: "gerant",
       },
       {
-        title: "Quartier",
-        dataIndex: "quartier",
-        key: "quartier",
-      },
-      {
-        title: "Collecteur en charge",
-        dataIndex: "collecteur",
-        key: "collecteur",
+        title: "Numero de carte CFE",
+        dataIndex: "carte",
+        key: "carte",
       },
       {
         title: "Action",
@@ -182,9 +177,8 @@ export default {
                 created_at: new Date(data[i].created_at).toLocaleString(),
                 nom: data[i].nom,
                 numero: data[i].numero,
-                profession: data[i].profession,
-                quartier: data[i].quartier,
-                collecteur: data[i].collecteur,
+                gerant: 'ALIBA Franck',
+                carte: '0215866585245',
               });
               this.data_s = this.data
             }

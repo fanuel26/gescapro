@@ -179,8 +179,8 @@
               <p>Page {{ page }}/{{ total_page }}</p>
             </div>
             <div>
-              <a-button class="mx-2" @click="preview()"> Retour </a-button>
-              <a-button class="mx-2" @click="next()"> Suivant </a-button>
+              <a-button class="mx-2" @click="preview()" v-if="page > 1"> Retour </a-button>
+              <a-button class="mx-2" @click="next()" v-if="page != total_page"> Suivant </a-button>
             </div>
           </div>
         </a-card>
@@ -216,7 +216,7 @@ export default {
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       stats,
       width: 1000,
@@ -300,7 +300,7 @@ export default {
             for (let i = 0; i < data.length; i++) {
               this.data.push({
                 key: data[i].id,
-                created_at: data[i].created_at,
+                created_at: new Date(data[i].created_at).toLocaleString(),
                 libelle: data[i].libelle,
                 prix_achat: data[i].prix_achat,
                 prix_vente: data[i].prix_vente,
@@ -339,7 +339,7 @@ export default {
             for (let i = 0; i < data.length; i++) {
               this.data.push({
                 key: data[i].id,
-                created_at: data[i].created_at,
+                created_at: new Date(data[i].created_at).toLocaleString(),
                 libelle: data[i].libelle,
                 prix_achat: data[i].prix_achat,
                 prix_vente: data[i].prix_vente,
@@ -378,7 +378,7 @@ export default {
             for (let i = 0; i < data.length; i++) {
               this.data.push({
                 key: data[i].id,
-                created_at: data[i].created_at,
+                created_at: new Date(data[i].created_at).toLocaleString(),
                 libelle: data[i].libelle,
                 prix_achat: data[i].prix_achat,
                 prix_vente: data[i].prix_vente,
@@ -517,7 +517,7 @@ export default {
             for (let i = 0; i < data.length; i++) {
               this.data.push({
                 key: data[i].id,
-                created_at: data[i].created_at,
+                created_at: new Date(data[i].created_at).toLocaleString(),
                 libelle: data[i].libelle,
                 prix_achat: data[i].prix_achat,
                 prix_vente: data[i].prix_vente,

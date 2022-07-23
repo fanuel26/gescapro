@@ -24,7 +24,7 @@
               <a-card :bordered="false" class="card-billing-info">
                 <div class="col-info">
                   <a-descriptions
-                    v-bind:title="'Date de creation: ' + carnet.created_at"
+                    v-bind:title="'Date de creation: ' + new Date(carnet.created_at).toLocaleString()"
                     :column="2"
                   >
                     <a-descriptions-item label="Nom du carnet">
@@ -276,7 +276,8 @@ export default {
     return {
       // Associating "Your Transactions" list data with its corresponding property.
       transactionsData,
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       stats: [],
       width: 1000,
@@ -304,7 +305,7 @@ export default {
 
       let headers = { headers: { Authorization: this.token_admin } };
 
-      this.$http.post(`${this.callback}/carnet/list`, {}, headers).then(
+      this.$http.post(`${this.callback}/carnet/list?all=true`, {}, headers).then(
         (response) => {
           let data = response.body.data;
           for (let i = 0; i < data.length; i++) {
@@ -347,7 +348,6 @@ export default {
           this.token_admin = session.getItem("token");
           let headers = { headers: { Authorization: this.token_admin } };
 
-          console.log(values);
           const data = {
             libelle: this.nom,
             frais: this.prix,
@@ -355,8 +355,9 @@ export default {
             produits: this.produit,
           };
 
+          console.log(data);
           this.$http
-            .post(`${this.callback}/carnet/update/${this.$route.params.id}`, values, headers)
+            .post(`${this.callback}/carnet/update/${this.$route.params.id}`, data, headers)
             .then(
               (response) => {
                 if (response) {

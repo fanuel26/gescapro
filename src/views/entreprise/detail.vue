@@ -7,7 +7,7 @@
   <div>
     <a-row type="flex" :gutter="24">
       <!-- Billing Information Column -->
-      <a-col :span="24" :md="16" class="mb-24">
+      <a-col :span="24" :md="24" class="mb-24">
         <a-card
           :bordered="false"
           class="header-solid h-full"
@@ -17,7 +17,7 @@
             <a-button @click="$router.go(-1)">Retour</a-button>
           </div>
           <template #title>
-            <h6 class="font-semibold m-0">Information du client</h6>
+            <h6 class="font-semibold m-0">Information de l'entreprise</h6>
           </template>
           <a-row :gutter="[24, 24]">
             <a-col :span="24">
@@ -25,27 +25,19 @@
                 <div class="col-info">
                   <a-descriptions
                     :title="'Date de creation: ' + new Date(client.created_at).toLocaleString()"
-                    :column="2"
+                    :column="4"
                   >
-                    <a-descriptions-item label="Nom/Prénoms">
+                    <a-descriptions-item label="Raison social">
                       {{ client.nom }} {{ client.prenom }}
                     </a-descriptions-item>
                     <a-descriptions-item label="Numéro de téléphone">
                       (+228){{ client.numero }}
                     </a-descriptions-item>
-                    <a-descriptions-item label="Profession">
+                    <a-descriptions-item label="Nom du gerant">
                       {{ client.profession }}
                     </a-descriptions-item>
-                    <a-descriptions-item label="Quartier">
-                      {{ quartier }}
-                    </a-descriptions-item>
-                    <a-descriptions-item label="Position géographique">
-                      01586854x12558866
-                    </a-descriptions-item>
-                    <a-descriptions-item label="Collecteur en charge">
-                      {{ client.collecteur.nom }}
-                      {{ client.collecteur.prenom }} - (+228)
-                      {{ client.collecteur.numero }}
+                    <a-descriptions-item label="Carte CFE">
+                      015868541866
                     </a-descriptions-item>
                   </a-descriptions>
                 </div>
@@ -63,9 +55,9 @@
               </template>
               <a-row :gutter="24">
                 <a-col
-                  :span="12"
-                  :lg="12"
-                  :xl="12"
+                  :span="8"
+                  :lg="8"
+                  :xl="8"
                   class="mb-24"
                   v-for="(stat, index) in stats"
                   :key="index"
@@ -86,16 +78,29 @@
           </a-col>
         </a-card>
       </a-col>
-      <!-- Billing Information Column -->
-
-      <!-- Your Transactions Column -->
-      <a-col :span="24" :md="8" class="mb-24">
-        <!-- Your Transactions Card -->
-        <CardTransactionsE :data="carnets"></CardTransactionsE>
-        <!-- / Your Transactions Card -->
+      <a-col :span="24" :md="24" class="mb-24">
+        <a-card
+          :bordered="false"
+          class="header-solid h-full"
+          :bodyStyle="{ paddingTop: 0, paddingBottom: '16px' }"
+        >
+          <template #title>
+            <h6 class="font-semibold m-0">Liste des personnelles</h6>
+          </template>
+          <a-table :columns="columns" :data-source="data">
+            <template slot="operation" slot-scope="text, record">
+              <router-link
+                :to="{ name: 'Entreprise_detail', params: { id: record.key } }"
+                ><a-button type="primary" size="small"
+                  >Detail</a-button
+                ></router-link
+              >
+            </template>
+          </a-table>
+        </a-card>
       </a-col>
-      <!-- / Your Transactions Column -->
-      <!-- / Your Transactions Column -->
+
+      <!-- Billing Information Column -->
     </a-row>
   </div>
 </template>
@@ -130,6 +135,8 @@ export default {
       token_admin: null,
       carnets: [],
       stats: [],
+      collumns: [],
+      data: [],
       client: {},
       carnets_sus: [],
       collecteur: {},
@@ -180,6 +187,41 @@ export default {
 						</svg>`,
       },
     ];
+
+    this.columns = [
+      {
+        title: "Date de creation",
+        dataIndex: "created_at",
+        key: "created_at",
+        scopedSlots: { customRender: "name" },
+      },
+      {
+        title: "Nom & Prénoms",
+        dataIndex: "nom",
+        key: "nom",
+      },
+      {
+        title: "Numéro de téléphone",
+        dataIndex: "numero",
+        key: "numero",
+      },
+      {
+        title: "Nom Gerant",
+        dataIndex: "gerant",
+        key: "gerant",
+      },
+      {
+        title: "Numero de carte CFE",
+        dataIndex: "carte",
+        key: "carte",
+      },
+      {
+        title: "Action",
+        key: "Action",
+        scopedSlots: { customRender: "operation" },
+      },
+    ];
+
     this.carnets = [];
     this.detailClient();
   },
@@ -222,11 +264,10 @@ export default {
                   title: `${dd[i].carnet.libelle.substr(0, 30)} ..., N° ${
                     dd[i].ids
                   }`,
-                  description: `Nbr de cotisation: ${dd[i].nbcotisattion} | Prix du carnet: ${dd[i].mise} Fcfa | date de création: ${new Date(dd[i].created_at).toLocaleString()}`,
-                  amount: dd[i].recette,
+                  description: `Nbr de cotisation: ${dd[i].nbcotisattion} | Prix du carnet: ${dd[i].carnet.tarif} Fcfa`,
+                  amount: dd[i].nbcotisattion * dd[i].carnet.tarif,
                   type: dd[i].state == 0 ? -1 : 1, // 0 is for pending, 1 is for deposit, -1 is for withdrawal.
                   status: "danger",
-                  cotisations: dd[i].cotisactions,
                 });
 
                 if (dd[i].state == 0) {

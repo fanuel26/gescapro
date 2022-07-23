@@ -65,7 +65,8 @@ export default {
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       stats,
       columns: [],
@@ -139,7 +140,7 @@ export default {
             for (let i = 0; i < data.length; i++) {
               this.data.push({
                 key: data[i].id,
-                created_at: data[i].created_at,
+                created_at: new Date(data[i].created_at).toLocaleString(),
                 nom: data[i].nom,
                 numero: data[i].numero,
                 profession: data[i].profession,

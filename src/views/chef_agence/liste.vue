@@ -179,7 +179,7 @@
             <template slot="operation" slot-scope="text, record">
               <div class="d-flex">
                 <a-popconfirm
-                  title="Etes vous sur d'accepter?"
+                  title="Etes vous Sûr d'accepter?"
                   @confirm="() => accepter(record.key)"
                   ><a-button type="primary" class="mx-2" size="small"
                     >Accepter</a-button
@@ -187,7 +187,7 @@
                 </a-popconfirm>
 
                 <a-popconfirm
-                  title="Etes vous sur de rejeter?"
+                  title="Etes vous Sûr de rejeter?"
                   @confirm="() => rejeter(record.key)"
                   ><a-button type="danger" size="small" class="mx-2"
                     >Rejeter</a-button
@@ -259,7 +259,8 @@ export default {
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       stats: [],
       width: 1000,
@@ -322,7 +323,7 @@ export default {
             for (let i = 0; i < data.length; i++) {
               this.data.push({
                 key: data[i].id,
-                created_at: data[i].created_at,
+                created_at: new Date(data[i].created_at).toLocaleString(),
                 nom_agence: data[i].agent.agence.nom_agence,
                 nom: `${data[i].agent.nom} ${data[i].agent.prenom}`,
                 numero: `(+228) ${data[i].agent.numero}`,

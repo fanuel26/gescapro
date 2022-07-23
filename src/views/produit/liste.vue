@@ -107,7 +107,7 @@
                 </router-link>
 
                 <a-popconfirm
-                  title="Etes vous sur de supprimer?"
+                  title="Etes vous Sûr de supprimer?"
                   @confirm="() => deleteProduit(record.key)"
                   ><a-button type="danger" size="small">Supprimer</a-button>
                 </a-popconfirm>
@@ -120,8 +120,8 @@
               <p>Page {{ page }}/{{ total_page }}</p>
             </div>
             <div>
-              <a-button class="mx-2" @click="preview()"> Retour </a-button>
-              <a-button class="mx-2" @click="next()"> Suivant </a-button>
+              <a-button class="mx-2" @click="preview()" v-if="page > 1"> Retour </a-button>
+              <a-button class="mx-2" @click="next()" v-if="page != total_page"> Suivant </a-button>
             </div>
           </div>
         </a-card>
@@ -143,7 +143,8 @@ export default {
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       stats: [],
       width: 1000,
@@ -227,7 +228,7 @@ export default {
             for (let i = data.length - 1; i >= 0; i--) {
               this.data.push({
                 key: data[i].id,
-                created_at: data[i].created_at,
+                created_at: new Date(data[i].created_at).toLocaleString(),
                 libelle: data[i].libelle,
               });
             }
@@ -262,7 +263,7 @@ export default {
             for (let i = data.length - 1; i >= 0; i--) {
               this.data.push({
                 key: data[i].id,
-                created_at: data[i].created_at,
+                created_at: new Date(data[i].created_at).toLocaleString(),
                 libelle: data[i].libelle,
               });
             }
@@ -297,7 +298,7 @@ export default {
             for (let i = data.length - 1; i >= 0; i--) {
               this.data.push({
                 key: data[i].id,
-                created_at: data[i].created_at,
+                created_at: new Date(data[i].created_at).toLocaleString(),
                 libelle: data[i].libelle,
               });
             }
@@ -330,7 +331,7 @@ export default {
             for (let i = data.length - 1; i >= 0; i--) {
               this.data.push({
                 key: data[i].id,
-                created_at: data[i].created_at,
+                created_at: new Date(data[i].created_at).toLocaleString(),
                 libelle: data[i].libelle,
               });
             }
@@ -354,10 +355,11 @@ export default {
             this.confirmLoading = true;
             this.produitSubmit(values);
             setTimeout(() => {
-              this.listeProduit();
-              this.visible = false;
               this.confirmLoading = false;
-            }, 2000);
+              this.visible = false;
+              this.form.resetFields()
+              this.listeProduit();
+            }, 1000);
           } else {
             this.showAlert("error", "Erreur", "Code secret incorrect");
           }
@@ -390,12 +392,13 @@ export default {
           (response) => {
             console.log(response);
             this.showAlert("success", "Success", "Produit creer avec success");
+            
+              this.form.resetFields()
           },
           (response) => {
             this.showAlert("error", "Error", response.body.message);
           }
         );
-      b;
     },
 
     deleteProduit(id) {

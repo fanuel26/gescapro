@@ -14,17 +14,24 @@
           :bodyStyle="{ paddingTop: 0, paddingBottom: '16px' }"
         >
           <div class="text-right mb-4">
+            <a-button type="primary" @click="changeState()">
+              Modifier le collecteur
+            </a-button>
             <router-link
               class="mx-2"
-              :to="{ name: 'Collecteur_depot', params: { id: this.$route.params.id } }"
+              :to="{
+                name: 'Collecteur_depot',
+                params: { id: this.$route.params.id },
+              }"
             >
-              <a-button type="primary"
-                >Deversement collecteur</a-button
-              >
+              <a-button type="primary">Deversement collecteur</a-button>
             </router-link>
             <router-link
               class="mx-2"
-              :to="{ name: 'Collecteur_client', params: { id:  this.$route.params.id} }"
+              :to="{
+                name: 'Collecteur_client',
+                params: { id: this.$route.params.id },
+              }"
             >
               <a-button type="primary">Liste des clients</a-button>
             </router-link>
@@ -38,7 +45,10 @@
               <a-card :bordered="false" class="card-billing-info">
                 <div class="col-info">
                   <a-descriptions
-                    :title="'date de création: ' + collecteur.created_at"
+                    :title="
+                      'date de création: ' +
+                      new Date(collecteur.created_at).toLocaleString()
+                    "
                     :column="2"
                   >
                     <a-descriptions-item label="Nom">
@@ -68,6 +78,83 @@
               </a-card>
             </a-col>
           </a-row>
+          <a-col :span="24" :md="24" class="mb-24" v-if="state == true">
+            <a-card
+              :bordered="false"
+              class="header-solid h-full"
+              :bodyStyle="{ paddingTop: 0, paddingBottom: '16px' }"
+            >
+              <template #title>
+                <h6 class="font-semibold m-0">Modification du collecteur</h6>
+              </template>
+              <a-form
+                id="components-form-demo-normal-login"
+                :form="form_update"
+                class="login-form"
+                @submit="collecteurUpdate"
+                :hideRequiredMark="true"
+              >
+                <a-row type="flex" :gutter="24">
+                  <!-- Billing Information Column -->
+                  <a-col :span="12" :md="12" class="">
+                    <a-form-item
+                      class=""
+                      label="Nom du collecteur"
+                      :colon="false"
+                    >
+                      <a-input
+                        v-decorator="[
+                          'nom',
+                          {
+                            initialValue: collecteur.nom,
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Nom du collecteur est vide!',
+                              },
+                            ],
+                          },
+                        ]"
+                        type="text"
+                        placeholder="Nom agent collecteur"
+                      />
+                    </a-form-item>
+                  </a-col>
+                  <a-col :span="12" :md="12" class="">
+                    <a-form-item
+                      class=""
+                      label="Prénom du collecteur"
+                      :colon="false"
+                    >
+                      <a-input
+                        v-decorator="[
+                          'prenom',
+                          {
+                            initialValue: collecteur.prenom,
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Prénom du collecteur est vide!',
+                              },
+                            ],
+                          },
+                        ]"
+                        type="text"
+                        placeholder="Prénom agent collecteur"
+                      />
+                    </a-form-item>
+                  </a-col>
+                  <a-col :span="24" :md="24">
+                    <div class="d-flex justify-content-end">
+                      <a-button htmlType="submit" type="primary">
+                        Modifier
+                      </a-button>
+                    </div>
+                  </a-col>
+                </a-row>
+              </a-form>
+            </a-card>
+          </a-col>
           <a-col :span="24" :md="24" class="mb-24">
             <a-card
               :bordered="false"
@@ -226,7 +313,7 @@
               </a-button>
             </div>
           </a-form>
-          <template>
+          <!-- <template>
             <h6 class="font-semibold m-0">
               Changer ce collecteur par un autre collecteur
             </h6>
@@ -290,36 +377,61 @@
                 Affecter
               </a-button>
             </div>
-          </a-form>
+          </a-form> -->
 
-          <!--<template>
-            <h6 class="font-semibold m-0">
-              Affecter agent collecteur a une agence
-            </h6>
+          <template>
+            <h6 class="font-semibold m-0">Statistique par date</h6>
           </template>
           <a-form
             id="components-form-demo-normal-login"
-            :form="form_agence"
+            :form="form_date"
             class="login-form"
-            @submit="handleSubmit"
+            @submit="dateStateSubmit"
             :hideRequiredMark="true"
           >
-            <a-form-item label="Selectionnez l'agence">
-              <div class="d-flex">
-                <a-select>
-                  <a-select-option value="87"> Agence 2 </a-select-option>
-                </a-select>
-              </div>
-            </a-form-item>
-            <a-form-item class="" label="Code secret" :colon="false">
+            <a-form-item label="Date de debut">
               <a-input
                 v-decorator="[
-                  'Code secret',
+                  'date_debut',
                   {
                     rules: [
                       {
                         required: true,
-                        message: 'Code secret incorrect!',
+                        message: 'Date debut incorrect!',
+                      },
+                    ],
+                  },
+                ]"
+                type="date"
+                placeholder="Date debut"
+              />
+            </a-form-item>
+            <a-form-item class="" label="Date de fin :" :colon="false">
+              <a-input
+                v-decorator="[
+                  'date_fin',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Date de fin incorrect!',
+                      },
+                    ],
+                  },
+                ]"
+                type="date"
+                placeholder="Date de fin"
+              />
+            </a-form-item>
+            <a-form-item class="" label="Code secret" :colon="false">
+              <a-input
+                v-decorator="[
+                  'code_secret',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Code secret est vide!',
                       },
                     ],
                   },
@@ -328,21 +440,48 @@
                 placeholder="Code secret"
               />
             </a-form-item>
-
             <div class="mb-4 text-right">
               <a-button
                 type="primary"
                 html-type="submit"
                 class="login-form-button"
               >
-                Affecter
+                Lancer la recherche
               </a-button>
             </div>
-          </a-form>-->
+          </a-form>
         </a-card>
       </a-col>
       <!-- / Your Transactions Column -->
     </a-row>
+
+    <a-modal
+      title="Statistique d'une periode daté"
+      :visible="visible"
+      @cancel="handleCancel"
+    >
+      <a-row :gutter="24">
+        <a-col
+          :span="24"
+          :lg="24"
+          :xl="24"
+          class="mb-24"
+          v-for="(stat, index) in stats_date"
+          :key="index"
+        >
+          <!-- Widget 1 Card -->
+          <WidgetCounter
+            :title="stat.title"
+            :value="stat.value"
+            :prefix="stat.prefix"
+            :suffix="stat.suffix"
+            :icon="stat.icon"
+            :status="stat.status"
+          ></WidgetCounter>
+          <!-- / Widget 1 Card -->
+        </a-col>
+      </a-row>
+    </a-modal>
   </div>
 </template>
 
@@ -365,9 +504,11 @@ export default {
   },
 
   beforeCreate() {
+    this.form_update = this.$form.createForm(this, { name: "update form" });
     this.form_code = this.$form.createForm(this, { name: "code_secret form" });
     this.form_password = this.$form.createForm(this, { name: "password form" });
     this.form_affect = this.$form.createForm(this, { name: "affect form" });
+    this.form_date = this.$form.createForm(this, { name: "date form" });
     this.form_disconnect = this.$form.createForm(this, {
       name: "disconnect form",
     });
@@ -375,15 +516,19 @@ export default {
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
+      visible: false,
       stats: [],
+      stats_date: [],
       collecteur: {},
       collecteurs: null,
       ville: null,
       quartier: null,
       code_secret: null,
       password: null,
+      state: false,
+      dataDate: null,
     };
   },
 
@@ -392,6 +537,42 @@ export default {
     this.password = `gescapro@${Math.floor(
       Math.random() * (9999 - 1000) + 1000
     )}`;
+
+    this.stats_date = [
+      {
+        title: "Nombre de clients",
+        value: 0,
+        prefix: "",
+        suffix: "",
+        icon: `<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M8.43338 7.41784C8.58818 7.31464 8.77939 7.2224 9 7.15101L9.00001 8.84899C8.77939 8.7776 8.58818 8.68536 8.43338 8.58216C8.06927 8.33942 8 8.1139 8 8C8 7.8861 8.06927 7.66058 8.43338 7.41784Z" fill="#111827"/>
+							<path d="M11 12.849L11 11.151C11.2206 11.2224 11.4118 11.3146 11.5666 11.4178C11.9308 11.6606 12 11.8861 12 12C12 12.1139 11.9308 12.3394 11.5666 12.5822C11.4118 12.6854 11.2206 12.7776 11 12.849Z" fill="#111827"/>
+							<path fill-rule="evenodd" clip-rule="evenodd" d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18ZM11 5C11 4.44772 10.5523 4 10 4C9.44772 4 9 4.44772 9 5V5.09199C8.3784 5.20873 7.80348 5.43407 7.32398 5.75374C6.6023 6.23485 6 7.00933 6 8C6 8.99067 6.6023 9.76515 7.32398 10.2463C7.80348 10.5659 8.37841 10.7913 9.00001 10.908L9.00002 12.8492C8.60902 12.7223 8.31917 12.5319 8.15667 12.3446C7.79471 11.9275 7.16313 11.8827 6.74599 12.2447C6.32885 12.6067 6.28411 13.2382 6.64607 13.6554C7.20855 14.3036 8.05956 14.7308 9 14.9076L9 15C8.99999 15.5523 9.44769 16 9.99998 16C10.5523 16 11 15.5523 11 15L11 14.908C11.6216 14.7913 12.1965 14.5659 12.676 14.2463C13.3977 13.7651 14 12.9907 14 12C14 11.0093 13.3977 10.2348 12.676 9.75373C12.1965 9.43407 11.6216 9.20873 11 9.09199L11 7.15075C11.391 7.27771 11.6808 7.4681 11.8434 7.65538C12.2053 8.07252 12.8369 8.11726 13.254 7.7553C13.6712 7.39335 13.7159 6.76176 13.354 6.34462C12.7915 5.69637 11.9405 5.26915 11 5.09236V5Z" fill="#111827"/>
+						</svg>`,
+      },
+      {
+        title: "Carnet total vendus",
+        value: 0,
+        prefix: "",
+        suffix: "",
+        icon: `<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M8.43338 7.41784C8.58818 7.31464 8.77939 7.2224 9 7.15101L9.00001 8.84899C8.77939 8.7776 8.58818 8.68536 8.43338 8.58216C8.06927 8.33942 8 8.1139 8 8C8 7.8861 8.06927 7.66058 8.43338 7.41784Z" fill="#111827"/>
+							<path d="M11 12.849L11 11.151C11.2206 11.2224 11.4118 11.3146 11.5666 11.4178C11.9308 11.6606 12 11.8861 12 12C12 12.1139 11.9308 12.3394 11.5666 12.5822C11.4118 12.6854 11.2206 12.7776 11 12.849Z" fill="#111827"/>
+							<path fill-rule="evenodd" clip-rule="evenodd" d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18ZM11 5C11 4.44772 10.5523 4 10 4C9.44772 4 9 4.44772 9 5V5.09199C8.3784 5.20873 7.80348 5.43407 7.32398 5.75374C6.6023 6.23485 6 7.00933 6 8C6 8.99067 6.6023 9.76515 7.32398 10.2463C7.80348 10.5659 8.37841 10.7913 9.00001 10.908L9.00002 12.8492C8.60902 12.7223 8.31917 12.5319 8.15667 12.3446C7.79471 11.9275 7.16313 11.8827 6.74599 12.2447C6.32885 12.6067 6.28411 13.2382 6.64607 13.6554C7.20855 14.3036 8.05956 14.7308 9 14.9076L9 15C8.99999 15.5523 9.44769 16 9.99998 16C10.5523 16 11 15.5523 11 15L11 14.908C11.6216 14.7913 12.1965 14.5659 12.676 14.2463C13.3977 13.7651 14 12.9907 14 12C14 11.0093 13.3977 10.2348 12.676 9.75373C12.1965 9.43407 11.6216 9.20873 11 9.09199L11 7.15075C11.391 7.27771 11.6808 7.4681 11.8434 7.65538C12.2053 8.07252 12.8369 8.11726 13.254 7.7553C13.6712 7.39335 13.7159 6.76176 13.354 6.34462C12.7915 5.69637 11.9405 5.26915 11 5.09236V5Z" fill="#111827"/>
+						</svg>`,
+      },
+      {
+        title: "Total versement",
+        value: 0,
+        prefix: "",
+        suffix: "Fcfa",
+        icon: `<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M8.43338 7.41784C8.58818 7.31464 8.77939 7.2224 9 7.15101L9.00001 8.84899C8.77939 8.7776 8.58818 8.68536 8.43338 8.58216C8.06927 8.33942 8 8.1139 8 8C8 7.8861 8.06927 7.66058 8.43338 7.41784Z" fill="#111827"/>
+							<path d="M11 12.849L11 11.151C11.2206 11.2224 11.4118 11.3146 11.5666 11.4178C11.9308 11.6606 12 11.8861 12 12C12 12.1139 11.9308 12.3394 11.5666 12.5822C11.4118 12.6854 11.2206 12.7776 11 12.849Z" fill="#111827"/>
+							<path fill-rule="evenodd" clip-rule="evenodd" d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18ZM11 5C11 4.44772 10.5523 4 10 4C9.44772 4 9 4.44772 9 5V5.09199C8.3784 5.20873 7.80348 5.43407 7.32398 5.75374C6.6023 6.23485 6 7.00933 6 8C6 8.99067 6.6023 9.76515 7.32398 10.2463C7.80348 10.5659 8.37841 10.7913 9.00001 10.908L9.00002 12.8492C8.60902 12.7223 8.31917 12.5319 8.15667 12.3446C7.79471 11.9275 7.16313 11.8827 6.74599 12.2447C6.32885 12.6067 6.28411 13.2382 6.64607 13.6554C7.20855 14.3036 8.05956 14.7308 9 14.9076L9 15C8.99999 15.5523 9.44769 16 9.99998 16C10.5523 16 11 15.5523 11 15L11 14.908C11.6216 14.7913 12.1965 14.5659 12.676 14.2463C13.3977 13.7651 14 12.9907 14 12C14 11.0093 13.3977 10.2348 12.676 9.75373C12.1965 9.43407 11.6216 9.20873 11 9.09199L11 7.15075C11.391 7.27771 11.6808 7.4681 11.8434 7.65538C12.2053 8.07252 12.8369 8.11726 13.254 7.7553C13.6712 7.39335 13.7159 6.76176 13.354 6.34462C12.7915 5.69637 11.9405 5.26915 11 5.09236V5Z" fill="#111827"/>
+						</svg>`,
+      },
+    ];
 
     this.stats = [
       {
@@ -417,6 +598,28 @@ export default {
 						</svg>`,
       },
       {
+        title: "Collectes en cours",
+        value: 0,
+        prefix: "",
+        suffix: "Fcfa",
+        icon: `<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M8.43338 7.41784C8.58818 7.31464 8.77939 7.2224 9 7.15101L9.00001 8.84899C8.77939 8.7776 8.58818 8.68536 8.43338 8.58216C8.06927 8.33942 8 8.1139 8 8C8 7.8861 8.06927 7.66058 8.43338 7.41784Z" fill="#111827"/>
+							<path d="M11 12.849L11 11.151C11.2206 11.2224 11.4118 11.3146 11.5666 11.4178C11.9308 11.6606 12 11.8861 12 12C12 12.1139 11.9308 12.3394 11.5666 12.5822C11.4118 12.6854 11.2206 12.7776 11 12.849Z" fill="#111827"/>
+							<path fill-rule="evenodd" clip-rule="evenodd" d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18ZM11 5C11 4.44772 10.5523 4 10 4C9.44772 4 9 4.44772 9 5V5.09199C8.3784 5.20873 7.80348 5.43407 7.32398 5.75374C6.6023 6.23485 6 7.00933 6 8C6 8.99067 6.6023 9.76515 7.32398 10.2463C7.80348 10.5659 8.37841 10.7913 9.00001 10.908L9.00002 12.8492C8.60902 12.7223 8.31917 12.5319 8.15667 12.3446C7.79471 11.9275 7.16313 11.8827 6.74599 12.2447C6.32885 12.6067 6.28411 13.2382 6.64607 13.6554C7.20855 14.3036 8.05956 14.7308 9 14.9076L9 15C8.99999 15.5523 9.44769 16 9.99998 16C10.5523 16 11 15.5523 11 15L11 14.908C11.6216 14.7913 12.1965 14.5659 12.676 14.2463C13.3977 13.7651 14 12.9907 14 12C14 11.0093 13.3977 10.2348 12.676 9.75373C12.1965 9.43407 11.6216 9.20873 11 9.09199L11 7.15075C11.391 7.27771 11.6808 7.4681 11.8434 7.65538C12.2053 8.07252 12.8369 8.11726 13.254 7.7553C13.6712 7.39335 13.7159 6.76176 13.354 6.34462C12.7915 5.69637 11.9405 5.26915 11 5.09236V5Z" fill="#111827"/>
+						</svg>`,
+      },
+      {
+        title: "Frais carnet",
+        value: 0,
+        prefix: "",
+        suffix: "Fcfa",
+        icon: `<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M8.43338 7.41784C8.58818 7.31464 8.77939 7.2224 9 7.15101L9.00001 8.84899C8.77939 8.7776 8.58818 8.68536 8.43338 8.58216C8.06927 8.33942 8 8.1139 8 8C8 7.8861 8.06927 7.66058 8.43338 7.41784Z" fill="#111827"/>
+							<path d="M11 12.849L11 11.151C11.2206 11.2224 11.4118 11.3146 11.5666 11.4178C11.9308 11.6606 12 11.8861 12 12C12 12.1139 11.9308 12.3394 11.5666 12.5822C11.4118 12.6854 11.2206 12.7776 11 12.849Z" fill="#111827"/>
+							<path fill-rule="evenodd" clip-rule="evenodd" d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18ZM11 5C11 4.44772 10.5523 4 10 4C9.44772 4 9 4.44772 9 5V5.09199C8.3784 5.20873 7.80348 5.43407 7.32398 5.75374C6.6023 6.23485 6 7.00933 6 8C6 8.99067 6.6023 9.76515 7.32398 10.2463C7.80348 10.5659 8.37841 10.7913 9.00001 10.908L9.00002 12.8492C8.60902 12.7223 8.31917 12.5319 8.15667 12.3446C7.79471 11.9275 7.16313 11.8827 6.74599 12.2447C6.32885 12.6067 6.28411 13.2382 6.64607 13.6554C7.20855 14.3036 8.05956 14.7308 9 14.9076L9 15C8.99999 15.5523 9.44769 16 9.99998 16C10.5523 16 11 15.5523 11 15L11 14.908C11.6216 14.7913 12.1965 14.5659 12.676 14.2463C13.3977 13.7651 14 12.9907 14 12C14 11.0093 13.3977 10.2348 12.676 9.75373C12.1965 9.43407 11.6216 9.20873 11 9.09199L11 7.15075C11.391 7.27771 11.6808 7.4681 11.8434 7.65538C12.2053 8.07252 12.8369 8.11726 13.254 7.7553C13.6712 7.39335 13.7159 6.76176 13.354 6.34462C12.7915 5.69637 11.9405 5.26915 11 5.09236V5Z" fill="#111827"/>
+						</svg>`,
+      },
+      {
         title: "Nombre de clients",
         value: 0,
         prefix: "",
@@ -432,17 +635,6 @@ export default {
         value: 0,
         prefix: "",
         suffix: "",
-        icon: `<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path d="M8.43338 7.41784C8.58818 7.31464 8.77939 7.2224 9 7.15101L9.00001 8.84899C8.77939 8.7776 8.58818 8.68536 8.43338 8.58216C8.06927 8.33942 8 8.1139 8 8C8 7.8861 8.06927 7.66058 8.43338 7.41784Z" fill="#111827"/>
-							<path d="M11 12.849L11 11.151C11.2206 11.2224 11.4118 11.3146 11.5666 11.4178C11.9308 11.6606 12 11.8861 12 12C12 12.1139 11.9308 12.3394 11.5666 12.5822C11.4118 12.6854 11.2206 12.7776 11 12.849Z" fill="#111827"/>
-							<path fill-rule="evenodd" clip-rule="evenodd" d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18ZM11 5C11 4.44772 10.5523 4 10 4C9.44772 4 9 4.44772 9 5V5.09199C8.3784 5.20873 7.80348 5.43407 7.32398 5.75374C6.6023 6.23485 6 7.00933 6 8C6 8.99067 6.6023 9.76515 7.32398 10.2463C7.80348 10.5659 8.37841 10.7913 9.00001 10.908L9.00002 12.8492C8.60902 12.7223 8.31917 12.5319 8.15667 12.3446C7.79471 11.9275 7.16313 11.8827 6.74599 12.2447C6.32885 12.6067 6.28411 13.2382 6.64607 13.6554C7.20855 14.3036 8.05956 14.7308 9 14.9076L9 15C8.99999 15.5523 9.44769 16 9.99998 16C10.5523 16 11 15.5523 11 15L11 14.908C11.6216 14.7913 12.1965 14.5659 12.676 14.2463C13.3977 13.7651 14 12.9907 14 12C14 11.0093 13.3977 10.2348 12.676 9.75373C12.1965 9.43407 11.6216 9.20873 11 9.09199L11 7.15075C11.391 7.27771 11.6808 7.4681 11.8434 7.65538C12.2053 8.07252 12.8369 8.11726 13.254 7.7553C13.6712 7.39335 13.7159 6.76176 13.354 6.34462C12.7915 5.69637 11.9405 5.26915 11 5.09236V5Z" fill="#111827"/>
-						</svg>`,
-      },
-      {
-        title: "Frais carnet",
-        value: 0,
-        prefix: "",
-        suffix: "Fcfa",
         icon: `<svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path d="M8.43338 7.41784C8.58818 7.31464 8.77939 7.2224 9 7.15101L9.00001 8.84899C8.77939 8.7776 8.58818 8.68536 8.43338 8.58216C8.06927 8.33942 8 8.1139 8 8C8 7.8861 8.06927 7.66058 8.43338 7.41784Z" fill="#111827"/>
 							<path d="M11 12.849L11 11.151C11.2206 11.2224 11.4118 11.3146 11.5666 11.4178C11.9308 11.6606 12 11.8861 12 12C12 12.1139 11.9308 12.3394 11.5666 12.5822C11.4118 12.6854 11.2206 12.7776 11 12.849Z" fill="#111827"/>
@@ -537,12 +729,13 @@ export default {
             this.quartier = data.quartier.libelle;
             this.stats[0].value = data.total_cotisation;
             this.stats[1].value =
-              data.total_cotisation + data.compte_agent_collecteur;
-            this.stats[3].value = data.carnet_vendu;
-            this.stats[4].value = data.carnet_vendu * 200;
-            this.stats[6].value = data.carnet_vendu_jour;
-            this.stats[5].value = data.dette;
-            this.stats[7].value = data.carnet_vendu_jour * 200;
+              data.compte_agent_collecteur + data.total_cotisation;
+            this.stats[2].value = data.compte_epargne + data.compte_produit;
+            this.stats[3].value = data.carnet_vendu * 200;
+            this.stats[5].value = data.carnet_vendu;
+            this.stats[6].value = data.dette;
+            this.stats[7].value = data.carnet_vendu_jour;
+            this.stats[8].value = data.carnet_vendu_jour * 200;
           },
           (response) => {
             this.showAlert("error", "Erreur", response.body.message);
@@ -576,7 +769,7 @@ export default {
           (response) => {
             let data = response.body.data;
 
-            this.stats[2].value = data.length;
+            this.stats[4].value = data.length;
             console.log(data);
           },
           (response) => {
@@ -779,6 +972,91 @@ export default {
           } else {
             this.showAlert("error", "Erreur", "Code secret incorrect");
           }
+        }
+      });
+    },
+
+    changeState() {
+      this.state = !this.state;
+    },
+
+    handleCancel(e) {
+      this.visible = false;
+    },
+
+    dateStateSubmit(e) {
+      e.preventDefault();
+      this.form_date.validateFields((err, values) => {
+        if (!err) {
+          if (values.code_secret == localStorage.getItem("code_secret")) {
+            let session = localStorage;
+            this.token_admin = session.getItem("token");
+
+            let headers = { headers: { Authorization: this.token_admin } };
+
+            this.$http
+              .post(
+                `${this.callback}/agent_collecteur/statistique/by-period/${this.$route.params.id}`,
+                { endDate: values.date_fin, startDate: values.date_debut },
+                headers
+              )
+              .then(
+                (response) => {
+                  let data = response.body;
+                  console.log(data);
+
+                  if (data) {
+                    this.dataDate = data.data;
+                    this.stats_date[0].value = this.dataDate.totalClients
+                    this.stats_date[1].value = this.dataDate.totalCarnets
+                    this.stats_date[2].value = this.dataDate.totalDeversements
+                    this.visible = true;
+                  }
+                },
+                (response) => {
+                  this.showAlert("error", "Erreur", response.body.message);
+                }
+              );
+          } else {
+            this.showAlert("error", "Erreur", "Code secret incorrect");
+          }
+        }
+      });
+    },
+
+    collecteurUpdate(e) {
+      e.preventDefault();
+      this.form_update.validateFields((err, values) => {
+        if (!err) {
+          let session = localStorage;
+          this.token_admin = session.getItem("token");
+          let headers = { headers: { Authorization: this.token_admin } };
+
+          let data_create = {
+            nom: values.nom,
+            prenom: values.prenom,
+          };
+
+          this.$http
+            .post(
+              `${this.callback}/suppfunc/update/collecteur/info/${this.collecteur.id}`,
+              data_create,
+              headers
+            )
+            .then(
+              (response) => {
+                this.showAlert(
+                  "success",
+                  "Success",
+                  "Agent collecteur modifier avec success"
+                );
+
+                this.detailCollecteur();
+              },
+              (response) => {
+                this.showAlert("error", "Error", response.body.message);
+              }
+            );
         }
       });
     },

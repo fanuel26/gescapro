@@ -231,14 +231,14 @@
                 <a-col :span="12">
                   <a-popconfirm
                     v-if="record.status == 1"
-                    title="Sure de bloquer?"
+                    title="Sûre de bloquer?"
                     @confirm="() => block(record.key)"
                     ><a-button type="danger" size="small">Bloquer</a-button>
                   </a-popconfirm>
 
                   <a-popconfirm
                     v-if="record.status == 0"
-                    title="Sure de débloquer?"
+                    title="Sûre de débloquer?"
                     @confirm="() => block(record.key)"
                     ><a-button type="success" size="small">Debloquer</a-button>
                   </a-popconfirm>
@@ -265,7 +265,8 @@ export default {
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       stats: [],
       width: 1000,
@@ -371,7 +372,7 @@ export default {
       this.token_admin = session.getItem("token");
       let headers = { headers: { Authorization: this.token_admin } };
 
-      this.$http.post(`${this.callback}/quartier/liste`, {}, headers).then(
+      this.$http.post(`${this.callback}/quartier/liste?all=true`, {}, headers).then(
         (response) => {
           console.log(response);
           let data = response.body.data;
@@ -407,14 +408,14 @@ export default {
             for (let i = data.length - 1; i >= 0; i--) {
               this.data.push({
                 key: data[i].id,
-                created_at: data[i].created_at,
+                created_at: new Date(data[i].created_at).toLocaleString(),
                 nom: `${data[i].nom} ${data[i].prenom}`,
                 numero: `(+228) ${data[i].numero}`,
                 agence: data[i].agence ? data[i].agence.nom_agence : "",
                 status: data[i].is_active,
               });
 
-              this.data_s = this.data
+              this.data_s = this.data;
             }
           },
           (response) => {
@@ -493,6 +494,8 @@ export default {
               "Success",
               "Agent superviseur creer avec success"
             );
+
+            this.form.resetFields();
           },
           (response) => {
             this.showAlert("error", "Error", response.body.message);

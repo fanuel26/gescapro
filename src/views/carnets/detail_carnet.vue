@@ -8,11 +8,7 @@
     <a-row type="flex" :gutter="24">
       <!-- Billing Information Column -->
       <a-col :span="24" :md="24" class="mb-24">
-        <a-card
-          :bordered="false"
-          class="header-solid h-full"
-          :bodyStyle="{ paddingTop: 0, paddingBottom: '16px' }"
-        >
+        <a-card :bordered="false" class="header-solid h-full" :bodyStyle="{ paddingTop: 0, paddingBottom: '16px' }">
           <div class="text-right mb-4">
             <a-button @click="$router.go(-1)">Retour</a-button>
           </div>
@@ -23,10 +19,7 @@
             <a-col :span="24">
               <a-card :bordered="false" class="card-billing-info">
                 <div class="col-info">
-                  <a-descriptions
-                    v-bind:title="'Date de creation: ' + carnet.created_at"
-                    :column="2"
-                  >
+                  <a-descriptions v-bind:title="'Date de creation: ' + new Date(carnet.created_at).toLocaleString()" :column="2">
                     <a-descriptions-item label="Nom du carnet">
                       {{ carnet.libelle }}
                     </a-descriptions-item>
@@ -51,131 +44,82 @@
             </a-col>
           </a-row>
           <a-col :span="24" :md="24" class="mb-24" v-if="carnet.vendu == 0">
-            <a-card
-              :bordered="false"
-              class="header-solid h-full"
-              :bodyStyle="{ paddingTop: 0, paddingBottom: '16px' }"
-            >
+            <a-card :bordered="false" class="header-solid h-full" :bodyStyle="{ paddingTop: 0, paddingBottom: '16px' }">
               <template #title>
                 <h6 class="font-semibold m-0">Modification du carnet</h6>
               </template>
               <a-row>
                 <a-col :span="24" :md="24" class="mb-24">
-                  <a-form
-                    :form="form"
-                    class="carnet-form"
-                    @submit="CarnetSubmit"
-                    :hideRequiredMark="true"
-                  >
+                  <a-form :form="form" class="carnet-form" @submit="CarnetSubmit" :hideRequiredMark="true">
                     <a-row type="flex" :gutter="24">
                       <!-- Billing Information Column -->
                       <a-col :span="8" :md="8" class="">
-                        <a-form-item
-                          class=""
-                          label="Nom du carnet"
-                          :colon="false"
-                        >
-                          <a-input
-                            v-model="nom"
-                            v-decorator="[
-                              'nom',
-                              {
-                                initialValue: nom,
-                                rules: [
-                                  {
-                                    required: true,
-                                    message: 'Nom du carnet est vide!',
-                                  },
-                                ],
-                              },
-                            ]"
-                            type="text"
-                            placeholder="Nom carnet"
-                          />
+                        <a-form-item class="" label="Nom du carnet" :colon="false">
+                          <a-input v-model="nom" v-decorator="[
+                            'nom',
+                            {
+                              initialValue: nom,
+                              rules: [
+                                {
+                                  required: true,
+                                  message: 'Nom du carnet est vide!',
+                                },
+                              ],
+                            },
+                          ]" type="text" placeholder="Nom carnet" />
                         </a-form-item>
                       </a-col>
                       <a-col :span="4" :md="4" class="">
-                        <a-form-item
-                          class=""
-                          label="Prix par jour"
-                          :colon="false"
-                        >
-                          <a-input
-                            v-model="prix"
-                            v-decorator="[
-                              'prix',
-                              {
-                                initialValue: prix,
-                                rules: [
-                                  {
-                                    required: true,
-                                    message: 'Prix par jour est vide!',
-                                  },
-                                ],
-                              },
-                            ]"
-                            type="number"
-                            placeholder="Prix par jour"
-                          />
+                        <a-form-item class="" label="Prix par jour" :colon="false">
+                          <a-input v-model="prix" v-decorator="[
+                            'prix',
+                            {
+                              initialValue: prix,
+                              rules: [
+                                {
+                                  required: true,
+                                  message: 'Prix par jour est vide!',
+                                },
+                              ],
+                            },
+                          ]" type="number" placeholder="Prix par jour" />
                         </a-form-item>
                       </a-col>
                       <a-col :span="4" :md="4" class="">
-                        <a-form-item
-                          class=""
-                          label="Nombre de mois"
-                          :colon="false"
-                        >
-                          <a-input
-                            v-model="nbr_jour"
-                            v-decorator="[
-                              'nbr_jour',
-                              {
-                                initialValue: nbr_jour,
-                                rules: [
-                                  {
-                                    required: true,
-                                    message: 'Nombre de mois est vide!',
-                                  },
-                                ],
-                              },
-                            ]"
-                            type="number"
-                            placeholder="Nombre du mois"
-                          />
+                        <a-form-item class="" label="Nombre de mois" :colon="false">
+                          <a-input v-model="nbr_jour" v-decorator="[
+                            'nbr_jour',
+                            {
+                              initialValue: nbr_jour,
+                              rules: [
+                                {
+                                  required: true,
+                                  message: 'Nombre de mois est vide!',
+                                },
+                              ],
+                            },
+                          ]" type="number" placeholder="Nombre du mois" />
                         </a-form-item>
                       </a-col>
 
                       <a-col :span="8" :md="8" class="">
-                        <a-form-item
-                          class=""
-                          label="Code secret"
-                          :colon="false"
-                        >
-                          <a-input
-                            v-model="code_secret"
-                            v-decorator="[
-                              'code_secret',
-                              {
-                                initialValue: null,
-                                rules: [
-                                  {
-                                    required: true,
-                                    message: 'Code secret est vide!',
-                                  },
-                                ],
-                              },
-                            ]"
-                            type="number"
-                            placeholder="Code secret"
-                          />
+                        <a-form-item class="" label="Code secret" :colon="false">
+                          <a-input v-model="code_secret" v-decorator="[
+                            'code_secret',
+                            {
+                              initialValue: null,
+                              rules: [
+                                {
+                                  required: true,
+                                  message: 'Code secret est vide!',
+                                },
+                              ],
+                            },
+                          ]" type="number" placeholder="Code secret" />
                         </a-form-item>
                       </a-col>
                       <a-col :span="24" :md="24" class="mb-4 text-right">
-                        <a-button
-                          type="primary"
-                          html-type="submit"
-                          class="login-form-button"
-                        >
+                        <a-button type="primary" html-type="submit" class="login-form-button">
                           Modifier
                         </a-button>
                       </a-col>
@@ -276,7 +220,8 @@ export default {
     return {
       // Associating "Your Transactions" list data with its corresponding property.
       transactionsData,
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       stats: [],
       width: 1000,
@@ -304,7 +249,7 @@ export default {
 
       let headers = { headers: { Authorization: this.token_admin } };
 
-      this.$http.post(`${this.callback}/carnet/list`, {}, headers).then(
+      this.$http.post(`${this.callback}/carnet/list?all=true`, {}, headers).then(
         (response) => {
           let data = response.body.data;
           for (let i = 0; i < data.length; i++) {
@@ -347,23 +292,23 @@ export default {
           this.token_admin = session.getItem("token");
           let headers = { headers: { Authorization: this.token_admin } };
 
-          console.log(values);
           const data = {
             libelle: this.nom,
-            frais: this.prix,
+            tarif: this.prix,
             nbr_jour: this.nbr_jour * 31,
             produits: this.produit,
           };
 
+          console.log(data);
           this.$http
-            .post(`${this.callback}/carnet/update/${this.$route.params.id}`, values, headers)
+            .post(`${this.callback}/carnet/update/${this.$route.params.id}`, data, headers)
             .then(
               (response) => {
                 if (response) {
                   this.showAlert(
                     "success",
                     "Success",
-                    "Creation de carnet effectuer avec success"
+                    "Mise à jour de carnet effectuer avec success"
                   );
                 }
               },

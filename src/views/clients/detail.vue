@@ -24,7 +24,7 @@
               <a-card :bordered="false" class="card-billing-info">
                 <div class="col-info">
                   <a-descriptions
-                    :title="'Date de creation: ' + client.created_at"
+                    :title="'Date de creation: ' + new Date(client.created_at).toLocaleString()"
                     :column="2"
                   >
                     <a-descriptions-item label="Nom/Prénoms">
@@ -107,7 +107,6 @@ import CardPaymentMethods from "../../components/Cards/CardPaymentMethods";
 import CardInvoices from "../../components/Cards/CardInvoices";
 import CardBillingInfo from "../../components/Cards/CardBillingInfo";
 import CardTransactions from "../../components/Cards/CardTransactions";
-import CardTransactionsE from "../../components/Cards/CardTransactionsE";
 import WidgetCounter from "../../components/Widgets/WidgetCounter";
 
 // "Your Transactions" list data.
@@ -120,12 +119,12 @@ export default {
     CardInvoices,
     CardBillingInfo,
     CardTransactions,
-    CardTransactionsE,
     WidgetCounter,
   },
   data() {
     return {
-      callback: "http://egal.iziway.tk/api/auth/admin",
+      
+      callback: process.env.VUE_APP_API_BASE_URL,
       token_admin: null,
       carnets: [],
       stats: [],
@@ -220,25 +219,28 @@ export default {
             this.quartier = this.client.quartier.libelle;
 
             let dd = this.client.carnets;
-            this.stats[0].value = this.client.carnets.length;
+            // this.stats[0].value = this.client.carnets.length;
 
             let n_s = 0;
             let n_l = 0;
             let n_p = 0;
             let n_e = 0;
             for (let i = 0; i < dd.length; i++) {
-              let frais = dd[i].id_pack == 1 ? dd[i].mise : dd[i].carnet.tarif
+              let frais = dd[i].id_pack != 1 ? dd[i].carnet.tarif : dd[i].mise
+
+              console.log(dd[i])
               this.carnets.push({
                 id: dd[i].id,
                 title: `${dd[i].carnet.libelle.substr(0, 30)} ..., N° ${
                   dd[i].ids
                 }`,
-                description: `Nbr de cotisation: ${dd[i].nbcotisattion} | Prix du carnet: ${frais} Fcfa`,
-                amount: dd[i].id_pack == 1 ? 0 : dd[i].nbcotisattion * frais,
-                type: dd[i].state == 0 ? -1 : 1, // 0 is for pending, 1 is for deposit, -1 is for withdrawal.
+                description: `Nbr de cotisation: ${dd[i].nbcotisattion} | Prix du carnet: ${frais} Fcfa | date de création: ${new Date(dd[i].created_at).toLocaleString()}`,
+                amount: dd[i].recette,
+                type: dd[i].state == 0 ? -1 : 1,
+                case: dd[i].id_pack, // 0 is for pending, 1 is for deposit, -1 is for withdrawal.
                 status: "danger",
+                cotisations: dd[i].cotisactions
               });
-
 
               if (dd[i].id_pack != 1) {
                 n_p = n_p + 1
