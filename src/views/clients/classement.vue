@@ -27,13 +27,14 @@
         <a-card class="card card-body border-0">
           <template #title>
             <div class="d-flex justify-content-between">
-              <h6>Classement de tous les clients</h6>
+              <h6>Classement de tous les clients par nombre de carnet</h6>
               <a-input-search
                 v-model="value"
                 placeholder="Recherche ici"
                 style="width: 300px"
                 @change="onSearch"
               />
+              <a-button class="mx-2" @click="$router.go(-1)">Retour</a-button>
             </div>
           </template>
           <a-table :columns="columns" :data-source="data" :pagination="false">
@@ -77,6 +78,7 @@ export default {
   data() {
     return {
       callback: process.env.VUE_APP_API_BASE_URL,
+      namApp: process.env.VUE_APP_NAME,
       token_admin: null,
       stats: [],
       columns: [],

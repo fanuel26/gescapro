@@ -1,71 +1,49 @@
- <template>
+<template>
   <div>
     <a-row :gutter="24">
-      <a-col
-        :span="24"
-        :lg="12"
-        :xl="6"
-        class="mb-24"
-        v-for="(stat, index) in stats"
-        :key="index"
-      >
+      <a-col :span="24" :lg="12" :xl="6" class="mb-24" v-for="(stat, index) in stats" :key="index">
         <!-- Widget 1 Card -->
-        <WidgetCounter
-          :title="stat.title"
-          :value="stat.value"
-          :prefix="stat.prefix"
-          :suffix="stat.suffix"
-          :icon="stat.icon"
-          :status="stat.status"
-        ></WidgetCounter>
+        <WidgetCounter :title="stat.title" :value="stat.value" :prefix="stat.prefix" :suffix="stat.suffix"
+          :icon="stat.icon" :status="stat.status"></WidgetCounter>
         <!-- / Widget 1 Card -->
       </a-col>
     </a-row>
 
     <a-row :gutter="24">
-      <a-col
-        :span="12"
-        :lg="12"
-        :xl="24"
-        class="mb-24"
-        v-for="(stat, index) in stats"
-        :key="index"
-      >
-        <a-card class="card card-body border-0">
-          <div class="mb-4 d-flex justify-content-between align-items-center">
-            <a-input-search
-              v-model="value"
-              placeholder="Recherche ici"
-              style="width: 300px"
-              @change="onSearch"
-            />
+      <a-col :span="12" :lg="12" :xl="24" class="mb-24" v-for="(stat, index) in stats" :key="index">
+        <a-spin :spinning="spinning" size="large" tip="Chargement...">
+          <a-card class="card card-body border-0">
+            <div class="mb-4 d-flex justify-content-between align-items-center">
+              <a-input-search v-model="value" placeholder="Recherche ici" style="width: 300px" @change="onSearch" />
 
-            <a-button @click="$router.go(-1)">Retour</a-button>
-          </div>
+              <a-button @click="$router.go(-1)">Retour</a-button>
+            </div>
 
-          <a-table :columns="columns" :data-source="data">
-            <template slot="operation" slot-scope="text, record">
-              <div class="d-flex">
-                <a-button
-                  v-if="record.status == 1"
-                  type="primary"
-                  class="mx-2"
-                  size="small"
-                  >Deja livrer</a-button
-                >
+            <a-table :columns="columns" :data-source="data">
+              <template slot="operation" slot-scope="text, record">
+                <div class="d-flex">
+                  <a-button class="mx-2" type="primary" size="small"
+                    @click="getCollecteur(record.id_agent_collecteur)">Collecteur</a-button>
+                  <a-button v-if="record.status == 1" type="primary" class="mx-2" size="small">Deja livrés</a-button>
 
-                <a-popconfirm
-                  v-if="record.status == 0"
-                  title="Sûre de livrer?"
-                  cancel-text="annuler"
-                  ok-text="Valider"
-                  @confirm="() => block(record.key)"
-                  ><a-button class="mx-2" size="small">Livrer</a-button>
-                </a-popconfirm>
-              </div>
-            </template>
-          </a-table>
-        </a-card>
+                  <a-popconfirm v-if="record.status == 0" title="Sûre de livrés?" cancel-text="annuler" ok-text="Valider"
+                    @confirm="() => block(record.key)">
+                    <a-button class="mx-2" size="small">livrés</a-button>
+                  </a-popconfirm>
+                </div>
+              </template>
+            </a-table>
+
+            <a-modal :visible="open" title="Information collecteur" @ok="handleOk" @cancel="handleCancel">
+              <a-descriptions title="">
+                <a-descriptions-item label="Nom" :span="3">{{ collecteur.nom }} {{ collecteur.prenom
+                }}</a-descriptions-item>
+                <a-descriptions-item label="Telephone" :span="3">+228 {{ collecteur.numero }}</a-descriptions-item>
+                <a-descriptions-item label="Agence" :span="3">{{ collecteur.agc_name }}</a-descriptions-item>
+              </a-descriptions>
+            </a-modal>
+          </a-card>
+        </a-spin>
       </a-col>
     </a-row>
   </div>
@@ -87,6 +65,7 @@ export default {
   data() {
     return {
       callback: process.env.VUE_APP_API_BASE_URL,
+      namApp: process.env.VUE_APP_NAME,
       token_admin: null,
       stats: [],
       stats_carnet: [],
@@ -99,7 +78,6 @@ export default {
       buttonText: "Détail",
       visible: false,
       confirmLoading: false,
-
       page: 1,
       row: 20,
       // form value
@@ -113,6 +91,9 @@ export default {
       prix_achat: 0,
       total: 0,
       prix_w: 0,
+      collecteur: {},
+      open: false,
+      spinning: true,
     };
   },
   mounted() {
@@ -157,7 +138,7 @@ export default {
 
     this.stats = [
       {
-        title: "Nombre de carnets non livrer",
+        title: "Nombre de carnets non livrés",
         value: 0,
         prefix: "",
         suffix: "",
@@ -179,7 +160,11 @@ export default {
       let headers = { headers: { Authorization: this.token_admin } };
 
       this.$http
-        .post(`${this.callback}/v2/carnets/termine/non-livre?all=true`, {}, headers)
+        .post(
+          `${this.callback}/v2/carnets/termine/non-livre?all=true`,
+          {},
+          headers
+        )
         .then(
           (response) => {
             let data = response.body.data;
@@ -197,12 +182,15 @@ export default {
                 created_at: new Date(data[i].created_at).toLocaleString(),
                 libelle: data[i].carnet.libelle,
                 prix_jour: data[i].carnet.tarif,
+                id_agent_collecteur: data[i].id_agent_collecteur,
                 somme: data[i].carnet.tarif * data[i].carnet.period,
                 nom_client: `${data[i].client.nom} ${data[i].client.prenom}`,
                 numero_client: data[i].client.numero,
                 status: data[i].is_delivered,
               });
             }
+
+            this.spinning = false;
 
             this.data_s = this.data;
           },
@@ -249,6 +237,40 @@ export default {
         );
     },
 
+    getCollecteur(id) {
+      console.log(id);
+      this.open = true
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(
+          `${this.callback}/agent_collecteur/info/${id}`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let data = response.body.data;
+
+            console.log(data);
+            this.collecteur = data;
+
+            console.log(this.collecteur)
+          })
+    },
+
+    handleOk() {
+
+    },
+
+
+    handleCancel(e) {
+      this.open = false;
+    },
+
     onSearch() {
       this.value = this.value.toLowerCase();
 
@@ -257,7 +279,11 @@ export default {
       this.data = [];
       for (let i = 0; i < data.length; i++) {
         let libelle = data[i].libelle.toLowerCase();
-        if (libelle.indexOf(this.value) > -1) {
+
+        let nom_client = data[i].nom_client.toLowerCase();
+        let numero_client = data[i].numero_client.toLowerCase();
+
+        if (libelle.indexOf(this.value) > -1 || nom_client.indexOf(this.value) > -1 || numero_client.indexOf(this.value) > -1) {
           this.data.push(data[i]);
         }
       }

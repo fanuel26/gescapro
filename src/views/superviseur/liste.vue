@@ -33,13 +33,13 @@
               @change="onSearch"
             />
             <a-button type="primary" @click="showModal">
-              Créer un agent superviseur
+              Créer un agent controlleur
             </a-button>
           </div>
 
           <a-modal
             :width="width"
-            title="Creer un agent superviseur"
+            title="Creer un agent controlleur"
             :visible="visible"
             :confirm-loading="confirmLoading"
             @ok="handleOk"
@@ -52,7 +52,7 @@
                   id="components-form-demo-normal-login"
                   :form="form"
                   class="login-form"
-                  @submit="superviseurSubmit"
+                  @submit="controlleurSubmit"
                   :hideRequiredMark="true"
                 >
                   <a-row type="flex" :gutter="24">
@@ -60,7 +60,7 @@
                     <a-col :span="12" :md="12" class="">
                       <a-form-item
                         class=""
-                        label="Nom du superviseur"
+                        label="Nom du controlleur"
                         :colon="false"
                       >
                         <a-input
@@ -72,20 +72,20 @@
                               rules: [
                                 {
                                   required: true,
-                                  message: 'Nom du superviseur est vide!',
+                                  message: 'Nom du controlleur est vide!',
                                 },
                               ],
                             },
                           ]"
                           type="text"
-                          placeholder="Nom agent superviseur"
+                          placeholder="Nom agent controlleur"
                         />
                       </a-form-item>
                     </a-col>
                     <a-col :span="12" :md="12" class="">
                       <a-form-item
                         class=""
-                        label="Prénom du superviseur"
+                        label="Prénom du controlleur"
                         :colon="false"
                       >
                         <a-input
@@ -97,13 +97,13 @@
                               rules: [
                                 {
                                   required: true,
-                                  message: 'Prénom du superviseur est vide!',
+                                  message: 'Prénom du controlleur est vide!',
                                 },
                               ],
                             },
                           ]"
                           type="text"
-                          placeholder="Prénom agent superviseur"
+                          placeholder="Prénom agent controlleur"
                         />
                       </a-form-item>
                     </a-col>
@@ -192,7 +192,7 @@
                 <a-card :bordered="false" class="card-billing-info">
                   <div class="col-info">
                     <a-descriptions
-                      title="Information du superviseur"
+                      title="Information du controlleur"
                       :column="1"
                     >
                       <a-descriptions-item label="Nom">
@@ -220,7 +220,7 @@
                   <router-link
                     class="mx-2"
                     :to="{
-                      name: 'Superviseur_detail',
+                      name: 'controlleur_detail',
                       params: { id: record.key },
                     }"
                     ><a-button type="primary" size="small"
@@ -267,6 +267,7 @@ export default {
     return {
       
       callback: process.env.VUE_APP_API_BASE_URL,
+      namApp: process.env.VUE_APP_NAME,
       token_admin: null,
       stats: [],
       width: 1000,
@@ -290,7 +291,7 @@ export default {
     };
   },
   mounted() {
-    this.password = `gescapro@${Math.floor(
+    this.password = `${this.namApp}@${Math.floor(
       Math.random() * (9999 - 1000) + 1000
     )}`;
 
@@ -325,7 +326,7 @@ export default {
 
     this.stats = [
       {
-        title: "Nombre d'agent superviseur",
+        title: "Nombre d'agent controlleur",
         value: 0,
         prefix: "",
         suffix: "",
@@ -338,7 +339,7 @@ export default {
     ];
 
     this.listeVille();
-    this.listesuperviseur();
+    this.listecontrolleur();
   },
   methods: {
     showAlert(type, title, description) {
@@ -390,14 +391,14 @@ export default {
       );
     },
 
-    listesuperviseur() {
+    listecontrolleur() {
       let session = localStorage;
       this.token_admin = session.getItem("token");
 
       let headers = { headers: { Authorization: this.token_admin } };
 
       this.$http
-        .post(`${this.callback}/agent/superviseur/list`, {}, headers)
+        .post(`${this.callback}/agent/controlleur/list`, {}, headers)
         .then(
           (response) => {
             let data = response.body.data;
@@ -439,7 +440,7 @@ export default {
           (response) => {
             console.log(response);
             this.showAlert("success", "Success", response.body.message);
-            this.listesuperviseur();
+            this.listecontrolleur();
           },
           (response) => {
             this.showAlert("error", "Erreur", response.body.message);
@@ -453,9 +454,9 @@ export default {
         if (!err) {
           console.log(values);
           this.confirmLoading = true;
-          this.superviseurSubmit(values);
+          this.controlleurSubmit(values);
           setTimeout(() => {
-            this.listesuperviseur();
+            this.listecontrolleur();
             this.visible = false;
             this.confirmLoading = false;
           }, 2000);
@@ -470,7 +471,7 @@ export default {
       this.visible = false;
     },
 
-    superviseurSubmit(data) {
+    controlleurSubmit(data) {
       let session = localStorage;
       this.token_admin = session.getItem("token");
       let headers = { headers: { Authorization: this.token_admin } };
@@ -481,7 +482,7 @@ export default {
         numero: data.numero,
         id_quartier: data.quartier,
         password: this.password,
-        id_type_agent: 2,
+        id_type_agent: 1,
       };
 
       this.$http
@@ -492,7 +493,7 @@ export default {
             this.showAlert(
               "success",
               "Success",
-              "Agent superviseur creer avec success"
+              "Agent controlleur creer avec success"
             );
 
             this.form.resetFields();

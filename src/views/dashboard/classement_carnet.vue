@@ -1,4 +1,5 @@
 <template>
+  
   <div>
     <a-row :gutter="24">
       <a-col
@@ -39,6 +40,40 @@
               style="width: 300px"
               @change="onSearch"
             />
+            <a-form-item label="Classement par ville" class="" :colon="false">
+                <a-select style="width: 300px" v-decorator="[
+                  'ville',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'ville est vide!',
+                      },
+                    ],
+                  },
+                ]" @change="listeCarnetVille">
+                  <a-select-option v-for="ville in villes" :value="ville.id" :key="ville.id">
+                    {{ ville.libelle }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+              <!-- <a-form-item label="Classement par agence" :colon="false">
+                <a-select style="width: 300px" v-decorator="[
+                  'agence',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'agence est vide!',
+                      },
+                    ],
+                  },
+                ]" @change="listeCarnetAgence">
+                  <a-select-option v-for="agence in Agences" :value="agence.id" :key="agence.id">
+                    {{ agence.nom_agence }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item> -->
           </div>
 
           <a-table :columns="columns" :data-source="data">
@@ -77,6 +112,7 @@ export default {
     return {
       
       callback: process.env.VUE_APP_API_BASE_URL,
+      namApp: process.env.VUE_APP_NAME,
       token_admin: null,
       stats: [],
       stats_carnet: [],
@@ -89,6 +125,9 @@ export default {
       buttonText: "Détail",
       visible: false,
       confirmLoading: false,
+
+      villes: null,
+      Agences: null,
 
       page: 1,
       row: 20,
@@ -161,9 +200,50 @@ export default {
 
     console.log(localStorage.getItem("code_secret"));
 
+    this.listeVille();
+    this.listeAgence();
     this.listeCarnet();
   },
   methods: {
+    
+    listeVille() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http.post(`${this.callback}/ville/liste`, {}, headers).then(
+        (response) => {
+          let data = response.body.data;
+
+          this.villes = data;
+        },
+        (response) => {
+          this.showAlert("error", "Erreur", response.body.message);
+        }
+      );
+    },
+
+    listeAgence() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http.post(`${this.callback}/agence/list?all=true`, {}, headers).then(
+        (response) => {
+          let data = response.body.data;
+
+          console.log(data)
+
+          this.Agences = data
+        },
+        (response) => {
+          this.showAlert("error", "Error", response.body.message);
+        }
+      );
+    },
+
 
     listeCarnet() {
       let session = localStorage;
@@ -196,6 +276,71 @@ export default {
           this.showAlert("error", "Error", response.body.message);
         }
       );
+    },
+
+    listeCarnetVille(id) {
+        // alert(id)
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      
+      this.$http
+        .post(`${this.callback}/classement/carnet/ville/${id}`, {}, headers)
+        .then((response) => {
+          let data = response.body.data;
+          console.log(data)          
+          this.stats[0].value = data.length;
+
+          this.data = [];
+
+          for (let i = 0; i < data.length; i++) {
+            this.data.push({
+              key: data[i].id,
+              created_at: new Date(data[i].created_at).toLocaleString(),
+              libelle: data[i].libelle,
+              nbr_mois: data[i].period / 31,
+              prix_jour: data[i].tarif,
+              somme: data[i].tarif * data[i].period,
+              nbr_sell: data[i].vendu,
+            });
+
+            this.data_s = this.data;
+          }
+        });
+    },
+
+    listeCarnetAgence(id) {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      
+      this.$http
+        .post(`${this.callback}/classement/carnet/agence/${id}`, {}, headers)
+        .then((response) => {
+          let data = response.body.data;
+          console.log(data)
+          this.stats[0].value = data.length;
+
+          this.data = [];
+
+          for (let i = 0; i < data.length; i++) {
+            this.data.push({
+              key: data[i].id,
+              created_at: new Date(data[i].created_at).toLocaleString(),
+              libelle: data[i].libelle,
+              nbr_mois: data[i].period / 31,
+              prix_jour: data[i].tarif,
+              somme: data[i].tarif * data[i].period,
+              nbr_sell: data[i].vendu,
+            });
+
+            this.data_s = this.data;
+          }
+        });
     },
 
     onSearch() {

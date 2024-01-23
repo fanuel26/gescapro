@@ -24,7 +24,10 @@
               <a-card :bordered="false" class="card-billing-info">
                 <div class="col-info">
                   <a-descriptions
-                    :title="'Date de creation: ' + new Date(client.created_at).toLocaleString()"
+                    :title="
+                      'Date de creation: ' +
+                      new Date(client.created_at).toLocaleString()
+                    "
                     :column="2"
                   >
                     <a-descriptions-item label="Nom/Prénoms">
@@ -125,8 +128,8 @@ export default {
   },
   data() {
     return {
-      
       callback: process.env.VUE_APP_API_BASE_URL,
+      namApp: process.env.VUE_APP_NAME,
       token_admin: null,
       carnets: [],
       stats: [],
@@ -169,7 +172,7 @@ export default {
 						</svg>`,
       },
       {
-        title: "Nombre de carnet Livrée",
+        title: "Carnets livrés",
         value: 0,
         prefix: "",
         suffix: "",
@@ -222,7 +225,13 @@ export default {
                   title: `${dd[i].carnet.libelle.substr(0, 30)} ..., N° ${
                     dd[i].ids
                   }`,
-                  description: `Nbr de cotisation: ${dd[i].nbcotisattion} | Prix du carnet: ${dd[i].mise} Fcfa | date de création: ${new Date(dd[i].created_at).toLocaleString()}`,
+                  description: `Nbr de cotisation: ${
+                    dd[i].nbcotisattion
+                  } | Prix du carnet: ${
+                    dd[i].mise
+                  } Fcfa | date de création: ${new Date(
+                    dd[i].created_at
+                  ).toLocaleString()}`,
                   amount: dd[i].recette,
                   type: dd[i].state == 0 ? -1 : 1, // 0 is for pending, 1 is for deposit, -1 is for withdrawal.
                   status: "danger",

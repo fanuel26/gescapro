@@ -40,15 +40,35 @@
               @change="onSearch"
             />
             <div>
-              <router-link :to="{ name: 'Carnets_livrer' }"> 
+              
+              <!-- Carnets_classement -->
+              <router-link :to="{ name: 'Carnets_desactivate' }">
                 <a-button type="primary" class="mx-2">
-                  Liste des carnets livrer
+                  Carnets descactiver
+                </a-button>
+              </router-link>
+              <router-link :to="{ name: 'Carnets_classement' }">
+                <a-button type="danger" class="mx-2">
+                  Classement carnets
+                </a-button>
+              </router-link>
+              <!-- <router-link :to="{ name: 'Carnets_terminer' }">
+                <a-button type="primary" class="mx-2">
+                  Carnets terminés
+                </a-button>
+              </router-link> -->
+              <router-link :to="{ name: 'Carnets_livrer' }">
+                <a-button type="success" class="mx-2">
+                  Carnets livrés
                 </a-button>
               </router-link>
               <router-link :to="{ name: 'Carnets_non_livrer' }">
-                <a-button type="primary" class="mx-2">
-                  Liste des carnets non livrer
+                <a-button type="danger" class="mx-2">
+                  Carnets non livrés
                 </a-button>
+              </router-link>
+              <router-link :to="{ name: 'Carnets_ville' }">
+                <a-button class="mx-2"> Liste carnet par ville </a-button>
               </router-link>
 
               <a-button type="primary" @click="showModal">
@@ -80,6 +100,24 @@
                       v-model="produit"
                       search-placeholder="Selectionnez le produit"
                       :options="produitData"
+                    >
+                      <!-- <a-select-option
+                        v-for="dt in produitData"
+                        :key="dt.key"
+                        :value="dt.key"
+                      >
+                        {{ dt.title }}
+                      </a-select-option> -->
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+                <a-col :span="24" :md="24" class="">
+                  <a-form-item label="Agence Lier">
+                    <a-select
+                      mode="multiple"
+                      v-model="agence"
+                      search-placeholder="Selectionnez le produit"
+                      :options="agenceData"
                     >
                       <!-- <a-select-option
                         v-for="dt in produitData"
@@ -218,6 +256,7 @@ export default {
   data() {
     return {
       callback: process.env.VUE_APP_API_BASE_URL,
+      namApp: process.env.VUE_APP_NAME,
       token_admin: null,
       stats: [],
       stats_carnet: [],
@@ -227,6 +266,7 @@ export default {
       data_s: [],
       value: null,
       produitData: [],
+      agenceData: [],
       buttonText: "Détail",
       visible: false,
       confirmLoading: false,
@@ -239,6 +279,8 @@ export default {
       pr: 0,
       nbr_jour: 12,
       produit: [],
+      agence: [],
+      carnetChoise: null,
       code_secret: null,
       prix_vente: 0,
       prix_achat: 0,
@@ -301,6 +343,7 @@ export default {
     ];
 
     this.listeProduit();
+    this.listeAgence();
     this.listeCarnet();
   },
   methods: {
@@ -329,6 +372,41 @@ export default {
           },
           (response) => {
             flash(response.body.message, "Erreur", "fa fa-times", "danger");
+          }
+        );
+    },
+
+    listeAgence() {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(`${this.callback}/agence/list?all=true`, {}, headers)
+        .then(
+          (response) => {
+            let data = response.body.data;
+
+            console.log(response);
+            this.agenceData = [];
+            this.agence = [];
+            for (let i = 0; i < data.length; i++) {
+              this.agenceData.push({
+                key: data[i].id,
+                id: data[i].id,
+                value: data[i].nom_agence,
+                title: data[i].nom_agence,
+                created_at: new Date(data[i].created_at).toLocaleString(),
+                nom: data[i].nom_agence,
+                ville: data[i].quartier.ville.libelle,
+                quartier: data[i].quartier.libelle,
+              });
+              this.agence.push(data[i].nom_agence);
+            }
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
           }
         );
     },
@@ -371,6 +449,29 @@ export default {
         );
     },
 
+    listeCarnetPrepare(carnetLibelle) {
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(`${this.callback}/carnet/list?all=true`, {}, headers)
+        .then(
+          (response) => {
+            let data = response.body.data;
+
+            this.carnetChoise = data.filter((value) => {
+              if (value.libelle == carnetLibelle) {
+                return value;
+              }
+            });
+          },
+          (response) => {
+            this.showAlert("error", "Error", response.body.message);
+          }
+        );
+    },
     generate(value) {
       let data = this.produitData;
       let dt = this.produit;
@@ -427,6 +528,7 @@ export default {
 
     handleOk(e) {
       e.preventDefault();
+      console.log(this.produit);
       this.form.validateFields((err, values) => {
         if (!err) {
           if (values.code_secret == localStorage.getItem("code_secret")) {
@@ -477,19 +579,76 @@ export default {
       this.$http.post(`${this.callback}/carnet/create`, values, headers).then(
         (response) => {
           if (response) {
-            this.showAlert(
-              "success",
-              "Success",
-              "Creation de carnet effectuer avec success"
-            );
+            if (this.agence) {
+              console.log(response);
+              this.listeCarnetPrepare(data.libelle);
+              setTimeout(() => {
+                console.log(this.carnetChoise[0].id);
+                this.affecteAgenceToCarnet(0, this.carnetChoise[0].id);
+              }, 2000);
+            } else {
+              this.showAlert(
+                "success",
+                "Success",
+                "Creation de carnet effectuer avec success, nb: aucune agence n'a été affecter"
+              );
 
-            this.form.resetFields();
+              this.form.resetFields();
+            }
           }
         },
         (response) => {
           this.showAlert("error", "Erreur", response.body.message);
         }
       );
+    },
+
+    affecteAgenceToCarnet(i, idCarnet) {
+      console.log(this.agence);
+      let val = this.agenceData.filter((value) => {
+        if (value.value == this.agence[i]) {
+          return value;
+        }
+      });
+      if (val) {
+        console.log(val[0].id);
+        let session = localStorage;
+        this.token_admin = session.getItem("token");
+
+        let headers = { headers: { Authorization: this.token_admin } };
+
+        this.$http
+          .post(
+            `${this.callback}/v3-upgrade/agency_pack/create`,
+            {
+              id_agence: val[0]?.id,
+              id_packs: [idCarnet],
+            },
+            headers
+          )
+          .then(
+            (response) => {
+              if (response) {
+                if (i < this.agence.length - 1) {
+                  this.affecteAgenceToCarnet(i + 1, idCarnet);
+                } else {
+                  this.showAlert(
+                    "success",
+                    "Success",
+                    "Creation de carnet effectuer avec success, nb: aucune agence n'a été affecter"
+                  );
+
+                  this.form.resetFields();
+                }
+              }
+            },
+            (response) => {
+              this.showAlert("error", "Error", response.body.message);
+            }
+          );
+      } else {
+        this.affecteAgenceToCarnet(i + 1, idCarnet);
+      }
     },
 
     block(id) {

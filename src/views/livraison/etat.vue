@@ -52,7 +52,7 @@
         <a-card class="card card-body border-0">
           <template #title>
             <div class="d-flex justify-content-between">
-              <h6>Liste de tous les clients livrer</h6>
+              <h6>Liste de tous les clients livrés</h6>
               <!-- <a-input-search
                 v-model="value"
                 placeholder="Recherche ici"
@@ -61,7 +61,11 @@
               /> -->
             </div>
           </template>
-          <a-table :columns="columns_l" :data-source="data_l" :pagination="true">
+          <a-table
+            :columns="columns_l"
+            :data-source="data_l"
+            :pagination="true"
+          >
             <template slot="operation" slot-scope="text, record">
               <router-link
                 :to="{ name: 'Client_detail', params: { id: record.key } }"
@@ -87,8 +91,8 @@ export default {
   },
   data() {
     return {
-      
       callback: process.env.VUE_APP_API_BASE_URL,
+      namApp: process.env.VUE_APP_NAME,
       token_admin: null,
       stats: [],
       columns: [],
@@ -219,7 +223,7 @@ export default {
     ];
 
     this.listeClient();
-    this.listeClientLivrer();
+    this.listeClientlivrés();
   },
   methods: {
     showAlert(type, title, description) {
@@ -236,16 +240,12 @@ export default {
       let headers = { headers: { Authorization: this.token_admin } };
 
       this.$http
-        .post(
-          `${this.callback}/clients/carnet/finished`,
-          {},
-          headers
-        )
+        .post(`${this.callback}/clients/carnet/finished`, {}, headers)
         .then(
           (response) => {
             let data = response.body.data;
 
-            this.stats[0].value = data.length
+            this.stats[0].value = data.length;
 
             this.data = [];
 
@@ -261,7 +261,7 @@ export default {
               });
             }
 
-            console.log(this.data)
+            console.log(this.data);
           },
           (response) => {
             this.showAlert("error", "Error", response.body.message);
@@ -269,23 +269,19 @@ export default {
         );
     },
 
-    listeClientLivrer() {
+    listeClientlivrés() {
       let session = localStorage;
       this.token_admin = session.getItem("token");
 
       let headers = { headers: { Authorization: this.token_admin } };
 
       this.$http
-        .post(
-          `${this.callback}/clients/carnet/delivered`,
-          {},
-          headers
-        )
+        .post(`${this.callback}/clients/carnet/delivered`, {}, headers)
         .then(
           (response) => {
             let data = response.body.data;
 
-            this.stats[1].value = data.length
+            this.stats[1].value = data.length;
             this.data_l = [];
 
             for (let i = 0; i < data.length; i++) {
@@ -305,7 +301,6 @@ export default {
           }
         );
     },
-
 
     onSearch() {
       let session = localStorage;

@@ -24,7 +24,10 @@
               <a-card :bordered="false" class="card-billing-info">
                 <div class="col-info">
                   <a-descriptions
-                    :title="'Date de creation: ' + new Date(client.created_at).toLocaleString()"
+                    :title="
+                      'Date de creation: ' +
+                      new Date(client.created_at).toLocaleString()
+                    "
                     :column="4"
                   >
                     <a-descriptions-item label="Raison social">
@@ -130,8 +133,8 @@ export default {
   },
   data() {
     return {
-      
       callback: process.env.VUE_APP_API_BASE_URL,
+      namApp: process.env.VUE_APP_NAME,
       token_admin: null,
       carnets: [],
       stats: [],
@@ -176,7 +179,7 @@ export default {
 						</svg>`,
       },
       {
-        title: "Nombre de carnet Livrée",
+        title: "Carnets livrés",
         value: 0,
         prefix: "",
         suffix: "",

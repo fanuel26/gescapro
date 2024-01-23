@@ -35,11 +35,11 @@
                 @change="onSearch"
               />
               <div>
-                <router-link type="primary" :to="{ name: 'Client_not_visite' }"
+                <!-- <router-link type="primary" :to="{ name: 'Client_not_visite' }"
                   ><a-button class="mx-2"
                     >clients non visité</a-button
                   ></router-link
-                >
+                > -->
                 <router-link type="primary" :to="{ name: 'Client_classement' }"
                   ><a-button class="mx-2"
                     >Classement clients</a-button
@@ -48,6 +48,11 @@
                 <router-link type="primary" :to="{ name: 'Client_new' }"
                   ><a-button class="mx-2"
                     >Nouveaux clients</a-button
+                  ></router-link
+                >
+                <router-link :to="{ name: 'Client_notification' }"
+                  ><a-button type="primary" class="mx-2"
+                    >Notifications</a-button
                   ></router-link
                 >
               </div>
@@ -94,6 +99,7 @@ export default {
   data() {
     return {
       callback: process.env.VUE_APP_API_BASE_URL,
+      namApp: process.env.VUE_APP_NAME,
       token_admin: null,
       stats: [],
       columns: [],

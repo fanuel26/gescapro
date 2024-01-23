@@ -310,11 +310,11 @@ export default {
         dataIndex: "nom",
         key: "nom",
       },
-      {
-        title: "Numéro de téléphone",
-        dataIndex: "numero",
-        key: "numero",
-      },
+      // {
+      //   title: "Numéro de téléphone",
+      //   dataIndex: "numero",
+      //   key: "numero",
+      // },
       {
         title: "Adresse emmail",
         dataIndex: "email",

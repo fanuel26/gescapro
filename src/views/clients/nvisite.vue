@@ -28,6 +28,13 @@
           <template #title>
             <div class="d-flex justify-content-between">
               <h6>Liste de tous les clients non visité</h6>
+              <div>
+                <a-range-picker v-model="valueDate" :format="dateFormat" @change="listeClient"/>
+
+                <!-- <a-button type="primary" @click="listeClient" class="mx-4">
+                  Envoyer
+                </a-button> -->
+              </div>
               <a-input-search
                 v-model="value"
                 placeholder="Recherche ici"
@@ -77,7 +84,10 @@ export default {
   data() {
     return {
       callback: process.env.VUE_APP_API_BASE_URL,
+      namApp: process.env.VUE_APP_NAME,
       token_admin: null,
+      dateFormat: 'YYYY/MM/DD',
+      valueDate: null,
       stats: [],
       columns: [],
       data: [],
@@ -138,7 +148,7 @@ export default {
       },
     ];
 
-    this.listeClient();
+    // this.listeClient();
   },
   methods: {
     showAlert(type, title, description) {
@@ -157,7 +167,7 @@ export default {
       this.$http
         .post(
           `${this.callback}/v2/client/not-visited/by-dates?row=${this.row}&page=${this.page}`,
-          {},
+          {startDate: this.valueDate[0], endDate: this.valueDate[0]},
           headers
         )
         .then(
@@ -180,7 +190,7 @@ export default {
                 nom: data[i].nom,
                 numero: data[i].numero,
                 profession: data[i].profession,
-                nbr_carnet: data[i].nb_carnet,
+                nbr_carnet: data[i].nb_carnets,
               });
             }
           },
@@ -200,8 +210,8 @@ export default {
 
       this.$http
         .post(
-          `${this.callback}/v2/client/not-visited/by-dates?row=${this.row}&page=${this.page}`,
-          {},
+         `${this.callback}/v2/client/not-visited/by-dates?row=${this.row}&page=${this.page}`,
+          {startDate: this.valueDate[0], endDate: this.valueDate[0]},
           headers
         )
         .then(
@@ -225,7 +235,7 @@ export default {
                 nom: d[i].nom,
                 numero: d[i].numero,
                 profession: d[i].profession,
-                nbr_carnet: d[i].nb_carnet,
+                nbr_carnet: d[i].nb_carnets,
               });
             }
           },
@@ -246,7 +256,7 @@ export default {
       this.$http
         .post(
           `${this.callback}/v2/client/not-visited/by-dates?row=${this.row}&page=${this.page}`,
-          {},
+          {startDate: this.valueDate[0], endDate: this.valueDate[0]},
           headers
         )
         .then(
@@ -270,7 +280,7 @@ export default {
                 nom: d[i].nom,
                 numero: d[i].numero,
                 profession: d[i].profession,
-                nbr_carnet: d[i].nb_carnet,
+                nbr_carnet: d[i].nb_carnets,
               });
             }
           },
@@ -288,8 +298,8 @@ export default {
 
       this.$http
         .post(
-          `${this.callback}/v2/client/not-visited/by-dates?search=${this.value}&row=${this.row}&page=1`,
-          {},
+         `${this.callback}/v2/client/not-visited/by-dates?row=${this.row}&page=${this.page}`,
+          {startDate: this.valueDate[0], endDate: this.valueDate[0]},
           headers
         )
         .then(
@@ -305,7 +315,7 @@ export default {
                 nom: d[i].nom,
                 numero: d[i].numero,
                 profession: d[i].profession,
-                nbr_carnet: d[i].nb_carnet,
+                nbr_carnet: d[i].nb_carnets,
               });
 
               this.data_s = this.data;

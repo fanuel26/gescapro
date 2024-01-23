@@ -108,6 +108,7 @@ export default {
     return {
       
       callback: process.env.VUE_APP_API_BASE_URL,
+      namApp: process.env.VUE_APP_NAME,
       token_admin: null,
       columnsCarnet: null,
       dataCarnets: [],

@@ -13,7 +13,14 @@
           class="header-solid h-full"
           :bodyStyle="{ paddingTop: 0, paddingBottom: '16px' }"
         >
+        <!-- Client_carnet_end -->
           <div class="text-right mb-4">
+            
+              <router-link :to="{ name: 'Client_carnet_end' }">
+                <a-button type="primary" class="mx-2">
+                  Carnets terminés
+                </a-button>
+              </router-link>
             <a-button @click="$router.go(-1)">Retour</a-button>
           </div>
           <template #title>
@@ -40,7 +47,7 @@
                       {{ quartier }}
                     </a-descriptions-item>
                     <a-descriptions-item label="Position géographique">
-                      01586854x12558866
+                      {{ client.lat }}x{{ client.long }}
                     </a-descriptions-item>
                     <a-descriptions-item label="Collecteur en charge">
                       {{ client.collecteur.nom }}
@@ -125,6 +132,7 @@ export default {
     return {
       
       callback: process.env.VUE_APP_API_BASE_URL,
+      namApp: process.env.VUE_APP_NAME,
       token_admin: null,
       carnets: [],
       stats: [],

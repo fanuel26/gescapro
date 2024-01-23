@@ -1,23 +1,10 @@
 <template>
   <div>
     <a-row :gutter="24">
-      <a-col
-        :span="24"
-        :lg="12"
-        :xl="6"
-        class="mb-24"
-        v-for="(stat, index) in stats"
-        :key="index"
-      >
+      <a-col :span="24" :lg="12" :xl="6" class="mb-24" v-for="(stat, index) in stats" :key="index">
         <!-- Widget 1 Card -->
-        <WidgetCounter
-          :title="stat.title"
-          :value="stat.value"
-          :prefix="stat.prefix"
-          :suffix="stat.suffix"
-          :icon="stat.icon"
-          :status="stat.status"
-        ></WidgetCounter>
+        <WidgetCounter :title="stat.title" :value="stat.value" :prefix="stat.prefix" :suffix="stat.suffix"
+          :icon="stat.icon" :status="stat.status"></WidgetCounter>
         <!-- / Widget 1 Card -->
       </a-col>
     </a-row>
@@ -26,27 +13,18 @@
       <a-col :span="12" :lg="12" :xl="24" class="mb-24">
         <a-card class="card card-body border-0">
           <div class="mb-4 d-flex justify-content-between align-items-center">
-            <a-input-search
-              v-model="value"
-              placeholder="Recherche ici"
-              style="width: 300px"
-              @change="onSearch"
-            />
+            <a-input-search v-model="value" placeholder="Recherche ici" style="width: 300px" @change="onSearch" />
+
+            <a-button @click="ClassementByCarnetVendus()"> Collecteur par carnet vendus par jour </a-button>
           </div>
           <a-table :columns="columns" :data-source="data" :pagination="false">
             <template slot="operation" slot-scope="text, record">
               <a-row>
                 <a-col :span="12">
-                  <router-link
-                    class="mx-2"
-                    :to="{
-                      name: 'Collecteur_detail',
-                      params: { id: record.key },
-                    }"
-                    ><a-button type="primary" size="small"
-                      >Détail</a-button
-                    ></router-link
-                  >
+                  <router-link class="mx-2" :to="{
+                    name: 'Collecteur_detail',
+                    params: { id: record.key },
+                  }"><a-button type="primary" size="small">Détail</a-button></router-link>
                 </a-col>
               </a-row>
             </template>
@@ -80,8 +58,9 @@ export default {
   },
   data() {
     return {
-      
+
       callback: process.env.VUE_APP_API_BASE_URL,
+      namApp: process.env.VUE_APP_NAME,
       token_admin: null,
       stats: [],
       width: 1000,
@@ -109,7 +88,7 @@ export default {
     };
   },
   mounted() {
-    this.password = `gescapro@${Math.floor(
+    this.password = `${this.namApp}@${Math.floor(
       Math.random() * (9999 - 1000) + 1000
     )}`;
 
@@ -232,9 +211,8 @@ export default {
                 numero: `(+228) ${data[i].numero}`,
                 agence: data[i].agc_name,
                 status: data[i].is_active,
-                somme: `${
-                  data[i].compte_agent_collecteur + data[i].total_cotisation
-                } Fcfa`,
+                somme: `${data[i].compte_agent_collecteur + data[i].total_cotisation
+                  } Fcfa`,
               });
 
               this.data_s = this.data;
@@ -280,9 +258,8 @@ export default {
                 numero: `(+228) ${data[i].numero}`,
                 agence: data[i].agc_name,
                 status: data[i].is_active,
-                somme: `${
-                  data[i].compte_agent_collecteur + data[i].total_cotisation
-                } Fcfa`,
+                somme: `${data[i].compte_agent_collecteur + data[i].total_cotisation
+                  } Fcfa`,
               });
 
               this.data_s = this.data;
@@ -326,9 +303,8 @@ export default {
                 numero: `(+228) ${data[i].numero}`,
                 agence: data[i].agc_name,
                 status: data[i].is_active,
-                somme: `${
-                  data[i].compte_agent_collecteur + data[i].total_cotisation
-                } Fcfa`,
+                somme: `${data[i].compte_agent_collecteur + data[i].total_cotisation
+                  } Fcfa`,
               });
 
               this.data_s = this.data;
@@ -467,6 +443,47 @@ export default {
         }
       }*/
     },
+
+    ClassementByCarnetVendus() {
+      this.columns[4].title = 'Carnet vendus par jour'
+      let session = localStorage;
+      this.token_admin = session.getItem("token");
+
+      let headers = { headers: { Authorization: this.token_admin } };
+
+      this.$http
+        .post(
+          `${this.callback}/classement/collecteur?all=true`,
+          {},
+          headers
+        )
+        .then(
+          (response) => {
+            let data = response.body.data;
+
+            console.log(data);
+            this.data = []
+            for (let i = 0; i < data.length; i++) {
+              if (data[i].carnet_vendu_jour > 0) {
+                this.data.push({
+                  key: data[i].id,
+                  created_at: new Date(data[i].created_at).toLocaleString(),
+                  nom: `${data[i].nom} ${data[i].prenom}`,
+                  numero: `(+228) ${data[i].numero}`,
+                  agence: data[i].agc_name,
+                  status: data[i].is_active,
+                  somme: data[i].carnet_vendu_jour,
+                });
+
+                this.data.sort(function (a, b) {
+                  return b.somme - a.somme;
+                });
+
+                this.data_s = this.data;
+              }
+            }
+          })
+    }
   },
 };
 </script>

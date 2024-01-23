@@ -318,6 +318,7 @@ export default {
     return {
       
       callback: process.env.VUE_APP_API_BASE_URL,
+      namApp: process.env.VUE_APP_NAME,
       token_admin: null,
       profileHeaderBtns: "overview",
       conversationsData,
@@ -330,7 +331,7 @@ export default {
   },
 
   mounted() {
-    this.password = `gescapro@${Math.floor(
+    this.password = `${this.namApp}@${Math.floor(
       Math.random() * (9999 - 1000) + 1000
     )}`;
 
@@ -449,7 +450,7 @@ export default {
                       "Success",
                       `Mot de passe generer avec succes! Mot de passe: ${values.password}`
                     );
-                    this.password = `gescapro@${Math.floor(
+                    this.password = `${this.namApp}@${Math.floor(
                       Math.random() * (9999 - 1000) + 1000
                     )}`;
                   } else {

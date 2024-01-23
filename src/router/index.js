@@ -76,6 +76,36 @@ let routes = [
 		component: () => import('../views/carnets/carnet_liver/liste.vue'),
 	},
 	{
+		path: '/carnets-desactiver',
+		name: 'Carnets_desactivate',
+		layout: "dashboard",
+		component: () => import('../views/carnets/carnet_block/liste.vue'),
+	},
+	{
+		path: '/carnets-terminer',
+		name: 'Carnets_terminer',
+		layout: "dashboard",
+		component: () => import('../views/carnets/carnet_terminer/liste.vue'),
+	},
+	{
+		path: '/carnets/carnets-client-terminer/:id',
+		name: 'Carnets_client_terminer',
+		layout: "dashboard",
+		component: () => import('../views/carnets/client_end/liste.vue'),
+	},
+	{
+		path: '/carnets/carnets-client/:id',
+		name: 'Carnets_client',
+		layout: "dashboard",
+		component: () => import('../views/carnets/clients/liste.vue'),
+	},
+	{
+		path: '/carnets/classement',
+		name: 'Carnets_classement',
+		layout: "dashboard",
+		component: () => import('../views/carnets/classement/liste.vue'),
+	},
+	{
 		path: '/produit',
 		name: 'Produit',
 		layout: "dashboard",
@@ -178,12 +208,43 @@ let routes = [
 		layout: "dashboard",
 		component: () => import('../views/clients/detail.vue'),
 	},
+	{
+		path: '/client/:id/carnet/end',
+		name: 'Client_carnet_end',
+		layout: "dashboard",
+		component: () => import('../views/clients/end.vue'),
+	},
+	
+	{
+		path: '/client/notification',
+		name: 'Client_notification',
+		layout: "dashboard",
+		component: () => import('../views/clients/message.vue'),
+	},
 	/// agence agent route
 	{
 		path: '/collecteur',
 		name: 'Collecteur',
 		layout: "dashboard",
 		component: () => import('../views/collecteur/liste.vue'),
+	},
+	{
+		path: '/dashboard/collecteur/byville',
+		name: 'Collecteur_ville',
+		layout: "dashboard",
+		component: () => import('../views/collecteur/collecteur_ville.vue'),
+	},
+	{
+		path: '/dashboard/collecteur/classement',
+		name: 'Collecteur_classement',
+		layout: "dashboard",
+		component: () => import('../views/collecteur/collecteur_classement.vue'),
+	},
+	{
+		path: '/dashboard/collecteur/archived',
+		name: 'Collecteur_archived',
+		layout: "dashboard",
+		component: () => import('../views/collecteur/collecteur_archived.vue'),
 	},
 	{
 		path: '/collecteur/:id',
@@ -208,6 +269,25 @@ let routes = [
 		name: 'Collecteur_client_non_visité',
 		layout: "dashboard",
 		component: () => import('../views/collecteur/client_n.vue'),
+	},
+	
+	{
+		path: '/collecteur/:id/classement',
+		name: 'Collecteur_classement',
+		layout: "dashboard",
+		component: () => import('../views/collecteur/classement.vue'),
+	},
+	{
+		path: '/collecteur/:id/not-visite',
+		name: 'Collecteur_not_visite',
+		layout: "dashboard",
+		component: () => import('../views/collecteur/nvisite.vue'),
+	},
+	{
+		path: '/collecteur/:id/classement_carnet',
+		name: 'Collecteur_classement_carnet',
+		layout: "dashboard",
+		component: () => import('../views/collecteur/classement_carnet.vue'),
 	},
 	{
 		path: '/superviseur',
@@ -244,6 +324,18 @@ let routes = [
 		name: 'Agence_detail',
 		layout: "dashboard",
 		component: () => import('../views/agences/detail.vue'),
+	},
+	{
+		path: '/agence/carnet/:id',
+		name: 'Agence_carnet_detail',
+		layout: "dashboard",
+		component: () => import('../views/agences/carnet.vue'),
+	},
+	{
+		path: '/agence/client/:id',
+		name: 'Agence_client_detail',
+		layout: "dashboard",
+		component: () => import('../views/agences/client.vue'),
 	},
 	{
 		path: '/agence/:id/depot',
@@ -356,6 +448,25 @@ let routes = [
 		name: 'Launship_point',
 		layout: "dashboard",
 		component: () => import('../views/launship/point.vue'),
+	},
+	
+	{
+		path: '/controle',
+		name: 'Controle_list',
+		layout: "dashboard",
+		component: () => import('../views/controle/controle.vue'),
+	},
+	{
+		path: '/controle/:id',
+		name: 'Controle_detail',
+		layout: "dashboard",
+		component: () => import('../views/controle/liste.vue'),
+	},
+	{
+		path: '/controleview/:id',
+		name: 'Controle_view',
+		layout: "dashboard",
+		component: () => import('../views/controle/detail.vue'),
 	},
 	{
 		path: '*',

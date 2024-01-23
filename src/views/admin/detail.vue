@@ -200,6 +200,28 @@
                         <p class="mx-2">Launship-Box</p>
                       </div>
                     </a-col>
+                    <a-col :span="8">
+                      <div class="d-flex">
+                        <a-switch
+                          checked-children=""
+                          un-checked-children=""
+                          :checked="state.dashboard"
+                          v-model="state.dashboard"
+                        />
+                        <p class="mx-2">Tableau de bord</p>
+                      </div>
+                    </a-col>
+                    <a-col :span="8">
+                      <div class="d-flex">
+                        <a-switch
+                          checked-children=""
+                          un-checked-children=""
+                          :checked="state.controle"
+                          v-model="state.controle"
+                        />
+                        <p class="mx-2">Controle</p>
+                      </div>
+                    </a-col>
                   </a-row>
 
                   <a-col :span="24">
@@ -489,6 +511,8 @@ export default {
                   ville: true,
                   launship: true,
                   pret: true,
+                  dashboard: true,
+                  controle: true,
                 };
               } else {
                 this.state = JSON.parse(data[i].adminAttributes);
