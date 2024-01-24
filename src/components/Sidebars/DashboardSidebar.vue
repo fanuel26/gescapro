@@ -19,9 +19,8 @@
     <div class="brand">
       <router-link :to="{ name: 'Dashboard' }"
         >
-        
 				<!-- <img src="/images/logo1.png" class="img-fluid w-100 h-75" alt=""/> -->
-				<h3 class="text-primary">TG-GROSSISTE</h3>
+				<h3 class="text-primary">{{ namAppView }}</h3>
         </router-link>
     </div>
     <hr />
@@ -678,6 +677,9 @@ export default {
   data() {
     return {
       callback: process.env.VUE_APP_API_BASE_URL,
+      
+      namAppView: process.env.VUE_APP_NAME_VIEW,
+      
       token_admin: null,
       // sidebarCollapsedModel: this.sidebarCollapsed,
       type: {},

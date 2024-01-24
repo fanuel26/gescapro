@@ -59,16 +59,16 @@
               </div>
             </template>
 
-            <div class="d-flex justify-content-center align-items-center" style="height: 300px;" v-if="load">
-              <a-spin v-if="load" size="large" tip="Chargement..." />
+            <div class="d-flex justify-content-center align-items-center" style="height: 300px;" v-if="loader">
+              <a-spin v-if="loader" size="large" tip="Chargement..." />
             </div>
             <a-timeline>
               <a-timeline-item v-for="dc in dataCollecteur_inactif" :key="dc" color="red">
                 {{ dc.nom }} {{ dc.prenom }}
-              <p><strong style="color: #000">{{ dc.collecte_journalier }}</strong> mises | <strong
-                  style="color: #000">{{ dc.collecte_encour }}</strong> Fcfa non deversé</p>
-            </a-timeline-item>
-          </a-timeline>
+                <p><strong style="color: #000">{{ dc.collecte_journalier }}</strong> mises | <strong
+                    style="color: #000">{{ dc.collecte_encour }}</strong> Fcfa non deversé</p>
+              </a-timeline-item>
+            </a-timeline>
             <!-- <div class="d-flex justify-content-end" v-if="dataCollecteur_vente_jour !== null">
                               <router-link :to="{ name: 'Classement_collecteur' }">
                                 <a-button type="primary" size="small">Voire plus</a-button>
@@ -97,9 +97,9 @@
               </a-timeline-item>
             </a-timeline>
 
-          <div class="d-flex justify-content-center align-items-center" style="height: 300px;" v-if="load">
-            <a-spin v-if="load" size="large" tip="Chargement..." />
-          </div>
+            <div class="d-flex justify-content-center align-items-center" style="height: 300px;" v-if="loader">
+              <a-spin v-if="loader" size="large" tip="Chargement..." />
+            </div>
             <!-- <div class="d-flex justify-content-end" v-if="dataCollecteur_vente_jour !== null">
                               <router-link :to="{ name: 'Classement_collecteur' }">
                                 <a-button type="primary" size="small">Voire plus</a-button>
@@ -174,77 +174,18 @@
             </div>
           </a-card>
           <!-- / Projects Table Card -->
-      </a-col>
-      <!-- / Table -->
-
-      <!-- Timeline -->
-      <!-- <a-col :span="24" :lg="12" class="mb-24">
-          <a-card :bordered="false" class="header-solid h-full" :bodyStyle="{ paddingTop: '12px' }">
-            <template #title>
-              <div class="d-flex justify-content-between align-items-start">
-                <h6>Carnets les plus vendus par agences</h6>
-
-                <a-form-item class="" :colon="false">
-                  <a-select style="width: 300px" v-decorator="[
-                    'agence',
-                    {
-                      initialValue: agence,
-                      rules: [
-                        {
-                          required: true,
-                          message: 'agence est vide!',
-                        },
-                      ],
-                    },
-                  ]" @change="listeCarnetAgence">
-                    <a-select-option v-for="agence in Agences" :value="agence.id" :key="agence.id">
-                      {{ agence.nom_agence }}
-                    </a-select-option>
-                  </a-select>
-                </a-form-item>
-              </div>
-            </template>
-            <a-timeline>
-              <a-timeline-item v-for="dc in dataCarnetsAgences" :key="dc" color="green">
-                {{ dc.libelle }}
-                <p>{{ dc.vendu }} ventes</p>
-              </a-timeline-item>
-            </a-timeline>
-            <div class="d-flex justify-content-end" v-if="dataCarnetsAgences !== null">
-              <router-link :to="{ name: 'Classement_carnet' }">
-                                <a-button type="primary" size="small">Voire plus</a-button>
-                              </router-link>
-                            </div>
-                          </a-card>
-                        </a-col> -->
+        </a-col>
+        <!-- / Table -->
 
         <a-col :span="24" :lg="12" class="mb-24">
           <!-- Orders History Timeline Card -->
 
           <!-- Orders History Timeline Card -->
           <a-card :bordered="false" class="header-solid h-full" :bodyStyle="{ paddingTop: '12px' }">
-          <template #title>
-            <div class="d-flex justify-content-between align-items-start">
-              <h6>Vendeurs du jour</h6>
+            <template #title>
+              <div class="d-flex justify-content-between align-items-start">
+                <h6>Vendeurs du jour</h6>
 
-              <!-- <a-form-item class="" :colon="false">
-                  <a-select style="width: 300px" v-decorator="[
-                    'agence',
-                    {
-                      initialValue: agence,
-                      rules: [
-                        {
-                          required: true,
-                          message: 'agence est vide!',
-                        },
-                      ],
-                    },
-                  ]" @change="listeCarnetAgence">
-                                    <a-select-option v-for="agence in Agences" :value="agence.id" :key="agence.id">
-                                      {{ agence.nom_agence }}
-                                    </a-select-option>
-                                  </a-select>
-                                </a-form-item> -->
               </div>
             </template>
             <a-timeline>
@@ -392,35 +333,36 @@ export default {
       callback: process.env.VUE_APP_API_BASE_URL,
       namApp: process.env.VUE_APP_NAME,
       token_admin: null,
-      dataCollecteur: null,
+      dataCollecteur: [],
       columnCollecteur: null,
-      dataCollecteur_c: null,
-      columnCollecteur_c: null,
-      dataCollecteur_cli: null,
-      dataCollecteur_vente_jour: null,
+      dataCollecteur_c: [],
+      columnCollecteur_c: [],
+      dataCollecteur_cli: [],
+      dataCollecteur_vente_jour: [],
       columnCollecteur_cli: null,
       columnsCarnet: null,
-      dataCarnets: null,
+      dataCarnets: [],
       ville: null,
       agence: null,
-      villes: null,
-      Agences: null,
-      dataCarnetsVilles: null,
-      dataCarnetsAgences: null,
-      dataCarnet: null,
+      villes: [],
+      Agences: [],
+      dataCarnetsVilles: [],
+      dataCarnetsAgences: [],
+      dataCarnet: [],
       stats: [],
       width: 500,
       timelineReverse: false,
       type: null,
       i: 0,
       dataC: 0,
-      dataCollecteur_inactif: null,
-      dataCollecteur_actif: null,
+      dataCollecteur_inactif: [],
+      dataCollecteur_actif: [],
       nb_dataCollecteur_inactif: 0,
       nb_dataCollecteur_actif: 0,
       somme_deverse: 0,
       confirmLoading: false,
       load: false,
+      loader: false,
       load_m: false,
       visible: false
     };
@@ -956,9 +898,9 @@ export default {
             if (data[i].nbcotisattion > 31 * 12 - 62) {
               this.dataCarnets.push({
                 key: data[i].id,
-                libelle: data[i].carnet.libelle,
-                nbr_mois: data[i].carnet.period / 31,
-                prix_jour: data[i].carnet.tarif,
+                libelle: data[i].carnet?.libelle,
+                nbr_mois: data[i].carnet?.period / 31,
+                prix_jour: data[i].carnet?.tarif,
                 nbr_cot: data[i].nbcotisattion,
                 nom_client: `${data[i].client.nom} ${data[i].client.prenom}`,
                 numero_client: data[i].client.numero,
@@ -987,8 +929,10 @@ export default {
           console.log(data)
           this.dataCarnetsVilles = [];
           for (let i = 0; i < 10; i++) {
-            this.dataCarnetsVilles.push(data[i]);
-            this.dataCarnetsVilles = this.dataCarnetsVilles.filter(value => value.vendu > 0 ? value : null)
+            if (data[i]) {
+              this.dataCarnetsVilles.push(data[i]);
+              this.dataCarnetsVilles = this.dataCarnetsVilles.filter(value => value.vendu > 0 ? value : null)
+            }
           }
         });
     },
@@ -1010,7 +954,9 @@ export default {
           console.log(data)
           this.dataCarnetsAgences = [];
           for (let i = 0; i < 10; i++) {
-            this.dataCarnetsAgences.push(data[i]);
+            if (data[i]) {
+              this.dataCarnetsAgences.push(data[i]);
+            }
           }
         });
     },
@@ -1123,13 +1069,15 @@ export default {
           console.log(data);
           this.dataCarnet = [];
           for (let i = 0; i < 10; i++) {
-            this.dataCarnet.push(data[i]);
+            if (data[i]) {
+              this.dataCarnet.push(data[i]);
+            }
           }
         });
     },
 
     listeCollecteur() {
-      this.load = true
+      this.loader = true
       let session = localStorage;
       this.token_admin = session.getItem("token");
 
@@ -1141,9 +1089,15 @@ export default {
           (response) => {
             let data = response.body.data;
 
+            console.log(data);
+
             this.dataC = data
             console.log(this.dataC.length)
-            this.getValueCollecteur(this.dataC[this.i].id)
+            if (this.dataC.length != 0) {
+              this.getValueCollecteur(this.dataC[this.i].id)
+            } else {
+              this.loader = false
+            }
 
           },
           (response) => {
@@ -1164,17 +1118,20 @@ export default {
         console.log(this.dataC)
         this.dataCollecteur_inactif = this.dataC.filter(value => parseInt(value.collecte_journalier) == 0 ? value : null);
         this.dataCollecteur_actif = this.dataC.filter(value => parseInt(value.collecte_journalier) > 0 ? value : null);
-        this.dataCollecteur_actif.sort(function (a, b) {
-          return b.collecte_journalier - a.collecte_journalier;
-        })
+        if (this.dataCollecteur_actif.length != 0) {
+          this.dataCollecteur_actif.sort(function (a, b) {
+            return b.collecte_journalier - a.collecte_journalier;
+          })
+        }
         this.nb_dataCollecteur_inactif = this.dataCollecteur_inactif.length
         this.nb_dataCollecteur_actif = this.dataCollecteur_actif.length
-        let nbrC = this.dataCollecteur_actif.reduce((accumulator, currentValue) => accumulator + parseInt(currentValue.collecte_journalier), 0)
-        console.log(nbrC)
-        this.stats[10].value = nbrC;
-        console.log(this.dataCollecteur_inactif)
-        console.log(this.dataCollecteur_actif)
-        this.load = false
+        if (this.dataCollecteur_actif.length != 0) {
+          let nbrC = this.dataCollecteur_actif.reduce((accumulator, currentValue) => accumulator + parseInt(currentValue.collecte_journalier), 0)
+          console.log(nbrC)
+          this.stats[10].value = nbrC;
+        }
+        this.loader = false
+        console.log(this.loader)
       }
     },
 
