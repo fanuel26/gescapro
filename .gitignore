@@ -1,9 +1,8 @@
 .DS_Store
 /node_modules
-gescapro
+# gescapro
 /dist
 package-lock.json
-
 
 # local env files
 .env.local
